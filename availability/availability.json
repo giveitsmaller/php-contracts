@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 160,
+  "capabilities_version": 162,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -167,6 +167,13 @@
       "availability": "stable",
       "identity_scoped": false,
       "operation_id": "verifyEmail",
+      "required_tier": null
+    },
+    "POST /api/billing/checkout": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "createBillingCheckoutSession",
       "required_tier": null
     },
     "POST /api/contact": {
@@ -2751,12 +2758,12 @@
       "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until backend\nsupport ships.\n\nTIFF (image/tiff) and BMP (image/bmp) bases are now `stable` too\n(flipped planned->stable 2026-06-30 on the lambdas staging proof,\nUANjD38A / #296) via the parallel `image_tiff` / `image_bmp`\nmime_groups. Because watermark output mirrors the input format\n(`produces: same_as_input`), advertising a base format is only honest\nwhen the worker can both decode AND encode it \u2014 which holds for\nTIFF/BMP but not for HEIC/AVIF (no encoder) or SVG (cannot re-emit svg\nfrom a rasterised composite); those stay out of scope.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`), which overlays and\nre-encodes the video.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 100 megapixels for image bases; per-frame caps for\nanimated GIF bases will be defined when the corresponding backend\nsupport ships.\n",
       "features": {
         "multi_overlay_stack": {
-          "availability": "planned",
-          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via per-input placement options.\nBackend support not yet confirmed; tagged planned. Scope is\nimage-base only at the time this feature was specified; extension\nto GIF / video bases tracks alongside the corresponding mime_group\n`planned` \u2192 `stable` flips.\n"
+          "availability": "stable",
+          "description": "Stack up to 8 overlay inputs on one base image, each with its own\nplacement via the `overlays[]` array option (index-aligned to the\noverlay-role sources; see the `image` group's `overlays` option).\n`overlays[]` is mutually exclusive with the flat single-overlay options,\nwhich remain the 1-overlay back-compat path.\n\n**Base-format scope: multi-overlay (`overlays[]`) is on the `image`\ngroup (jpeg/png/webp) ONLY** \u2014 the format the worker proved. The\nstable `image_tiff` / `image_bmp` bases support the SINGLE-overlay flat\noptions but NOT `overlays[]` yet (multi-overlay on those bases needs its\nown worker proof \u2014 a base-format extension, separate from the group's\nstable single-overlay flip). GIF / video bases remain out of scope.\n\nThe op-level `input` max 9 / `per_role_cardinality` overlay `{1,8}` is\nthe MAXIMUM (the jpeg/png/webp base); input-cardinality has no per-mime-\ngroup primitive, so a `>1`-overlay request on a tiff/bmp base \u2014 which\nhas no `overlays[]` to place the extra overlays \u2014 is rejected as\n`invalid_options` (API + worker). Effective per-base overlay count:\njpeg/png/webp = 1\u20138, tiff/bmp = 1.\n"
         }
       },
       "input_model": "multi",
-      "max_inputs": 2,
+      "max_inputs": 9,
       "mime_groups": {
         "image": {
           "mimes": [
@@ -2804,6 +2811,57 @@
               "description": "Optional overlay width as either pixels (e.g. \"200px\") or\npercentage of base image width (e.g. \"30%\"). Aspect ratio is\npreserved. Omit to use the original overlay size.\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
+            },
+            "overlays": {
+              "description": "Per-overlay placement for the multi-overlay stack \u2014 one entry per\noverlay source, INDEX-ALIGNED: `overlays[i]` applies to overlay\nsource `i`. Stacks up to 8 overlays on one base\n(`features.multi_overlay_stack`). `len(overlays)` MUST equal the\nnumber of overlay-role sources (worker-enforced; `invalid_options`\notherwise).\n\n**Z-order = array index (painter's order, bottom \u2192 top).** Overlays\nare composited in array/source order: `overlays[0]` first (bottom),\nthen `overlays[1]`, \u2026 `overlays[N-1]` LAST (on top). Where two\noverlays overlap, the higher index wins. There is no per-overlay\n`z` field \u2014 the index IS the z-order. (Deterministic in the worker;\nidentical per-frame for animated-WebP bases.)\n\n**Mutually exclusive with the flat single-overlay options**\n(`anchor` / `margin_x` / `margin_y` / `opacity` / `overlay_width`):\na request that sets BOTH `overlays[]` and any flat option is\nrejected as `invalid_options` (API create-validation + worker) \u2014\nthere is no silent precedence. Use the flat options for the\nsingle-overlay path, `overlays[]` for the multi path.\n\nLIVE (flipped `planned` -> stable 2026-07-01 on the lambdas worker\nproof, co-landed with `input` max 2 -> 9 + `per_role_cardinality`\noverlay `{1,8}` + api's overlays[] validation & FNA-gate removal).\nThe single-overlay FLAT options remain the 1-overlay back-compat path.\n",
+              "items": {
+                "properties": {
+                  "anchor": {
+                    "default": "bottom_right",
+                    "description": "9-grid anchor position on the base image (per-overlay; see the flat `anchor`).",
+                    "enum": [
+                      "top_left",
+                      "top_center",
+                      "top_right",
+                      "center_left",
+                      "center",
+                      "center_right",
+                      "bottom_left",
+                      "bottom_center",
+                      "bottom_right"
+                    ],
+                    "type": "string"
+                  },
+                  "margin_x": {
+                    "default": "0px",
+                    "description": "Horizontal offset from the anchor (px or % of base width), anchor-relative (see the flat `margin_x`).",
+                    "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+                    "type": "string"
+                  },
+                  "margin_y": {
+                    "default": "0px",
+                    "description": "Vertical offset from the anchor (px or % of base height), anchor-relative (see the flat `margin_y`).",
+                    "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+                    "type": "string"
+                  },
+                  "opacity": {
+                    "default": 0.5,
+                    "description": "Overlay opacity (0 transparent .. 1 opaque), clamped.",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "overlay_width": {
+                    "description": "Optional overlay width (px or % of base width); aspect preserved. Omit for original size.",
+                    "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array"
             }
           }
         },
@@ -2957,7 +3015,7 @@
           "min": 1
         },
         "overlay": {
-          "max": 1,
+          "max": 8,
           "min": 1
         }
       },
@@ -4838,7 +4896,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.148.0",
+  "schema_version": "2.152.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

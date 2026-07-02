@@ -13,8 +13,8 @@ final class ImageWatermarkMetadata
         return new OperationMetadata(
             features: [
                 'multi_overlay_stack' => new FeatureEntry(
-                    availability: 'planned',
-                    description: 'Allow up to 8 overlay inputs per job (currently capped at 1 overlay). Per-overlay placement via per-input placement options. Backend support not yet confirmed; tagged planned. Scope is image-base only at the time this feature was specified; extension to GIF / video bases tracks alongside the corresponding mime_group `planned` → `stable` flips. ',
+                    availability: 'stable',
+                    description: 'Stack up to 8 overlay inputs on one base image, each with its own placement via the `overlays[]` array option (index-aligned to the overlay-role sources; see the `image` group\'s `overlays` option). `overlays[]` is mutually exclusive with the flat single-overlay options, which remain the 1-overlay back-compat path.  **Base-format scope: multi-overlay (`overlays[]`) is on the `image` group (jpeg/png/webp) ONLY** — the format the worker proved. The stable `image_tiff` / `image_bmp` bases support the SINGLE-overlay flat options but NOT `overlays[]` yet (multi-overlay on those bases needs its own worker proof — a base-format extension, separate from the group\'s stable single-overlay flip). GIF / video bases remain out of scope.  The op-level `input` max 9 / `per_role_cardinality` overlay `{1,8}` is the MAXIMUM (the jpeg/png/webp base); input-cardinality has no per-mime- group primitive, so a `>1`-overlay request on a tiff/bmp base — which has no `overlays[]` to place the extra overlays — is rejected as `invalid_options` (API + worker). Effective per-base overlay count: jpeg/png/webp = 1–8, tiff/bmp = 1. ',
                 ),
             ],
             mime_groups: [
@@ -35,6 +35,9 @@ final class ImageWatermarkMetadata
                             per_value_availability: [],
                         ),
                         'overlay_width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'overlays' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                     ],

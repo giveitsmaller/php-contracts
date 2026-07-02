@@ -854,7 +854,8 @@
             "margin_x",
             "margin_y",
             "opacity",
-            "overlay_width"
+            "overlay_width",
+            "overlays"
           ]
         },
         "output_format_option": null
@@ -1159,5 +1160,5 @@
       }
     }
   },
-  "schema_version": "2.148.0"
+  "schema_version": "2.152.0"
 }

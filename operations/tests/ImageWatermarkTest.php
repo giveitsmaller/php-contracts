@@ -13,6 +13,8 @@ use Gisl\Generated\Operations\ImageWatermarkImageBmpOptions;
 use Gisl\Generated\Operations\ImageWatermarkImageGifAnchor;
 use Gisl\Generated\Operations\ImageWatermarkImageGifOptions;
 use Gisl\Generated\Operations\ImageWatermarkImageOptions;
+use Gisl\Generated\Operations\ImageWatermarkImageOverlaysItem;
+use Gisl\Generated\Operations\ImageWatermarkImageOverlaysItemAnchor;
 use Gisl\Generated\Operations\ImageWatermarkImageTiffAnchor;
 use Gisl\Generated\Operations\ImageWatermarkImageTiffOptions;
 
@@ -95,6 +97,7 @@ final class ImageWatermarkTest extends TestCase
         $this->assertSame('0px', $obj->margin_y);
         $this->assertSame(0.5, $obj->opacity);
         $this->assertNull($obj->overlay_width);
+        $this->assertNull($obj->overlays);
     }
 
     public function testImageWatermarkImageOptionsFullConstruction(): void
@@ -105,6 +108,7 @@ final class ImageWatermarkTest extends TestCase
             margin_y: 'test_value',
             opacity: 0.0,
             overlay_width: 'test_value',
+            overlays: [new ImageWatermarkImageOverlaysItem(anchor: ImageWatermarkImageOverlaysItemAnchor::TopLeft, margin_x: 'x', margin_y: 'x', opacity: 0.0, overlay_width: 'x')],
         );
         $this->assertInstanceOf(ImageWatermarkImageOptions::class, $obj);
     }

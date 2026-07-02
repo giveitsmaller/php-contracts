@@ -294,7 +294,7 @@
       ],
       "availability": "stable",
       "input": {
-        "max": 2,
+        "max": 9,
         "min": 2,
         "model": "multi",
         "roles": [
@@ -302,6 +302,46 @@
           "overlay"
         ]
       },
+      "option_conflicts": [
+        {
+          "availability": "stable",
+          "constraint_id": "image_watermark.overlays_vs_flat_options",
+          "message": "`overlays[]` (multi-overlay) is mutually exclusive with the flat single-overlay options (anchor / margin_x / margin_y / opacity / overlay_width) \u2014 set one mode, not both.",
+          "when": {
+            "all": [
+              {
+                "field": "image_watermark.overlays",
+                "isSet": true
+              },
+              {
+                "any": [
+                  {
+                    "field": "image_watermark.anchor",
+                    "isSet": true
+                  },
+                  {
+                    "field": "image_watermark.margin_x",
+                    "isSet": true
+                  },
+                  {
+                    "field": "image_watermark.margin_y",
+                    "isSet": true
+                  },
+                  {
+                    "field": "image_watermark.opacity",
+                    "isSet": true
+                  },
+                  {
+                    "field": "image_watermark.overlay_width",
+                    "isSet": true
+                  }
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
+        }
+      ],
       "produces": {
         "same_as_input": true
       },
@@ -525,5 +565,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.148.0"
+  "schema_version": "2.152.0"
 }
