@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 162,
+  "capabilities_version": 163,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -4659,6 +4659,159 @@
         }
       }
     },
+    "transform": {
+      "availability": "planned",
+      "default": false,
+      "description": "Apply a geometric / orientation transform to a media asset. **v1 supports\nrotate + flip only** (orientation transforms) \u2014 it does NOT do crop, scale,\nskew, or colour transforms. The name is deliberately `transform` (not\n`orient`) to leave room for a future `crop` on the same op; do not read the\nname as advertising arbitrary affine transforms. Full design + normative\norder-of-operations, routing topology, chain order, media gating, and\nbilling model: ADR-0026.\n\n**Params (per media group):**\n- `rotate` \u2014 `0 | 90 | 180 | 270` degrees clockwise (default `0`).\n- `flip` \u2014 `none | horizontal | vertical | both` mirror (default `none`).\n  `horizontal` = left\u2194right (the selfie/webcam mirror-correction),\n  `vertical` = top\u2194bottom, `both` = both axes.\n\n**Normative order-of-operations (v1 has NO arbitrary sequence).** For a\nsingle `transform` op the worker applies, in this fixed order:\n1. (images) normalize display orientation from EXIF,\n2. apply `rotate`,\n3. apply `flip` in the FINAL (post-rotate) display axes,\n4. (images) write pixels with the orientation tag reset/removed.\nSo `flip: horizontal` always means left\u2194right in the *visible result*, even\nafter a 90/270 rotate. See ADR-0026 \u00a7Order-of-operations.\n\n**auto_orient coexistence.** `transform` reads the image honouring EXIF\norientation, applies rotate/flip, and emits normalized-orientation pixels \u2014\nso a downstream `compress`/`convert` `auto_orient` is a no-op. Raw\nstored-pixel rotation that ignores EXIF is out of scope for v1.\n\n**No-op is rejected at create.** A `transform` with `rotate: 0` AND\n`flip: none` (for documents: `rotate: 0`) does nothing, so the API rejects\nit as `invalid_options` at create \u2014 there is no billed, worker-dispatched\nno-op (mirrors the API facade gate that rejects inert option combos). At\nleast one of `rotate`/`flip` must be non-default.\n\n**Media scope (v1).** IMAGE **still-raster** (jpeg/png/webp) and animated\nGIF; VIDEO (mp4/webm); DOCUMENT is PDF-rotate ONLY (no flip \u2014 the\n`document_pdf` group offers `rotate` alone). AUDIO is intentionally absent\n(no spatial geometry). SVG, HEIC/AVIF, and non-PDF documents\n(Office/ODF/EPUB) are out of scope for v1 and are not advertised.\n**Animated PNG (APNG) and animated WebP** are NOT covered by the\nstill-raster `image` group's activation proof \u2014 like animated GIF, a\npixel-baking geometry op would drop frames / animation metadata. Before the\n`image` group flips stable the worker MUST either reject animated PNG/WebP\nvariants at probe or transform ALL frames + preserve animation metadata\n(same bar as the `image_gif` group). Everything ships `availability:\nplanned` first and flips per media on worker capability-source proof\n(ADR-0006) \u2014 each activation co-updates schema availability + AsyncAPI\nrouting + API OperationType/chain/pricing + the billing weight row together\n(ADR-0026 \u00a7Rollout).\n\n**Routing (thumbnail precedent).** The payload `operation_type` stays the\nbase value `transform`; the API publisher resolves the effective input MIME\nto an SNS `operation_type` routing-attribute sub-type\n(`transform_image` / `transform_video` / `transform_document`). Those\nsub-types are ROUTING ATTRIBUTES ONLY \u2014 never persisted or public operation\ntypes (they are absent from the OperationType payload enum). The\n`document_pdf` group routes under `transform_document` (media-family level,\neven though v1 is PDF-only). See ADR-0026 \u00a7Routing + asyncapi/events.yaml.\n",
+      "input_model": "single",
+      "mime_groups": {
+        "document_pdf": {
+          "availability": "planned",
+          "mimes": [
+            "application/pdf"
+          ],
+          "options": {
+            "rotate": {
+              "default": 0,
+              "description": "Clockwise page rotation in degrees, applied to the rendered page orientation. `flip` is NOT offered for documents in v1.",
+              "type": "enum",
+              "value_type": "integer",
+              "values": [
+                0,
+                90,
+                180,
+                270
+              ]
+            }
+          }
+        },
+        "image": {
+          "availability": "planned",
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+          ],
+          "options": {
+            "flip": {
+              "default": "none",
+              "description": "Mirror the image. `horizontal` = left\u2194right, `vertical` = top\u2194bottom, `both` = both axes. Applied AFTER `rotate`, in the final (post-rotate) display axes, so `horizontal` always means left\u2194right in the visible result.",
+              "type": "enum",
+              "values": [
+                "none",
+                "horizontal",
+                "vertical",
+                "both"
+              ]
+            },
+            "rotate": {
+              "default": 0,
+              "description": "Clockwise rotation in degrees. Applied BEFORE `flip` (see the operation-level normative order-of-operations).",
+              "type": "enum",
+              "value_type": "integer",
+              "values": [
+                0,
+                90,
+                180,
+                270
+              ]
+            }
+          }
+        },
+        "image_gif": {
+          "availability": "planned",
+          "mimes": [
+            "image/gif"
+          ],
+          "options": {
+            "flip": {
+              "default": "none",
+              "description": "Mirror all frames. Applied after `rotate`, in final display axes.",
+              "type": "enum",
+              "values": [
+                "none",
+                "horizontal",
+                "vertical",
+                "both"
+              ]
+            },
+            "rotate": {
+              "default": 0,
+              "description": "Clockwise rotation in degrees (all frames). Applied before `flip`.",
+              "type": "enum",
+              "value_type": "integer",
+              "values": [
+                0,
+                90,
+                180,
+                270
+              ]
+            }
+          }
+        },
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "flip": {
+              "default": "none",
+              "description": "Mirror the video (FFmpeg `hflip` / `vflip`). `horizontal` = left\u2194right, `vertical` = top\u2194bottom, `both` = both. Applied AFTER `rotate`, in the final display axes. Re-encodes the video.",
+              "type": "enum",
+              "values": [
+                "none",
+                "horizontal",
+                "vertical",
+                "both"
+              ]
+            },
+            "rotate": {
+              "default": 0,
+              "description": "Clockwise rotation in degrees (FFmpeg `transpose`). Applied BEFORE `flip`. Re-encodes the video.",
+              "type": "enum",
+              "value_type": "integer",
+              "values": [
+                0,
+                90,
+                180,
+                270
+              ]
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 5000000000,
+                "max_output_size_bytes": 5000000000
+              },
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 120000000000,
+                  "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
+                }
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      },
+      "sole_op": false
+    },
     "video_text_watermark": {
       "availability": "planned",
       "default": false,
@@ -4896,7 +5049,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.153.0",
+  "schema_version": "2.154.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

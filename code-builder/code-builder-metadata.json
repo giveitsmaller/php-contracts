@@ -6675,6 +6675,235 @@
       },
       "sole_op": false
     },
+    "transform": {
+      "accepts": [
+        "document",
+        "image",
+        "video"
+      ],
+      "availability": "planned",
+      "input": {
+        "model": "single"
+      },
+      "input_model": "single",
+      "media_groups": {
+        "document_pdf": {
+          "availability": "planned",
+          "media_group": "document",
+          "mimes": [
+            "application/pdf"
+          ],
+          "options": {
+            "rotate": {
+              "default": 0,
+              "description": "Clockwise page rotation in degrees, applied to the rendered page orientation. `flip` is NOT offered for documents in v1.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "rotate",
+              "type": "enum",
+              "value_exposure": {
+                "0": "coming_soon",
+                "180": "coming_soon",
+                "270": "coming_soon",
+                "90": "coming_soon"
+              },
+              "value_type": "integer",
+              "values": [
+                0,
+                90,
+                180,
+                270
+              ]
+            }
+          }
+        },
+        "image": {
+          "availability": "planned",
+          "media_group": "image",
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+          ],
+          "options": {
+            "flip": {
+              "default": "none",
+              "description": "Mirror the image. `horizontal` = left\u2194right, `vertical` = top\u2194bottom, `both` = both axes. Applied AFTER `rotate`, in the final (post-rotate) display axes, so `horizontal` always means left\u2194right in the visible result.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "flip",
+              "type": "enum",
+              "value_exposure": {
+                "both": "coming_soon",
+                "horizontal": "coming_soon",
+                "none": "coming_soon",
+                "vertical": "coming_soon"
+              },
+              "values": [
+                "none",
+                "horizontal",
+                "vertical",
+                "both"
+              ]
+            },
+            "rotate": {
+              "default": 0,
+              "description": "Clockwise rotation in degrees. Applied BEFORE `flip` (see the operation-level normative order-of-operations).",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "rotate",
+              "type": "enum",
+              "value_exposure": {
+                "0": "coming_soon",
+                "180": "coming_soon",
+                "270": "coming_soon",
+                "90": "coming_soon"
+              },
+              "value_type": "integer",
+              "values": [
+                0,
+                90,
+                180,
+                270
+              ]
+            }
+          }
+        },
+        "image_gif": {
+          "availability": "planned",
+          "media_group": "image",
+          "mimes": [
+            "image/gif"
+          ],
+          "options": {
+            "flip": {
+              "default": "none",
+              "description": "Mirror all frames. Applied after `rotate`, in final display axes.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "flip",
+              "type": "enum",
+              "value_exposure": {
+                "both": "coming_soon",
+                "horizontal": "coming_soon",
+                "none": "coming_soon",
+                "vertical": "coming_soon"
+              },
+              "values": [
+                "none",
+                "horizontal",
+                "vertical",
+                "both"
+              ]
+            },
+            "rotate": {
+              "default": 0,
+              "description": "Clockwise rotation in degrees (all frames). Applied before `flip`.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "rotate",
+              "type": "enum",
+              "value_exposure": {
+                "0": "coming_soon",
+                "180": "coming_soon",
+                "270": "coming_soon",
+                "90": "coming_soon"
+              },
+              "value_type": "integer",
+              "values": [
+                0,
+                90,
+                180,
+                270
+              ]
+            }
+          }
+        },
+        "video": {
+          "media_group": "video",
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "flip": {
+              "default": "none",
+              "description": "Mirror the video (FFmpeg `hflip` / `vflip`). `horizontal` = left\u2194right, `vertical` = top\u2194bottom, `both` = both. Applied AFTER `rotate`, in the final display axes. Re-encodes the video.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "flip",
+              "type": "enum",
+              "value_exposure": {
+                "both": "coming_soon",
+                "horizontal": "coming_soon",
+                "none": "coming_soon",
+                "vertical": "coming_soon"
+              },
+              "values": [
+                "none",
+                "horizontal",
+                "vertical",
+                "both"
+              ]
+            },
+            "rotate": {
+              "default": 0,
+              "description": "Clockwise rotation in degrees (FFmpeg `transpose`). Applied BEFORE `flip`. Re-encodes the video.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "rotate",
+              "type": "enum",
+              "value_exposure": {
+                "0": "coming_soon",
+                "180": "coming_soon",
+                "270": "coming_soon",
+                "90": "coming_soon"
+              },
+              "value_type": "integer",
+              "values": [
+                0,
+                90,
+                180,
+                270
+              ]
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 5000000000,
+                "max_output_size_bytes": 5000000000
+              },
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 120000000000,
+                  "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
+                }
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": false
+    },
     "video_text_watermark": {
       "accepts": [
         "video"
@@ -7001,7 +7230,7 @@
     }
   },
   "preset_config_hash": "sha256:0fe215aede1da13430380384c58226d074c3b8344c091efc53e097c2930a34f7",
-  "schema_version": "2.153.0",
+  "schema_version": "2.154.0",
   "sdk_spec_version": "2.2.0",
-  "source_hash": "sha256:04db7465138b36b6604fbb2a807c15ab661a09f73a147eb34b91812397653c59"
+  "source_hash": "sha256:d923117dd11a6bc01a5b0e0990c74e235f89231269d955da7da1f8cb189d40ac"
 }

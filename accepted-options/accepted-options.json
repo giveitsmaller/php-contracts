@@ -1125,6 +1125,43 @@
         "output_format_option": null
       }
     },
+    "transform": {
+      "document_pdf": {
+        "accepted_options": {
+          "*": [
+            "rotate"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image": {
+        "accepted_options": {
+          "*": [
+            "flip",
+            "rotate"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image_gif": {
+        "accepted_options": {
+          "*": [
+            "flip",
+            "rotate"
+          ]
+        },
+        "output_format_option": null
+      },
+      "video": {
+        "accepted_options": {
+          "*": [
+            "flip",
+            "rotate"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
     "video_text_watermark": {
       "video": {
         "accepted_options": {
@@ -1160,5 +1197,5 @@
       }
     }
   },
-  "schema_version": "2.153.0"
+  "schema_version": "2.154.0"
 }
