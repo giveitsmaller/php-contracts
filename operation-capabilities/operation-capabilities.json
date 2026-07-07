@@ -104,7 +104,7 @@
         {
           "availability": "stable",
           "constraint_id": "compress.video.target_size.container",
-          "message": "target_size encoding is mp4/MOV-only; not yet available for {output_format} output. Use crf.",
+          "message": "target_size encoding is mp4/MOV-only; not yet available for {output_container} output. Use crf.",
           "when": {
             "all": [
               {
@@ -112,7 +112,7 @@
                 "field": "compress.encoding_mode"
               },
               {
-                "field": "output_format",
+                "field": "output_container",
                 "in": [
                   "webm",
                   "ogg"
@@ -210,6 +210,114 @@
               {
                 "equals": true,
                 "field": "compress.lossless"
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.codec_container.webm",
+          "message": "WebM output supports the vp9 or av1 codec; {compress.codec} is incompatible.",
+          "when": {
+            "all": [
+              {
+                "field": "output_container",
+                "in": [
+                  "webm"
+                ]
+              },
+              {
+                "field": "compress.codec",
+                "isSet": true
+              },
+              {
+                "field": "compress.codec",
+                "in": [
+                  "h264",
+                  "h265"
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.codec_container.mp4_mov",
+          "message": "MP4/MOV output supports the h264 or h265 codec; {compress.codec} is incompatible.",
+          "when": {
+            "all": [
+              {
+                "field": "output_container",
+                "in": [
+                  "mp4",
+                  "mov"
+                ]
+              },
+              {
+                "field": "compress.codec",
+                "isSet": true
+              },
+              {
+                "field": "compress.codec",
+                "in": [
+                  "vp9",
+                  "av1"
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.audio_codec_container.webm",
+          "message": "WebM output supports opus or vorbis audio; {compress.audio_codec} is incompatible.",
+          "when": {
+            "all": [
+              {
+                "field": "output_container",
+                "in": [
+                  "webm"
+                ]
+              },
+              {
+                "field": "compress.audio_codec",
+                "isSet": true
+              },
+              {
+                "field": "compress.audio_codec",
+                "in": [
+                  "aac"
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.audio_codec_container.mp4_mov",
+          "message": "MP4/MOV output supports aac or opus audio; {compress.audio_codec} is incompatible.",
+          "when": {
+            "all": [
+              {
+                "field": "output_container",
+                "in": [
+                  "mp4",
+                  "mov"
+                ]
+              },
+              {
+                "field": "compress.audio_codec",
+                "isSet": true
+              },
+              {
+                "field": "compress.audio_codec",
+                "in": [
+                  "vorbis"
+                ]
               }
             ]
           },
@@ -580,5 +688,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.154.0"
+  "schema_version": "2.158.0"
 }
