@@ -136,7 +136,7 @@ final class MergeMetadata
                             ),
                         ),
                         'long_form_re_encode' => new AvailabilityEntry(
-                            availability: 'beta',
+                            availability: 'stable',
                             required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
                                 max_total_duration: 'PT24H',

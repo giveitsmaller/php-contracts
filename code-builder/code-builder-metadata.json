@@ -3111,6 +3111,17 @@
                 "veryslow"
               ]
             },
+            "speed": {
+              "availability": "planned",
+              "default": 1.0,
+              "description": "Playback speed multiplier. 1.0 = unchanged (default), 2.0 = twice as fast (half the output duration), 0.5 = half speed (double the duration); range 0.25\u20134.0. Audio PITCH IS PRESERVED (a tempo-shift, not a resample \u2014 ffmpeg `atempo` semantics), so a 2.0x clip sounds sped up, not chipmunked. Applied BEFORE an explicit `fps`: speed re-times the stream, then `fps` (if set) resamples the retimed stream to the target rate. SHORT-FORM only \u2014 long-form video returns `feature_not_available` (adjust a short clip, or chain a `split`); see the compress.video.speed.longform constraint.\n",
+              "max": 4.0,
+              "min": 0.25,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "speed",
+              "type": "float"
+            },
             "target_size_bytes": {
               "depends_on": {
                 "encoding_mode": "target_size"
@@ -3164,7 +3175,7 @@
           },
           "processing_class": {
             "long_form": {
-              "availability": "beta",
+              "availability": "stable",
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -5361,7 +5372,7 @@
           },
           "processing_class": {
             "long_form_re_encode": {
-              "availability": "beta",
+              "availability": "stable",
               "constraints": {
                 "max_total_duration": "PT24H",
                 "max_total_input_size_bytes": 5000000000
@@ -7230,7 +7241,7 @@
     }
   },
   "preset_config_hash": "sha256:0fe215aede1da13430380384c58226d074c3b8344c091efc53e097c2930a34f7",
-  "schema_version": "2.158.0",
+  "schema_version": "2.162.0",
   "sdk_spec_version": "2.2.0",
-  "source_hash": "sha256:5e5b91126e69faa1b3f07be5d1071e4c92db47bd42c985cf976cb568e72bd845"
+  "source_hash": "sha256:fc515fe650394d16ef26ea72dd6f060ae7acb6bc729dd6747ecdb11072577887"
 }

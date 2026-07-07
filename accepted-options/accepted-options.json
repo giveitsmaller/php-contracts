@@ -528,6 +528,7 @@
             "height",
             "output_format",
             "preset",
+            "speed",
             "target_size_bytes",
             "trim_end",
             "trim_start",
@@ -545,6 +546,7 @@
             "height",
             "output_format",
             "preset",
+            "speed",
             "target_size_bytes",
             "trim_end",
             "trim_start",
@@ -562,6 +564,7 @@
             "height",
             "output_format",
             "preset",
+            "speed",
             "target_size_bytes",
             "trim_end",
             "trim_start",
@@ -579,6 +582,7 @@
             "height",
             "output_format",
             "preset",
+            "speed",
             "target_size_bytes",
             "trim_end",
             "trim_start",
@@ -1197,5 +1201,5 @@
       }
     }
   },
-  "schema_version": "2.158.0"
+  "schema_version": "2.162.0"
 }

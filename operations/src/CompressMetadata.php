@@ -335,7 +335,7 @@ final class CompressMetadata
                             ),
                         ),
                         'long_form' => new AvailabilityEntry(
-                            availability: 'beta',
+                            availability: 'stable',
                             required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
@@ -399,6 +399,10 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'trim_end' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'speed' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],

@@ -167,6 +167,25 @@
             ]
           },
           "wire_code": "feature_not_available"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.speed.longform",
+          "eval_scope": "api",
+          "message": "Speed adjustment is not yet available for long-form video. Adjust a short-form clip, or chain a split op.",
+          "when": {
+            "all": [
+              {
+                "equals": "long_form",
+                "field": "processing_class"
+              },
+              {
+                "field": "compress.speed",
+                "isSet": true
+              }
+            ]
+          },
+          "wire_code": "feature_not_available"
         }
       ],
       "input": {
@@ -244,14 +263,39 @@
         },
         {
           "availability": "stable",
-          "constraint_id": "compress.video.codec_container.mp4_mov",
-          "message": "MP4/MOV output supports the h264 or h265 codec; {compress.codec} is incompatible.",
+          "constraint_id": "compress.video.codec_container.mp4",
+          "message": "MP4 output supports the h264, h265 or av1 codec; {compress.codec} is incompatible.",
           "when": {
             "all": [
               {
                 "field": "output_container",
                 "in": [
-                  "mp4",
+                  "mp4"
+                ]
+              },
+              {
+                "field": "compress.codec",
+                "isSet": true
+              },
+              {
+                "field": "compress.codec",
+                "in": [
+                  "vp9"
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.codec_container.mov",
+          "message": "MOV output supports the h264 or h265 codec; {compress.codec} is incompatible.",
+          "when": {
+            "all": [
+              {
+                "field": "output_container",
+                "in": [
                   "mov"
                 ]
               },
@@ -688,5 +732,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.158.0"
+  "schema_version": "2.162.0"
 }

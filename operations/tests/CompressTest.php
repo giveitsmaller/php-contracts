@@ -1488,6 +1488,7 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressVideoPreset::Medium, $obj->preset);
         $this->assertSame(true, $obj->faststart);
         $this->assertSame(CompressVideoAudioCodec::Copy, $obj->audio_codec);
+        $this->assertSame(1.0, $obj->speed);
         $this->assertNull($obj->crf);
         $this->assertNull($obj->target_size_bytes);
         $this->assertNull($obj->width);
@@ -1517,6 +1518,7 @@ final class CompressTest extends TestCase
             audio_bitrate: CompressVideoAudioBitrate::_64,
             trim_start: 0.0,
             trim_end: 0.0,
+            speed: 0.25,
         );
         $this->assertInstanceOf(CompressVideoOptions::class, $obj);
     }
