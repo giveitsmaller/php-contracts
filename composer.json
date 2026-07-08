@@ -3,7 +3,7 @@
     "description": "Generated contract types for GISL (Give It Smaller)",
     "version": "0.55.0",
     "type": "library",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "require": {
         "php": "^8.1",
         "ext-curl": "*",
