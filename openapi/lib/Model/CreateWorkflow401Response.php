@@ -1,6 +1,6 @@
 <?php
 /**
- * ResendVerificationEmail422Response
+ * CreateWorkflow401Response
  *
  * PHP version 8.1
  *
@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.166.0
+ * The version of the OpenAPI document: 2.170.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -32,7 +32,7 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * ResendVerificationEmail422Response Class Doc Comment
+ * CreateWorkflow401Response Class Doc Comment
  *
  * @category Class
  * @package  Gisl\Generated\OpenApi
@@ -40,16 +40,16 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess, \JsonSerializable
+class CreateWorkflow401Response implements ModelInterface, ArrayAccess, \JsonSerializable
 {
-    public const DISCRIMINATOR = 'error_type';
+    public const DISCRIMINATOR = null;
 
     /**
      * The original name of the model.
      *
      * @var string
      */
-    protected static $openAPIModelName = 'resendVerificationEmail_422_response';
+    protected static $openAPIModelName = 'createWorkflow_401_response';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,14 +58,12 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
      */
     protected static $openAPITypes = [
         'success' => 'bool',
-        'error_type' => 'string',
         'error' => 'string',
         'message' => 'string',
         'message_key' => 'string',
         'locale' => 'string',
         'message_params' => 'array<string,mixed>',
-        'details' => '\Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[]',
-        'violations' => '\Gisl\Generated\OpenApi\Model\FeatureViolation[]'
+        'error_type' => 'string'
     ];
 
     /**
@@ -77,14 +75,12 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
      */
     protected static $openAPIFormats = [
         'success' => null,
-        'error_type' => null,
         'error' => null,
         'message' => null,
         'message_key' => null,
         'locale' => null,
         'message_params' => null,
-        'details' => null,
-        'violations' => null
+        'error_type' => null
     ];
 
     /**
@@ -94,14 +90,12 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
      */
     protected static array $openAPINullables = [
         'success' => false,
-        'error_type' => false,
         'error' => false,
         'message' => false,
         'message_key' => false,
         'locale' => false,
         'message_params' => false,
-        'details' => false,
-        'violations' => false
+        'error_type' => false
     ];
 
     /**
@@ -191,14 +185,12 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
      */
     protected static $attributeMap = [
         'success' => 'success',
-        'error_type' => 'error_type',
         'error' => 'error',
         'message' => 'message',
         'message_key' => 'message_key',
         'locale' => 'locale',
         'message_params' => 'message_params',
-        'details' => 'details',
-        'violations' => 'violations'
+        'error_type' => 'error_type'
     ];
 
     /**
@@ -208,14 +200,12 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
      */
     protected static $setters = [
         'success' => 'setSuccess',
-        'error_type' => 'setErrorType',
         'error' => 'setError',
         'message' => 'setMessage',
         'message_key' => 'setMessageKey',
         'locale' => 'setLocale',
         'message_params' => 'setMessageParams',
-        'details' => 'setDetails',
-        'violations' => 'setViolations'
+        'error_type' => 'setErrorType'
     ];
 
     /**
@@ -225,14 +215,12 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
      */
     protected static $getters = [
         'success' => 'getSuccess',
-        'error_type' => 'getErrorType',
         'error' => 'getError',
         'message' => 'getMessage',
         'message_key' => 'getMessageKey',
         'locale' => 'getLocale',
         'message_params' => 'getMessageParams',
-        'details' => 'getDetails',
-        'violations' => 'getViolations'
+        'error_type' => 'getErrorType'
     ];
 
     /**
@@ -276,7 +264,9 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
         return self::$openAPIModelName;
     }
 
-    public const ERROR_TYPE_FEATURE_NOT_AVAILABLE = 'feature_not_available';
+    public const ERROR_TYPE_REAUTHENTICATION_REQUIRED = 'reauthentication_required';
+    public const ERROR_TYPE_API_KEY_INVALID = 'api_key_invalid';
+    public const ERROR_TYPE_AUTHENTICATION_REQUIRED = 'authentication_required';
 
     /**
      * Gets allowable values of the enum
@@ -286,7 +276,9 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
     public function getErrorTypeAllowableValues()
     {
         return [
-            self::ERROR_TYPE_FEATURE_NOT_AVAILABLE,
+            self::ERROR_TYPE_REAUTHENTICATION_REQUIRED,
+            self::ERROR_TYPE_API_KEY_INVALID,
+            self::ERROR_TYPE_AUTHENTICATION_REQUIRED,
         ];
     }
 
@@ -306,17 +298,12 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
     public function __construct(?array $data = null)
     {
         $this->setIfExists('success', $data ?? [], null);
-        $this->setIfExists('error_type', $data ?? [], null);
         $this->setIfExists('error', $data ?? [], null);
         $this->setIfExists('message', $data ?? [], null);
         $this->setIfExists('message_key', $data ?? [], null);
         $this->setIfExists('locale', $data ?? [], null);
         $this->setIfExists('message_params', $data ?? [], null);
-        $this->setIfExists('details', $data ?? [], null);
-        $this->setIfExists('violations', $data ?? [], null);
-
-        // Initialize discriminator property with the model name.
-        $this->container['error_type'] = static::$openAPIModelName;
+        $this->setIfExists('error_type', $data ?? [], null);
     }
 
     /**
@@ -350,6 +337,9 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
             $invalidProperties[] = "'success' can't be null";
         }
 
+        if ($this->container['error'] === null) {
+            $invalidProperties[] = "'error' can't be null";
+        }
         if ($this->container['error_type'] === null) {
             $invalidProperties[] = "'error_type' can't be null";
         }
@@ -360,19 +350,6 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
                 $this->container['error_type'],
                 implode("', '", $allowedValues)
             );
-        }
-
-        if ($this->container['error'] === null) {
-            $invalidProperties[] = "'error' can't be null";
-        }
-        if ($this->container['details'] === null) {
-            $invalidProperties[] = "'details' can't be null";
-        }
-        if ($this->container['violations'] === null) {
-            $invalidProperties[] = "'violations' can't be null";
-        }
-        if ((count($this->container['violations']) < 1)) {
-            $invalidProperties[] = "invalid value for 'violations', number of items must be greater than or equal to 1.";
         }
 
         return $invalidProperties;
@@ -413,43 +390,6 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
             throw new \InvalidArgumentException('non-nullable success cannot be null');
         }
         $this->container['success'] = $success;
-
-        return $this;
-    }
-
-    /**
-     * Gets error_type
-     *
-     * @return string
-     */
-    public function getErrorType()
-    {
-        return $this->container['error_type'];
-    }
-
-    /**
-     * Sets error_type
-     *
-     * @param string $error_type Discriminator for the 422 oneOf. Always `feature_not_available`.
-     *
-     * @return self
-     */
-    public function setErrorType($error_type)
-    {
-        if (is_null($error_type)) {
-            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!in_array($error_type, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'error_type', must be one of '%s'",
-                    $error_type,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['error_type'] = $error_type;
 
         return $this;
     }
@@ -590,60 +530,38 @@ class ResendVerificationEmail422Response implements ModelInterface, ArrayAccess,
     }
 
     /**
-     * Gets details
+     * Gets error_type
      *
-     * @return \Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[]
+     * @return string
      */
-    public function getDetails()
+    public function getErrorType()
     {
-        return $this->container['details'];
+        return $this->container['error_type'];
     }
 
     /**
-     * Sets details
+     * Sets error_type
      *
-     * @param \Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[] $details List of individual validation errors
+     * @param string $error_type error_type
      *
      * @return self
      */
-    public function setDetails($details)
+    public function setErrorType($error_type)
     {
-        if (is_null($details)) {
-            throw new \InvalidArgumentException('non-nullable details cannot be null');
+        if (is_null($error_type)) {
+            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
         }
-        $this->container['details'] = $details;
-
-        return $this;
-    }
-
-    /**
-     * Gets violations
-     *
-     * @return \Gisl\Generated\OpenApi\Model\FeatureViolation[]
-     */
-    public function getViolations()
-    {
-        return $this->container['violations'];
-    }
-
-    /**
-     * Sets violations
-     *
-     * @param \Gisl\Generated\OpenApi\Model\FeatureViolation[] $violations One entry per unavailable feature referenced by the request. Per ADR-0001 §F6 batched-violations rule, multiple violations in a single request are ALL returned here (fail-all, not fail-fast).
-     *
-     * @return self
-     */
-    public function setViolations($violations)
-    {
-        if (is_null($violations)) {
-            throw new \InvalidArgumentException('non-nullable violations cannot be null');
+        $allowedValues = $this->getErrorTypeAllowableValues();
+        if (!in_array($error_type, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'error_type', must be one of '%s'",
+                    $error_type,
+                    implode("', '", $allowedValues)
+                )
+            );
         }
-
-
-        if ((count($violations) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $violations when calling ResendVerificationEmail422Response., number of items must be greater than or equal to 1.');
-        }
-        $this->container['violations'] = $violations;
+        $this->container['error_type'] = $error_type;
 
         return $this;
     }

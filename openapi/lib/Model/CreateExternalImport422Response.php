@@ -1,6 +1,6 @@
 <?php
 /**
- * DeliveryPlanOutput
+ * CreateExternalImport422Response
  *
  * PHP version 8.1
  *
@@ -32,25 +32,24 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * DeliveryPlanOutput Class Doc Comment
+ * CreateExternalImport422Response Class Doc Comment
  *
  * @category Class
- * @description One entry in &#x60;DeliveryPlan.outputs&#x60; or &#x60;DeliveryPlan.hidden_outputs&#x60;.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializable
+class CreateExternalImport422Response implements ModelInterface, ArrayAccess, \JsonSerializable
 {
-    public const DISCRIMINATOR = null;
+    public const DISCRIMINATOR = 'error_type';
 
     /**
      * The original name of the model.
      *
      * @var string
      */
-    protected static $openAPIModelName = 'DeliveryPlanOutput';
+    protected static $openAPIModelName = 'createExternalImport_422_response';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,11 +57,15 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $openAPITypes = [
-        'job_id' => 'string',
-        'operation' => 'string',
-        'reason' => '\Gisl\Generated\OpenApi\Model\DeliveryPlanReason',
-        'consumed_by_job_id' => 'string',
-        'node_id' => 'string'
+        'success' => 'bool',
+        'error_type' => 'string',
+        'error' => 'string',
+        'message' => 'string',
+        'message_key' => 'string',
+        'locale' => 'string',
+        'message_params' => 'array<string,mixed>',
+        'details' => '\Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[]',
+        'violations' => '\Gisl\Generated\OpenApi\Model\FeatureViolation[]'
     ];
 
     /**
@@ -73,11 +76,15 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'job_id' => 'uuid',
-        'operation' => null,
-        'reason' => null,
-        'consumed_by_job_id' => 'uuid',
-        'node_id' => null
+        'success' => null,
+        'error_type' => null,
+        'error' => null,
+        'message' => null,
+        'message_key' => null,
+        'locale' => null,
+        'message_params' => null,
+        'details' => null,
+        'violations' => null
     ];
 
     /**
@@ -86,11 +93,15 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'job_id' => false,
-        'operation' => false,
-        'reason' => false,
-        'consumed_by_job_id' => false,
-        'node_id' => false
+        'success' => false,
+        'error_type' => false,
+        'error' => false,
+        'message' => false,
+        'message_key' => false,
+        'locale' => false,
+        'message_params' => false,
+        'details' => false,
+        'violations' => false
     ];
 
     /**
@@ -179,11 +190,15 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $attributeMap = [
-        'job_id' => 'job_id',
-        'operation' => 'operation',
-        'reason' => 'reason',
-        'consumed_by_job_id' => 'consumed_by_job_id',
-        'node_id' => 'node_id'
+        'success' => 'success',
+        'error_type' => 'error_type',
+        'error' => 'error',
+        'message' => 'message',
+        'message_key' => 'message_key',
+        'locale' => 'locale',
+        'message_params' => 'message_params',
+        'details' => 'details',
+        'violations' => 'violations'
     ];
 
     /**
@@ -192,11 +207,15 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $setters = [
-        'job_id' => 'setJobId',
-        'operation' => 'setOperation',
-        'reason' => 'setReason',
-        'consumed_by_job_id' => 'setConsumedByJobId',
-        'node_id' => 'setNodeId'
+        'success' => 'setSuccess',
+        'error_type' => 'setErrorType',
+        'error' => 'setError',
+        'message' => 'setMessage',
+        'message_key' => 'setMessageKey',
+        'locale' => 'setLocale',
+        'message_params' => 'setMessageParams',
+        'details' => 'setDetails',
+        'violations' => 'setViolations'
     ];
 
     /**
@@ -205,11 +224,15 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $getters = [
-        'job_id' => 'getJobId',
-        'operation' => 'getOperation',
-        'reason' => 'getReason',
-        'consumed_by_job_id' => 'getConsumedByJobId',
-        'node_id' => 'getNodeId'
+        'success' => 'getSuccess',
+        'error_type' => 'getErrorType',
+        'error' => 'getError',
+        'message' => 'getMessage',
+        'message_key' => 'getMessageKey',
+        'locale' => 'getLocale',
+        'message_params' => 'getMessageParams',
+        'details' => 'getDetails',
+        'violations' => 'getViolations'
     ];
 
     /**
@@ -253,6 +276,19 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
         return self::$openAPIModelName;
     }
 
+    public const ERROR_TYPE_FEATURE_NOT_AVAILABLE = 'feature_not_available';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getErrorTypeAllowableValues()
+    {
+        return [
+            self::ERROR_TYPE_FEATURE_NOT_AVAILABLE,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -269,11 +305,18 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('job_id', $data ?? [], null);
-        $this->setIfExists('operation', $data ?? [], null);
-        $this->setIfExists('reason', $data ?? [], null);
-        $this->setIfExists('consumed_by_job_id', $data ?? [], null);
-        $this->setIfExists('node_id', $data ?? [], null);
+        $this->setIfExists('success', $data ?? [], null);
+        $this->setIfExists('error_type', $data ?? [], null);
+        $this->setIfExists('error', $data ?? [], null);
+        $this->setIfExists('message', $data ?? [], null);
+        $this->setIfExists('message_key', $data ?? [], null);
+        $this->setIfExists('locale', $data ?? [], null);
+        $this->setIfExists('message_params', $data ?? [], null);
+        $this->setIfExists('details', $data ?? [], null);
+        $this->setIfExists('violations', $data ?? [], null);
+
+        // Initialize discriminator property with the model name.
+        $this->container['error_type'] = static::$openAPIModelName;
     }
 
     /**
@@ -303,18 +346,33 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
     {
         $invalidProperties = [];
 
-        if ($this->container['job_id'] === null) {
-            $invalidProperties[] = "'job_id' can't be null";
-        }
-        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['job_id'])) {
-            $invalidProperties[] = "invalid value for 'job_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
+        if ($this->container['success'] === null) {
+            $invalidProperties[] = "'success' can't be null";
         }
 
-        if ($this->container['reason'] === null) {
-            $invalidProperties[] = "'reason' can't be null";
+        if ($this->container['error_type'] === null) {
+            $invalidProperties[] = "'error_type' can't be null";
         }
-        if (!is_null($this->container['consumed_by_job_id']) && !preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['consumed_by_job_id'])) {
-            $invalidProperties[] = "invalid value for 'consumed_by_job_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
+        $allowedValues = $this->getErrorTypeAllowableValues();
+        if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'error_type', must be one of '%s'",
+                $this->container['error_type'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['error'] === null) {
+            $invalidProperties[] = "'error' can't be null";
+        }
+        if ($this->container['details'] === null) {
+            $invalidProperties[] = "'details' can't be null";
+        }
+        if ($this->container['violations'] === null) {
+            $invalidProperties[] = "'violations' can't be null";
+        }
+        if ((count($this->container['violations']) < 1)) {
+            $invalidProperties[] = "invalid value for 'violations', number of items must be greater than or equal to 1.";
         }
 
         return $invalidProperties;
@@ -333,146 +391,259 @@ class DeliveryPlanOutput implements ModelInterface, ArrayAccess, \JsonSerializab
 
 
     /**
-     * Gets job_id
+     * Gets success
+     *
+     * @return bool
+     */
+    public function getSuccess()
+    {
+        return $this->container['success'];
+    }
+
+    /**
+     * Sets success
+     *
+     * @param bool $success success
+     *
+     * @return self
+     */
+    public function setSuccess($success)
+    {
+        if (is_null($success)) {
+            throw new \InvalidArgumentException('non-nullable success cannot be null');
+        }
+        $this->container['success'] = $success;
+
+        return $this;
+    }
+
+    /**
+     * Gets error_type
      *
      * @return string
      */
-    public function getJobId()
+    public function getErrorType()
     {
-        return $this->container['job_id'];
+        return $this->container['error_type'];
     }
 
     /**
-     * Sets job_id
+     * Sets error_type
      *
-     * @param string $job_id UUID v7 format identifier (time-ordered)
+     * @param string $error_type Discriminator for the 422 oneOf. Always `feature_not_available`.
      *
      * @return self
      */
-    public function setJobId($job_id)
+    public function setErrorType($error_type)
     {
-        if (is_null($job_id)) {
-            throw new \InvalidArgumentException('non-nullable job_id cannot be null');
+        if (is_null($error_type)) {
+            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
         }
-
-        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($job_id)))) {
-            throw new \InvalidArgumentException("invalid value for \$job_id when calling DeliveryPlanOutput., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
+        $allowedValues = $this->getErrorTypeAllowableValues();
+        if (!in_array($error_type, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'error_type', must be one of '%s'",
+                    $error_type,
+                    implode("', '", $allowedValues)
+                )
+            );
         }
-
-        $this->container['job_id'] = $job_id;
+        $this->container['error_type'] = $error_type;
 
         return $this;
     }
 
     /**
-     * Gets operation
+     * Gets error
+     *
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->container['error'];
+    }
+
+    /**
+     * Sets error
+     *
+     * @param string $error Stable, machine-readable error code (e.g. `INVALID_OPTIONS`, `BALANCE_EXHAUSTED`, `REQUIRES_REENCODE`). Canonical English; never localised. SDKs duck-type on this field for typed error-branch helpers.  Multipart-session resume codes (per ticket [`HxUmVr3Y`](https://trello.com/c/HxUmVr3Y), V2.10.0): - `MULTIPART_SESSION_NOT_FOUND` (404) — upload_id does   not match an in-flight session (expired / never   existed / wrong account namespace). Fired by /status,   /presign, /keepalive. - `MULTIPART_SESSION_OWNERSHIP` (403) — authenticated   caller is not the session owner. Fired by /status,   /presign, /keepalive, /complete (when manifest.userId   is non-null and differs). - `MULTIPART_SESSION_AUTH_REQUIRED` (403) — session was   anonymously initiated; the three resume endpoints   require authentication. The `8LABloaz` follow-up will   flip `/initiate` to also require auth. - `FILE_TOO_LARGE_FOR_MULTIPART` (422) — assembled object   would exceed the S3 multipart capacity cap. Pre-S3   server-side capacity gate; distinct from tier-quota   rejections (`upload_size_exceeds_tier`).  Workflow-create code (per ticket [`nGYbgChX`](https://trello.com/c/nGYbgChX) / sdks [`DRjIyMt9`](https://trello.com/c/DRjIyMt9)): - `UPLOAD_NOT_FOUND` (404) — a `POST /api/workflows` request   references an upload that does not exist OR exists but is   owned by a different identity (deliberate BOLA/IDOR   existence-mask: reported as not-found, **never 403**, so the   response does not reveal another user's upload exists).   `message_key: \"upload.not_found\"`. See the createWorkflow   404 response + ADR-0016 Amendment. - `LONG_FORM_CONCURRENCY_LIMIT_EXCEEDED` (429) — caller already   holds the maximum concurrent in-flight long-form workflows   their tier permits (Pro 2 / Max 5; Enterprise uncapped).   DISTINCT from an infra rate-limit 429: carries no   `Retry-After` (it clears on workflow completion) and adds a   `links.upgrade` CTA. `message_key:   \"job.long_form_concurrency_exceeded\"`. See the createWorkflow   429 response + `LongFormConcurrencyLimitResponse`.
+     *
+     * @return self
+     */
+    public function setError($error)
+    {
+        if (is_null($error)) {
+            throw new \InvalidArgumentException('non-nullable error cannot be null');
+        }
+        $this->container['error'] = $error;
+
+        return $this;
+    }
+
+    /**
+     * Gets message
      *
      * @return string|null
      */
-    public function getOperation()
+    public function getMessage()
     {
-        return $this->container['operation'];
+        return $this->container['message'];
     }
 
     /**
-     * Sets operation
+     * Sets message
      *
-     * @param string|null $operation Operation type within the job (e.g. `compress`, `merge`).
+     * @param string|null $message Human-readable error message, localised per the request's `Accept-Language` header (fallback locale `en-GB`). The response carries `Content-Language: <locale>` + `Vary: Accept-Language` headers. **Never parse this field for control flow** — it changes per locale.
      *
      * @return self
      */
-    public function setOperation($operation)
+    public function setMessage($message)
     {
-        if (is_null($operation)) {
-            throw new \InvalidArgumentException('non-nullable operation cannot be null');
+        if (is_null($message)) {
+            throw new \InvalidArgumentException('non-nullable message cannot be null');
         }
-        $this->container['operation'] = $operation;
+        $this->container['message'] = $message;
 
         return $this;
     }
 
     /**
-     * Gets reason
-     *
-     * @return \Gisl\Generated\OpenApi\Model\DeliveryPlanReason
-     */
-    public function getReason()
-    {
-        return $this->container['reason'];
-    }
-
-    /**
-     * Sets reason
-     *
-     * @param \Gisl\Generated\OpenApi\Model\DeliveryPlanReason $reason reason
-     *
-     * @return self
-     */
-    public function setReason($reason)
-    {
-        if (is_null($reason)) {
-            throw new \InvalidArgumentException('non-nullable reason cannot be null');
-        }
-        $this->container['reason'] = $reason;
-
-        return $this;
-    }
-
-    /**
-     * Gets consumed_by_job_id
+     * Gets message_key
      *
      * @return string|null
      */
-    public function getConsumedByJobId()
+    public function getMessageKey()
     {
-        return $this->container['consumed_by_job_id'];
+        return $this->container['message_key'];
     }
 
     /**
-     * Sets consumed_by_job_id
+     * Sets message_key
      *
-     * @param string|null $consumed_by_job_id Set when `reason: consumed_by`. The id of the downstream job that consumes this output.
+     * @param string|null $message_key Stable canonical lookup key for the message (e.g. `error.balance_exhausted.add_credits`, `error.upload_size_exceeds_tier`). Never localised. SDK + frontend translation layers gate on this for client-side i18n catalogs (per ticket X19, cross-repo SDK companion work). Stable across server message-prose updates.
      *
      * @return self
      */
-    public function setConsumedByJobId($consumed_by_job_id)
+    public function setMessageKey($message_key)
     {
-        if (is_null($consumed_by_job_id)) {
-            throw new \InvalidArgumentException('non-nullable consumed_by_job_id cannot be null');
+        if (is_null($message_key)) {
+            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
         }
-
-        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($consumed_by_job_id)))) {
-            throw new \InvalidArgumentException("invalid value for \$consumed_by_job_id when calling DeliveryPlanOutput., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
-        }
-
-        $this->container['consumed_by_job_id'] = $consumed_by_job_id;
+        $this->container['message_key'] = $message_key;
 
         return $this;
     }
 
     /**
-     * Gets node_id
+     * Gets locale
      *
      * @return string|null
      */
-    public function getNodeId()
+    public function getLocale()
     {
-        return $this->container['node_id'];
+        return $this->container['locale'];
     }
 
     /**
-     * Sets node_id
+     * Sets locale
      *
-     * @param string|null $node_id Symbolic composition `node_id` correlating this delivered output to its canonical node in `composition_plan` (e.g. `encode`, `thumbnail`, `processed_base`). Lets consumers label and group delivered files by composition role. **Optional** — emitted once the canonicalization engine is live (optional-then-promote, mirroring `composition_plan`); absent until then. This is the additive carrier; the normative `/downloads == delivery_plan.outputs[]` rendezvous invariant is introduced with the delivery-selection promotion, not here.
+     * @param string|null $locale BCP 47 locale tag echoing the resolved `Content-Language` response header value. Currently always `en-GB` (the only committed locale per `info.description` Localisation block + ticket [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)); additional values will appear here when their catalogs ship. Lets the SDK confirm which locale the server selected when the request used q-value negotiation across multiple `Accept-Language` values.
      *
      * @return self
      */
-    public function setNodeId($node_id)
+    public function setLocale($locale)
     {
-        if (is_null($node_id)) {
-            throw new \InvalidArgumentException('non-nullable node_id cannot be null');
+        if (is_null($locale)) {
+            throw new \InvalidArgumentException('non-nullable locale cannot be null');
         }
-        $this->container['node_id'] = $node_id;
+        $this->container['locale'] = $locale;
+
+        return $this;
+    }
+
+    /**
+     * Gets message_params
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getMessageParams()
+    {
+        return $this->container['message_params'];
+    }
+
+    /**
+     * Sets message_params
+     *
+     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. Keys are stable parameter names referenced by the translation table (e.g. `{ \"filename\": \"photo.heic\", \"max_size_mb\": 100 }`). **Excludes cost / monetary numbers** per plan v5 §F11 round-13 narrowing — pricing-related localisation reads numeric state from `GET /api/v2/credits/balance`, not from this field. Values are JSON-native scalars (`string` / `integer` / `number` / `boolean` / `null`) — no nested objects, to keep translation-table integration simple.
+     *
+     * @return self
+     */
+    public function setMessageParams($message_params)
+    {
+        if (is_null($message_params)) {
+            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
+        }
+        $this->container['message_params'] = $message_params;
+
+        return $this;
+    }
+
+    /**
+     * Gets details
+     *
+     * @return \Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[]
+     */
+    public function getDetails()
+    {
+        return $this->container['details'];
+    }
+
+    /**
+     * Sets details
+     *
+     * @param \Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[] $details List of individual validation errors
+     *
+     * @return self
+     */
+    public function setDetails($details)
+    {
+        if (is_null($details)) {
+            throw new \InvalidArgumentException('non-nullable details cannot be null');
+        }
+        $this->container['details'] = $details;
+
+        return $this;
+    }
+
+    /**
+     * Gets violations
+     *
+     * @return \Gisl\Generated\OpenApi\Model\FeatureViolation[]
+     */
+    public function getViolations()
+    {
+        return $this->container['violations'];
+    }
+
+    /**
+     * Sets violations
+     *
+     * @param \Gisl\Generated\OpenApi\Model\FeatureViolation[] $violations One entry per unavailable feature referenced by the request. Per ADR-0001 §F6 batched-violations rule, multiple violations in a single request are ALL returned here (fail-all, not fail-fast).
+     *
+     * @return self
+     */
+    public function setViolations($violations)
+    {
+        if (is_null($violations)) {
+            throw new \InvalidArgumentException('non-nullable violations cannot be null');
+        }
+
+
+        if ((count($violations) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $violations when calling CreateExternalImport422Response., number of items must be greater than or equal to 1.');
+        }
+        $this->container['violations'] = $violations;
 
         return $this;
     }
