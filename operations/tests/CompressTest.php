@@ -14,9 +14,6 @@ use Gisl\Generated\Operations\CompressAudioSampleRate;
 use Gisl\Generated\Operations\CompressDocumentEpubOptions;
 use Gisl\Generated\Operations\CompressDocumentOdfOptions;
 use Gisl\Generated\Operations\CompressDocumentOfficeOptions;
-use Gisl\Generated\Operations\CompressDocumentPdfColorspace;
-use Gisl\Generated\Operations\CompressDocumentPdfOptions;
-use Gisl\Generated\Operations\CompressDocumentPdfProfile;
 use Gisl\Generated\Operations\CompressImageAvifColorProfile;
 use Gisl\Generated\Operations\CompressImageAvifEncodingMode;
 use Gisl\Generated\Operations\CompressImageAvifFit;
@@ -1521,99 +1518,6 @@ final class CompressTest extends TestCase
             speed: 0.25,
         );
         $this->assertInstanceOf(CompressVideoOptions::class, $obj);
-    }
-
-    public function testCompressDocumentPdfProfileScreenBackingValue(): void
-    {
-        $enum = CompressDocumentPdfProfile::from('screen');
-        $this->assertSame(CompressDocumentPdfProfile::Screen, $enum);
-        $this->assertSame('screen', $enum->value);
-    }
-
-    public function testCompressDocumentPdfProfileEbookBackingValue(): void
-    {
-        $enum = CompressDocumentPdfProfile::from('ebook');
-        $this->assertSame(CompressDocumentPdfProfile::Ebook, $enum);
-        $this->assertSame('ebook', $enum->value);
-    }
-
-    public function testCompressDocumentPdfProfilePrinterBackingValue(): void
-    {
-        $enum = CompressDocumentPdfProfile::from('printer');
-        $this->assertSame(CompressDocumentPdfProfile::Printer, $enum);
-        $this->assertSame('printer', $enum->value);
-    }
-
-    public function testCompressDocumentPdfProfilePrepressBackingValue(): void
-    {
-        $enum = CompressDocumentPdfProfile::from('prepress');
-        $this->assertSame(CompressDocumentPdfProfile::Prepress, $enum);
-        $this->assertSame('prepress', $enum->value);
-    }
-
-    public function testCompressDocumentPdfProfileCaseCount(): void
-    {
-        $this->assertCount(4, CompressDocumentPdfProfile::cases());
-    }
-
-    public function testCompressDocumentPdfColorspaceUnchangedBackingValue(): void
-    {
-        $enum = CompressDocumentPdfColorspace::from('unchanged');
-        $this->assertSame(CompressDocumentPdfColorspace::Unchanged, $enum);
-        $this->assertSame('unchanged', $enum->value);
-    }
-
-    public function testCompressDocumentPdfColorspaceRgbBackingValue(): void
-    {
-        $enum = CompressDocumentPdfColorspace::from('rgb');
-        $this->assertSame(CompressDocumentPdfColorspace::Rgb, $enum);
-        $this->assertSame('rgb', $enum->value);
-    }
-
-    public function testCompressDocumentPdfColorspaceCmykBackingValue(): void
-    {
-        $enum = CompressDocumentPdfColorspace::from('cmyk');
-        $this->assertSame(CompressDocumentPdfColorspace::Cmyk, $enum);
-        $this->assertSame('cmyk', $enum->value);
-    }
-
-    public function testCompressDocumentPdfColorspaceGrayscaleBackingValue(): void
-    {
-        $enum = CompressDocumentPdfColorspace::from('grayscale');
-        $this->assertSame(CompressDocumentPdfColorspace::Grayscale, $enum);
-        $this->assertSame('grayscale', $enum->value);
-    }
-
-    public function testCompressDocumentPdfColorspaceCaseCount(): void
-    {
-        $this->assertCount(4, CompressDocumentPdfColorspace::cases());
-    }
-
-    public function testCompressDocumentPdfOptionsDefaultConstruction(): void
-    {
-        $obj = new CompressDocumentPdfOptions();
-        $this->assertInstanceOf(CompressDocumentPdfOptions::class, $obj);
-        $this->assertSame(50, $obj->quality);
-        $this->assertSame(false, $obj->grayscale);
-        $this->assertSame(CompressDocumentPdfColorspace::Unchanged, $obj->colorspace);
-        $this->assertSame(false, $obj->flatten_forms);
-        $this->assertNull($obj->profile);
-        $this->assertNull($obj->image_dpi);
-        $this->assertNull($obj->pages);
-    }
-
-    public function testCompressDocumentPdfOptionsFullConstruction(): void
-    {
-        $obj = new CompressDocumentPdfOptions(
-            quality: 1,
-            profile: CompressDocumentPdfProfile::Screen,
-            grayscale: true,
-            image_dpi: 72,
-            colorspace: CompressDocumentPdfColorspace::Unchanged,
-            pages: 'test_value',
-            flatten_forms: true,
-        );
-        $this->assertInstanceOf(CompressDocumentPdfOptions::class, $obj);
     }
 
     public function testCompressDocumentOfficeOptionsDefaultConstruction(): void

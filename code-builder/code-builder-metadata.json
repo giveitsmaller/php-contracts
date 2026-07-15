@@ -114,48 +114,6 @@
       ],
       "synthetic": true
     },
-    "PdfColorspace": {
-      "members": [
-        {
-          "canonical": "Unchanged",
-          "wire": "unchanged"
-        },
-        {
-          "canonical": "Rgb",
-          "wire": "rgb"
-        },
-        {
-          "canonical": "Cmyk",
-          "wire": "cmyk"
-        },
-        {
-          "canonical": "Grayscale",
-          "wire": "grayscale"
-        }
-      ],
-      "synthetic": false
-    },
-    "PdfProfile": {
-      "members": [
-        {
-          "canonical": "Screen",
-          "wire": "screen"
-        },
-        {
-          "canonical": "Ebook",
-          "wire": "ebook"
-        },
-        {
-          "canonical": "Printer",
-          "wire": "printer"
-        },
-        {
-          "canonical": "Prepress",
-          "wire": "prepress"
-        }
-      ],
-      "synthetic": false
-    },
     "VideoCodec": {
       "members": [
         {
@@ -1407,126 +1365,6 @@
               "strip_hidden_data": true,
               "strip_macros": true,
               "strip_unused_fonts": true
-            }
-          }
-        },
-        "document_pdf": {
-          "media_group": "document",
-          "mimes": [
-            "application/pdf"
-          ],
-          "options": {
-            "colorspace": {
-              "availability": "planned",
-              "default": "unchanged",
-              "description": "Output color space. `planned` \u2014 not yet supported (use `grayscale` for grayscale conversion).",
-              "enum_ref": "PdfColorspace",
-              "enum_translations": {
-                "cmyk": "Cmyk",
-                "grayscale": "Grayscale",
-                "rgb": "Rgb",
-                "unchanged": "Unchanged"
-              },
-              "origin": "contract",
-              "sdk_exposure": "coming_soon",
-              "surface_key": "colorspace",
-              "type": "enum",
-              "value_exposure": {
-                "cmyk": "coming_soon",
-                "grayscale": "coming_soon",
-                "rgb": "coming_soon",
-                "unchanged": "coming_soon"
-              },
-              "values": [
-                "unchanged",
-                "rgb",
-                "cmyk",
-                "grayscale"
-              ]
-            },
-            "flatten_forms": {
-              "availability": "planned",
-              "default": false,
-              "description": "Flatten interactive form fields into static content. `planned` \u2014 not yet supported.",
-              "origin": "contract",
-              "sdk_exposure": "coming_soon",
-              "surface_key": "flattenForms",
-              "type": "boolean"
-            },
-            "grayscale": {
-              "default": false,
-              "description": "Convert all images to grayscale (smaller output; discards colour).",
-              "origin": "contract",
-              "sdk_exposure": "expose",
-              "surface_key": "grayscale",
-              "type": "boolean"
-            },
-            "image_dpi": {
-              "description": "Downsample images above this DPI (72\u2013600 inclusive). Omit to use automatic DPI analysis. Out-of-range is rejected.",
-              "max": 600,
-              "min": 72,
-              "origin": "contract",
-              "sdk_exposure": "expose",
-              "surface_key": "imageDpi",
-              "type": "integer"
-            },
-            "pages": {
-              "availability": "planned",
-              "description": "Page selection (e.g. '1-5,8,10-12'). Omit to keep all pages. `planned` \u2014 not yet supported.",
-              "origin": "contract",
-              "sdk_exposure": "coming_soon",
-              "surface_key": "pages",
-              "type": "string"
-            },
-            "profile": {
-              "description": "Compression preset, pinned directly (overrides the quality\u2192preset mapping). screen = lowest-res / smallest, ebook = mid, printer = 300dpi, prepress = print-production. Optional \u2014 omit to let `quality` drive the preset.",
-              "enum_ref": "PdfProfile",
-              "enum_translations": {
-                "ebook": "Ebook",
-                "prepress": "Prepress",
-                "printer": "Printer",
-                "screen": "Screen"
-              },
-              "origin": "contract",
-              "sdk_exposure": "expose",
-              "surface_key": "profile",
-              "type": "enum",
-              "value_exposure": {
-                "ebook": "expose",
-                "prepress": "expose",
-                "printer": "expose",
-                "screen": "expose"
-              },
-              "values": [
-                "screen",
-                "ebook",
-                "printer",
-                "prepress"
-              ]
-            },
-            "quality": {
-              "default": 50,
-              "description": "Compression quality (1 = smallest, 100 = best). Maps to a compression preset. Overridden by `profile` when that is set.",
-              "max": 100,
-              "min": 1,
-              "origin": "contract",
-              "sdk_exposure": "expose",
-              "surface_key": "quality",
-              "type": "integer"
-            }
-          },
-          "presets": {
-            "Balanced": {
-              "grayscale": false,
-              "profile": "ebook"
-            },
-            "Quality": {
-              "grayscale": false,
-              "profile": "printer"
-            },
-            "Size": {
-              "grayscale": true,
-              "profile": "screen"
             }
           }
         },
@@ -7240,8 +7078,8 @@
       "sole_op": true
     }
   },
-  "preset_config_hash": "sha256:0fe215aede1da13430380384c58226d074c3b8344c091efc53e097c2930a34f7",
-  "schema_version": "2.162.0",
+  "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
+  "schema_version": "2.166.0",
   "sdk_spec_version": "2.2.0",
-  "source_hash": "sha256:fc515fe650394d16ef26ea72dd6f060ae7acb6bc729dd6747ecdb11072577887"
+  "source_hash": "sha256:17cd5e9f354037c915a3ba87d78d98fce3fff1ff75e157d2d8584665195d7bc2"
 }

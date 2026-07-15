@@ -1,6 +1,6 @@
 <?php
 /**
- * AuthRejectionEnvelope
+ * EmailNotify
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * AuthRejectionEnvelope Class Doc Comment
+ * EmailNotify Class Doc Comment
  *
  * @category Class
- * @description Flat **domain-rejection** 422 envelope for the auth surface — the non-validation branch of the auth-422 &#x60;oneOf&#x60; (per [ADR-0019](../docs/decisions/0019-auth-422-discriminated-oneof.md), the sibling adoption of [ADR-0018](../docs/decisions/0018-universal-422-error-type-discriminator.md) anticipated for non-workflow &#x60;oneOf&#x60; sites). Distinct from &#x60;ValidationErrorEnvelope&#x60;: it has **no &#x60;details[]&#x60;** (the rejection is a single business-rule failure, not a field-by-field validation report). Carries the same I26 localisation triple as &#x60;ErrorEnvelope&#x60;.  Returned alongside &#x60;ValidationErrorEnvelope&#x60; on the four auth endpoints that have a domain-reject 422 branch: &#x60;register&#x60; (disposable/blocklisted email), &#x60;verify-email&#x60; (invalid/expired token), &#x60;api-keys&#x60; POST (duplicate/invalid key name) — all &#x60;error: UNPROCESSABLE_ENTITY&#x60;, &#x60;error_type: unprocessable_entity&#x60; — and &#x60;profile&#x60; PATCH (&#x60;error: EMAIL_SAME&#x60;, &#x60;error_type: email_same&#x60;, new email equals current).  **&#x60;error_type&#x60; vs &#x60;error&#x60;** (per ADR-0018): &#x60;error_type&#x60; is the &#x60;oneOf&#x60; branch discriminator; the specific failure stays in the &#x60;error&#x60; machine code. &#x60;email_same&#x60; is retained as its own discriminator value (pre-existing wire shape) rather than folded into &#x60;unprocessable_entity&#x60;; both map to this envelope.
+ * @description Email-channel completion notification. When a subscribed workflow event occurs, the API emails each recipient in &#x60;to&#x60; a link to the workflow&#39;s results — a **server-composed, short-lived presigned URL** to the same downloadable outputs as &#x60;GET /api/workflows/{id}/downloads&#x60;. The request carries recipients + event selection ONLY: the link&#39;s target, contents, and expiry are determined server-side and can never be supplied or influenced by the caller.  The emailed link is a time-limited **bearer capability** — anyone who holds it (including anyone the email is forwarded to) can download those outputs until it expires; it grants no other account access and conveys no session. This is the same trust model as any presigned download URL.  **Anti-abuse (security).** Because &#x60;POST /api/workflows&#x60; is callable with &#x60;optional&#x60; auth, an unconstrained recipient list would be an open mail-relay / spam-amplification vector. Recipients are therefore subject to **server-side anti-abuse controls** — the API restricts who may be emailed (the exact recipient policy, e.g. the authenticated account&#39;s own verified address(es), is API/product-owned and enforced server-side, NOT a caller-supplied setting) and applies send-rate limits; a request whose recipients fall outside the allowed set is rejected. This is part of what the &#x60;planned&#x60; gate covers until the dispatch engine + its abuse controls ship.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSerializable
+class EmailNotify implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      *
      * @var string
      */
-    protected static $openAPIModelName = 'AuthRejectionEnvelope';
+    protected static $openAPIModelName = 'EmailNotify';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,13 +58,8 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $openAPITypes = [
-        'success' => 'bool',
-        'error' => 'string',
-        'error_type' => 'string',
-        'message' => 'string',
-        'message_key' => 'string',
-        'locale' => 'string',
-        'message_params' => 'array<string,mixed>'
+        'to' => 'string[]',
+        'events' => '\Gisl\Generated\OpenApi\Model\CallbackEventType[]'
     ];
 
     /**
@@ -75,13 +70,8 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'success' => null,
-        'error' => null,
-        'error_type' => null,
-        'message' => null,
-        'message_key' => null,
-        'locale' => null,
-        'message_params' => null
+        'to' => 'email',
+        'events' => null
     ];
 
     /**
@@ -90,13 +80,8 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'success' => false,
-        'error' => false,
-        'error_type' => false,
-        'message' => false,
-        'message_key' => false,
-        'locale' => false,
-        'message_params' => false
+        'to' => false,
+        'events' => false
     ];
 
     /**
@@ -185,13 +170,8 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $attributeMap = [
-        'success' => 'success',
-        'error' => 'error',
-        'error_type' => 'error_type',
-        'message' => 'message',
-        'message_key' => 'message_key',
-        'locale' => 'locale',
-        'message_params' => 'message_params'
+        'to' => 'to',
+        'events' => 'events'
     ];
 
     /**
@@ -200,13 +180,8 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $setters = [
-        'success' => 'setSuccess',
-        'error' => 'setError',
-        'error_type' => 'setErrorType',
-        'message' => 'setMessage',
-        'message_key' => 'setMessageKey',
-        'locale' => 'setLocale',
-        'message_params' => 'setMessageParams'
+        'to' => 'setTo',
+        'events' => 'setEvents'
     ];
 
     /**
@@ -215,13 +190,8 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $getters = [
-        'success' => 'getSuccess',
-        'error' => 'getError',
-        'error_type' => 'getErrorType',
-        'message' => 'getMessage',
-        'message_key' => 'getMessageKey',
-        'locale' => 'getLocale',
-        'message_params' => 'getMessageParams'
+        'to' => 'getTo',
+        'events' => 'getEvents'
     ];
 
     /**
@@ -265,21 +235,6 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
         return self::$openAPIModelName;
     }
 
-    public const ERROR_TYPE_UNPROCESSABLE_ENTITY = 'unprocessable_entity';
-    public const ERROR_TYPE_EMAIL_SAME = 'email_same';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getErrorTypeAllowableValues()
-    {
-        return [
-            self::ERROR_TYPE_UNPROCESSABLE_ENTITY,
-            self::ERROR_TYPE_EMAIL_SAME,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -296,13 +251,8 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('success', $data ?? [], null);
-        $this->setIfExists('error', $data ?? [], null);
-        $this->setIfExists('error_type', $data ?? [], null);
-        $this->setIfExists('message', $data ?? [], null);
-        $this->setIfExists('message_key', $data ?? [], null);
-        $this->setIfExists('locale', $data ?? [], null);
-        $this->setIfExists('message_params', $data ?? [], null);
+        $this->setIfExists('to', $data ?? [], null);
+        $this->setIfExists('events', $data ?? [], null);
     }
 
     /**
@@ -332,23 +282,15 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $invalidProperties = [];
 
-        if ($this->container['success'] === null) {
-            $invalidProperties[] = "'success' can't be null";
+        if ($this->container['to'] === null) {
+            $invalidProperties[] = "'to' can't be null";
+        }
+        if ((count($this->container['to']) > 10)) {
+            $invalidProperties[] = "invalid value for 'to', number of items must be less than or equal to 10.";
         }
 
-        if ($this->container['error'] === null) {
-            $invalidProperties[] = "'error' can't be null";
-        }
-        if ($this->container['error_type'] === null) {
-            $invalidProperties[] = "'error_type' can't be null";
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'error_type', must be one of '%s'",
-                $this->container['error_type'],
-                implode("', '", $allowedValues)
-            );
+        if ((count($this->container['to']) < 1)) {
+            $invalidProperties[] = "invalid value for 'to', number of items must be greater than or equal to 1.";
         }
 
         return $invalidProperties;
@@ -367,200 +309,62 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
 
 
     /**
-     * Gets success
+     * Gets to
      *
-     * @return bool
+     * @return string[]
      */
-    public function getSuccess()
+    public function getTo()
     {
-        return $this->container['success'];
+        return $this->container['to'];
     }
 
     /**
-     * Sets success
+     * Sets to
      *
-     * @param bool $success success
+     * @param string[] $to Recipient email addresses (1–10). At least one is required when `email` is present. Subject to the server-side recipient policy above — the API may reject or narrow recipients outside the allowed set (anti-abuse); a caller cannot email arbitrary third parties.
      *
      * @return self
      */
-    public function setSuccess($success)
+    public function setTo($to)
     {
-        if (is_null($success)) {
-            throw new \InvalidArgumentException('non-nullable success cannot be null');
+        if (is_null($to)) {
+            throw new \InvalidArgumentException('non-nullable to cannot be null');
         }
-        $this->container['success'] = $success;
+
+        if ((count($to) > 10)) {
+            throw new \InvalidArgumentException('invalid value for $to when calling EmailNotify., number of items must be less than or equal to 10.');
+        }
+        if ((count($to) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $to when calling EmailNotify., number of items must be greater than or equal to 1.');
+        }
+        $this->container['to'] = $to;
 
         return $this;
     }
 
     /**
-     * Gets error
+     * Gets events
      *
-     * @return string
+     * @return \Gisl\Generated\OpenApi\Model\CallbackEventType[]|null
      */
-    public function getError()
+    public function getEvents()
     {
-        return $this->container['error'];
+        return $this->container['events'];
     }
 
     /**
-     * Sets error
+     * Sets events
      *
-     * @param string $error Stable machine-readable failure code. `UNPROCESSABLE_ENTITY` for the generic auth domain rejections (register / verify-email / api-keys); `EMAIL_SAME` for the profile new-email-equals-current rejection. Canonical English; never localised. See `ErrorEnvelope.error`.
+     * @param \Gisl\Generated\OpenApi\Model\CallbackEventType[]|null $events Which workflow events trigger the email. Reuses the `CallbackEventType` vocabulary shared with `callback_events` (webhook) — the notify surface does NOT fork the event enum. Defaults to terminal events only (mirrors the `callback_events` default); `operation.completed` is opt-in for granular progress.
      *
      * @return self
      */
-    public function setError($error)
+    public function setEvents($events)
     {
-        if (is_null($error)) {
-            throw new \InvalidArgumentException('non-nullable error cannot be null');
+        if (is_null($events)) {
+            throw new \InvalidArgumentException('non-nullable events cannot be null');
         }
-        $this->container['error'] = $error;
-
-        return $this;
-    }
-
-    /**
-     * Gets error_type
-     *
-     * @return string
-     */
-    public function getErrorType()
-    {
-        return $this->container['error_type'];
-    }
-
-    /**
-     * Sets error_type
-     *
-     * @param string $error_type Discriminator for the auth-422 `oneOf` (per ADR-0019). Names the envelope **shape**, not the failure — the failure is in `error`. `unprocessable_entity` for the generic flat auth rejections; `email_same` preserved as the profile-specific pre-existing wire value. Both resolve to this `AuthRejectionEnvelope`. Distinct from `ValidationErrorEnvelope.error_type` (`validation_error`), the other branch of the auth-422 `oneOf`.
-     *
-     * @return self
-     */
-    public function setErrorType($error_type)
-    {
-        if (is_null($error_type)) {
-            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!in_array($error_type, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'error_type', must be one of '%s'",
-                    $error_type,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['error_type'] = $error_type;
-
-        return $this;
-    }
-
-    /**
-     * Gets message
-     *
-     * @return string|null
-     */
-    public function getMessage()
-    {
-        return $this->container['message'];
-    }
-
-    /**
-     * Sets message
-     *
-     * @param string|null $message Human-readable message, localised per `Accept-Language` (fallback `en-GB`). Never parse for control flow. See `ErrorEnvelope.message`.
-     *
-     * @return self
-     */
-    public function setMessage($message)
-    {
-        if (is_null($message)) {
-            throw new \InvalidArgumentException('non-nullable message cannot be null');
-        }
-        $this->container['message'] = $message;
-
-        return $this;
-    }
-
-    /**
-     * Gets message_key
-     *
-     * @return string|null
-     */
-    public function getMessageKey()
-    {
-        return $this->container['message_key'];
-    }
-
-    /**
-     * Sets message_key
-     *
-     * @param string|null $message_key Stable canonical lookup key for the message. Never localised. See `ErrorEnvelope.message_key`.
-     *
-     * @return self
-     */
-    public function setMessageKey($message_key)
-    {
-        if (is_null($message_key)) {
-            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
-        }
-        $this->container['message_key'] = $message_key;
-
-        return $this;
-    }
-
-    /**
-     * Gets locale
-     *
-     * @return string|null
-     */
-    public function getLocale()
-    {
-        return $this->container['locale'];
-    }
-
-    /**
-     * Sets locale
-     *
-     * @param string|null $locale BCP 47 locale tag echoing `Content-Language`. See `ErrorEnvelope.locale`.
-     *
-     * @return self
-     */
-    public function setLocale($locale)
-    {
-        if (is_null($locale)) {
-            throw new \InvalidArgumentException('non-nullable locale cannot be null');
-        }
-        $this->container['locale'] = $locale;
-
-        return $this;
-    }
-
-    /**
-     * Gets message_params
-     *
-     * @return array<string,mixed>|null
-     */
-    public function getMessageParams()
-    {
-        return $this->container['message_params'];
-    }
-
-    /**
-     * Sets message_params
-     *
-     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. See `ErrorEnvelope.message_params`.
-     *
-     * @return self
-     */
-    public function setMessageParams($message_params)
-    {
-        if (is_null($message_params)) {
-            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
-        }
-        $this->container['message_params'] = $message_params;
+        $this->container['events'] = $events;
 
         return $this;
     }

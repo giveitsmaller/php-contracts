@@ -1,6 +1,6 @@
 <?php
 /**
- * AuthRejectionEnvelope
+ * LoginUser401Response
  *
  * PHP version 8.1
  *
@@ -32,16 +32,15 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * AuthRejectionEnvelope Class Doc Comment
+ * LoginUser401Response Class Doc Comment
  *
  * @category Class
- * @description Flat **domain-rejection** 422 envelope for the auth surface — the non-validation branch of the auth-422 &#x60;oneOf&#x60; (per [ADR-0019](../docs/decisions/0019-auth-422-discriminated-oneof.md), the sibling adoption of [ADR-0018](../docs/decisions/0018-universal-422-error-type-discriminator.md) anticipated for non-workflow &#x60;oneOf&#x60; sites). Distinct from &#x60;ValidationErrorEnvelope&#x60;: it has **no &#x60;details[]&#x60;** (the rejection is a single business-rule failure, not a field-by-field validation report). Carries the same I26 localisation triple as &#x60;ErrorEnvelope&#x60;.  Returned alongside &#x60;ValidationErrorEnvelope&#x60; on the four auth endpoints that have a domain-reject 422 branch: &#x60;register&#x60; (disposable/blocklisted email), &#x60;verify-email&#x60; (invalid/expired token), &#x60;api-keys&#x60; POST (duplicate/invalid key name) — all &#x60;error: UNPROCESSABLE_ENTITY&#x60;, &#x60;error_type: unprocessable_entity&#x60; — and &#x60;profile&#x60; PATCH (&#x60;error: EMAIL_SAME&#x60;, &#x60;error_type: email_same&#x60;, new email equals current).  **&#x60;error_type&#x60; vs &#x60;error&#x60;** (per ADR-0018): &#x60;error_type&#x60; is the &#x60;oneOf&#x60; branch discriminator; the specific failure stays in the &#x60;error&#x60; machine code. &#x60;email_same&#x60; is retained as its own discriminator value (pre-existing wire shape) rather than folded into &#x60;unprocessable_entity&#x60;; both map to this envelope.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSerializable
+class LoginUser401Response implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +49,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      *
      * @var string
      */
-    protected static $openAPIModelName = 'AuthRejectionEnvelope';
+    protected static $openAPIModelName = 'loginUser_401_response';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -60,11 +59,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $openAPITypes = [
         'success' => 'bool',
         'error' => 'string',
-        'error_type' => 'string',
         'message' => 'string',
         'message_key' => 'string',
         'locale' => 'string',
-        'message_params' => 'array<string,mixed>'
+        'message_params' => 'array<string,mixed>',
+        'error_type' => 'string'
     ];
 
     /**
@@ -77,11 +76,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $openAPIFormats = [
         'success' => null,
         'error' => null,
-        'error_type' => null,
         'message' => null,
         'message_key' => null,
         'locale' => null,
-        'message_params' => null
+        'message_params' => null,
+        'error_type' => null
     ];
 
     /**
@@ -92,11 +91,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static array $openAPINullables = [
         'success' => false,
         'error' => false,
-        'error_type' => false,
         'message' => false,
         'message_key' => false,
         'locale' => false,
-        'message_params' => false
+        'message_params' => false,
+        'error_type' => false
     ];
 
     /**
@@ -187,11 +186,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $attributeMap = [
         'success' => 'success',
         'error' => 'error',
-        'error_type' => 'error_type',
         'message' => 'message',
         'message_key' => 'message_key',
         'locale' => 'locale',
-        'message_params' => 'message_params'
+        'message_params' => 'message_params',
+        'error_type' => 'error_type'
     ];
 
     /**
@@ -202,11 +201,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $setters = [
         'success' => 'setSuccess',
         'error' => 'setError',
-        'error_type' => 'setErrorType',
         'message' => 'setMessage',
         'message_key' => 'setMessageKey',
         'locale' => 'setLocale',
-        'message_params' => 'setMessageParams'
+        'message_params' => 'setMessageParams',
+        'error_type' => 'setErrorType'
     ];
 
     /**
@@ -217,11 +216,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $getters = [
         'success' => 'getSuccess',
         'error' => 'getError',
-        'error_type' => 'getErrorType',
         'message' => 'getMessage',
         'message_key' => 'getMessageKey',
         'locale' => 'getLocale',
-        'message_params' => 'getMessageParams'
+        'message_params' => 'getMessageParams',
+        'error_type' => 'getErrorType'
     ];
 
     /**
@@ -265,8 +264,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
         return self::$openAPIModelName;
     }
 
-    public const ERROR_TYPE_UNPROCESSABLE_ENTITY = 'unprocessable_entity';
-    public const ERROR_TYPE_EMAIL_SAME = 'email_same';
+    public const ERROR_TYPE_INVALID_CREDENTIALS = 'invalid_credentials';
 
     /**
      * Gets allowable values of the enum
@@ -276,8 +274,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     public function getErrorTypeAllowableValues()
     {
         return [
-            self::ERROR_TYPE_UNPROCESSABLE_ENTITY,
-            self::ERROR_TYPE_EMAIL_SAME,
+            self::ERROR_TYPE_INVALID_CREDENTIALS,
         ];
     }
 
@@ -298,11 +295,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $this->setIfExists('success', $data ?? [], null);
         $this->setIfExists('error', $data ?? [], null);
-        $this->setIfExists('error_type', $data ?? [], null);
         $this->setIfExists('message', $data ?? [], null);
         $this->setIfExists('message_key', $data ?? [], null);
         $this->setIfExists('locale', $data ?? [], null);
         $this->setIfExists('message_params', $data ?? [], null);
+        $this->setIfExists('error_type', $data ?? [], null);
     }
 
     /**
@@ -406,7 +403,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets error
      *
-     * @param string $error Stable machine-readable failure code. `UNPROCESSABLE_ENTITY` for the generic auth domain rejections (register / verify-email / api-keys); `EMAIL_SAME` for the profile new-email-equals-current rejection. Canonical English; never localised. See `ErrorEnvelope.error`.
+     * @param string $error Stable, machine-readable error code (e.g. `INVALID_OPTIONS`, `BALANCE_EXHAUSTED`, `REQUIRES_REENCODE`). Canonical English; never localised. SDKs duck-type on this field for typed error-branch helpers.  Multipart-session resume codes (per ticket [`HxUmVr3Y`](https://trello.com/c/HxUmVr3Y), V2.10.0): - `MULTIPART_SESSION_NOT_FOUND` (404) — upload_id does   not match an in-flight session (expired / never   existed / wrong account namespace). Fired by /status,   /presign, /keepalive. - `MULTIPART_SESSION_OWNERSHIP` (403) — authenticated   caller is not the session owner. Fired by /status,   /presign, /keepalive, /complete (when manifest.userId   is non-null and differs). - `MULTIPART_SESSION_AUTH_REQUIRED` (403) — session was   anonymously initiated; the three resume endpoints   require authentication. The `8LABloaz` follow-up will   flip `/initiate` to also require auth. - `FILE_TOO_LARGE_FOR_MULTIPART` (422) — assembled object   would exceed the S3 multipart capacity cap. Pre-S3   server-side capacity gate; distinct from tier-quota   rejections (`upload_size_exceeds_tier`).  Workflow-create code (per ticket [`nGYbgChX`](https://trello.com/c/nGYbgChX) / sdks [`DRjIyMt9`](https://trello.com/c/DRjIyMt9)): - `UPLOAD_NOT_FOUND` (404) — a `POST /api/workflows` request   references an upload that does not exist OR exists but is   owned by a different identity (deliberate BOLA/IDOR   existence-mask: reported as not-found, **never 403**, so the   response does not reveal another user's upload exists).   `message_key: \"upload.not_found\"`. See the createWorkflow   404 response + ADR-0016 Amendment. - `LONG_FORM_CONCURRENCY_LIMIT_EXCEEDED` (429) — caller already   holds the maximum concurrent in-flight long-form workflows   their tier permits (Pro 2 / Max 5; Enterprise uncapped).   DISTINCT from an infra rate-limit 429: carries no   `Retry-After` (it clears on workflow completion) and adds a   `links.upgrade` CTA. `message_key:   \"job.long_form_concurrency_exceeded\"`. See the createWorkflow   429 response + `LongFormConcurrencyLimitResponse`.
      *
      * @return self
      */
@@ -416,43 +413,6 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
             throw new \InvalidArgumentException('non-nullable error cannot be null');
         }
         $this->container['error'] = $error;
-
-        return $this;
-    }
-
-    /**
-     * Gets error_type
-     *
-     * @return string
-     */
-    public function getErrorType()
-    {
-        return $this->container['error_type'];
-    }
-
-    /**
-     * Sets error_type
-     *
-     * @param string $error_type Discriminator for the auth-422 `oneOf` (per ADR-0019). Names the envelope **shape**, not the failure — the failure is in `error`. `unprocessable_entity` for the generic flat auth rejections; `email_same` preserved as the profile-specific pre-existing wire value. Both resolve to this `AuthRejectionEnvelope`. Distinct from `ValidationErrorEnvelope.error_type` (`validation_error`), the other branch of the auth-422 `oneOf`.
-     *
-     * @return self
-     */
-    public function setErrorType($error_type)
-    {
-        if (is_null($error_type)) {
-            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!in_array($error_type, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'error_type', must be one of '%s'",
-                    $error_type,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['error_type'] = $error_type;
 
         return $this;
     }
@@ -470,7 +430,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets message
      *
-     * @param string|null $message Human-readable message, localised per `Accept-Language` (fallback `en-GB`). Never parse for control flow. See `ErrorEnvelope.message`.
+     * @param string|null $message Human-readable error message, localised per the request's `Accept-Language` header (fallback locale `en-GB`). The response carries `Content-Language: <locale>` + `Vary: Accept-Language` headers. **Never parse this field for control flow** — it changes per locale.
      *
      * @return self
      */
@@ -497,7 +457,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets message_key
      *
-     * @param string|null $message_key Stable canonical lookup key for the message. Never localised. See `ErrorEnvelope.message_key`.
+     * @param string|null $message_key Stable canonical lookup key for the message (e.g. `error.balance_exhausted.add_credits`, `error.upload_size_exceeds_tier`). Never localised. SDK + frontend translation layers gate on this for client-side i18n catalogs (per ticket X19, cross-repo SDK companion work). Stable across server message-prose updates.
      *
      * @return self
      */
@@ -524,7 +484,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets locale
      *
-     * @param string|null $locale BCP 47 locale tag echoing `Content-Language`. See `ErrorEnvelope.locale`.
+     * @param string|null $locale BCP 47 locale tag echoing the resolved `Content-Language` response header value. Currently always `en-GB` (the only committed locale per `info.description` Localisation block + ticket [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)); additional values will appear here when their catalogs ship. Lets the SDK confirm which locale the server selected when the request used q-value negotiation across multiple `Accept-Language` values.
      *
      * @return self
      */
@@ -551,7 +511,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets message_params
      *
-     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. See `ErrorEnvelope.message_params`.
+     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. Keys are stable parameter names referenced by the translation table (e.g. `{ \"filename\": \"photo.heic\", \"max_size_mb\": 100 }`). **Excludes cost / monetary numbers** per plan v5 §F11 round-13 narrowing — pricing-related localisation reads numeric state from `GET /api/v2/credits/balance`, not from this field. Values are JSON-native scalars (`string` / `integer` / `number` / `boolean` / `null`) — no nested objects, to keep translation-table integration simple.
      *
      * @return self
      */
@@ -561,6 +521,43 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
             throw new \InvalidArgumentException('non-nullable message_params cannot be null');
         }
         $this->container['message_params'] = $message_params;
+
+        return $this;
+    }
+
+    /**
+     * Gets error_type
+     *
+     * @return string
+     */
+    public function getErrorType()
+    {
+        return $this->container['error_type'];
+    }
+
+    /**
+     * Sets error_type
+     *
+     * @param string $error_type error_type
+     *
+     * @return self
+     */
+    public function setErrorType($error_type)
+    {
+        if (is_null($error_type)) {
+            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
+        }
+        $allowedValues = $this->getErrorTypeAllowableValues();
+        if (!in_array($error_type, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'error_type', must be one of '%s'",
+                    $error_type,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['error_type'] = $error_type;
 
         return $this;
     }

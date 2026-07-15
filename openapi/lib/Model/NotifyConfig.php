@@ -1,6 +1,6 @@
 <?php
 /**
- * AuthRejectionEnvelope
+ * NotifyConfig
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * AuthRejectionEnvelope Class Doc Comment
+ * NotifyConfig Class Doc Comment
  *
  * @category Class
- * @description Flat **domain-rejection** 422 envelope for the auth surface — the non-validation branch of the auth-422 &#x60;oneOf&#x60; (per [ADR-0019](../docs/decisions/0019-auth-422-discriminated-oneof.md), the sibling adoption of [ADR-0018](../docs/decisions/0018-universal-422-error-type-discriminator.md) anticipated for non-workflow &#x60;oneOf&#x60; sites). Distinct from &#x60;ValidationErrorEnvelope&#x60;: it has **no &#x60;details[]&#x60;** (the rejection is a single business-rule failure, not a field-by-field validation report). Carries the same I26 localisation triple as &#x60;ErrorEnvelope&#x60;.  Returned alongside &#x60;ValidationErrorEnvelope&#x60; on the four auth endpoints that have a domain-reject 422 branch: &#x60;register&#x60; (disposable/blocklisted email), &#x60;verify-email&#x60; (invalid/expired token), &#x60;api-keys&#x60; POST (duplicate/invalid key name) — all &#x60;error: UNPROCESSABLE_ENTITY&#x60;, &#x60;error_type: unprocessable_entity&#x60; — and &#x60;profile&#x60; PATCH (&#x60;error: EMAIL_SAME&#x60;, &#x60;error_type: email_same&#x60;, new email equals current).  **&#x60;error_type&#x60; vs &#x60;error&#x60;** (per ADR-0018): &#x60;error_type&#x60; is the &#x60;oneOf&#x60; branch discriminator; the specific failure stays in the &#x60;error&#x60; machine code. &#x60;email_same&#x60; is retained as its own discriminator value (pre-existing wire shape) rather than folded into &#x60;unprocessable_entity&#x60;; both map to this envelope.
+ * @description Channel-agnostic per-job completion-notification config (ticket [&#x60;IQtEwVET&#x60;](https://trello.com/c/IQtEwVET)). Currently the &#x60;email&#x60; channel only; &#x60;webhook&#x60; folds onto the same dispatch engine later (today webhook is configured via the top-level &#x60;callback_url&#x60; / &#x60;callback_events&#x60;). **Advertised-ahead** — the API returns &#x60;feature_not_available&#x60; (422) for any &#x60;notify&#x60; use until the dispatch engine ships. &#x60;x-availability&#x60; is decorative per ADR-0001 §1.5; the API is the authority on the 422 gate.  An **empty &#x60;notify&#x60;** (object present but no channel set) is a no-op — the workflow runs normally with no notifications; it is neither an error nor a dispatch trigger. Omit &#x60;notify&#x60; entirely to say the same thing.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSerializable
+class NotifyConfig implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      *
      * @var string
      */
-    protected static $openAPIModelName = 'AuthRejectionEnvelope';
+    protected static $openAPIModelName = 'NotifyConfig';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,13 +58,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $openAPITypes = [
-        'success' => 'bool',
-        'error' => 'string',
-        'error_type' => 'string',
-        'message' => 'string',
-        'message_key' => 'string',
-        'locale' => 'string',
-        'message_params' => 'array<string,mixed>'
+        'email' => '\Gisl\Generated\OpenApi\Model\EmailNotify'
     ];
 
     /**
@@ -75,13 +69,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'success' => null,
-        'error' => null,
-        'error_type' => null,
-        'message' => null,
-        'message_key' => null,
-        'locale' => null,
-        'message_params' => null
+        'email' => null
     ];
 
     /**
@@ -90,13 +78,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'success' => false,
-        'error' => false,
-        'error_type' => false,
-        'message' => false,
-        'message_key' => false,
-        'locale' => false,
-        'message_params' => false
+        'email' => false
     ];
 
     /**
@@ -185,13 +167,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $attributeMap = [
-        'success' => 'success',
-        'error' => 'error',
-        'error_type' => 'error_type',
-        'message' => 'message',
-        'message_key' => 'message_key',
-        'locale' => 'locale',
-        'message_params' => 'message_params'
+        'email' => 'email'
     ];
 
     /**
@@ -200,13 +176,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $setters = [
-        'success' => 'setSuccess',
-        'error' => 'setError',
-        'error_type' => 'setErrorType',
-        'message' => 'setMessage',
-        'message_key' => 'setMessageKey',
-        'locale' => 'setLocale',
-        'message_params' => 'setMessageParams'
+        'email' => 'setEmail'
     ];
 
     /**
@@ -215,13 +185,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $getters = [
-        'success' => 'getSuccess',
-        'error' => 'getError',
-        'error_type' => 'getErrorType',
-        'message' => 'getMessage',
-        'message_key' => 'getMessageKey',
-        'locale' => 'getLocale',
-        'message_params' => 'getMessageParams'
+        'email' => 'getEmail'
     ];
 
     /**
@@ -265,21 +229,6 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
         return self::$openAPIModelName;
     }
 
-    public const ERROR_TYPE_UNPROCESSABLE_ENTITY = 'unprocessable_entity';
-    public const ERROR_TYPE_EMAIL_SAME = 'email_same';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getErrorTypeAllowableValues()
-    {
-        return [
-            self::ERROR_TYPE_UNPROCESSABLE_ENTITY,
-            self::ERROR_TYPE_EMAIL_SAME,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -296,13 +245,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('success', $data ?? [], null);
-        $this->setIfExists('error', $data ?? [], null);
-        $this->setIfExists('error_type', $data ?? [], null);
-        $this->setIfExists('message', $data ?? [], null);
-        $this->setIfExists('message_key', $data ?? [], null);
-        $this->setIfExists('locale', $data ?? [], null);
-        $this->setIfExists('message_params', $data ?? [], null);
+        $this->setIfExists('email', $data ?? [], null);
     }
 
     /**
@@ -332,25 +275,6 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $invalidProperties = [];
 
-        if ($this->container['success'] === null) {
-            $invalidProperties[] = "'success' can't be null";
-        }
-
-        if ($this->container['error'] === null) {
-            $invalidProperties[] = "'error' can't be null";
-        }
-        if ($this->container['error_type'] === null) {
-            $invalidProperties[] = "'error_type' can't be null";
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'error_type', must be one of '%s'",
-                $this->container['error_type'],
-                implode("', '", $allowedValues)
-            );
-        }
-
         return $invalidProperties;
     }
 
@@ -367,200 +291,28 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
 
 
     /**
-     * Gets success
+     * Gets email
      *
-     * @return bool
+     * @return \Gisl\Generated\OpenApi\Model\EmailNotify|null
      */
-    public function getSuccess()
+    public function getEmail()
     {
-        return $this->container['success'];
+        return $this->container['email'];
     }
 
     /**
-     * Sets success
+     * Sets email
      *
-     * @param bool $success success
+     * @param \Gisl\Generated\OpenApi\Model\EmailNotify|null $email Email notification channel.
      *
      * @return self
      */
-    public function setSuccess($success)
+    public function setEmail($email)
     {
-        if (is_null($success)) {
-            throw new \InvalidArgumentException('non-nullable success cannot be null');
+        if (is_null($email)) {
+            throw new \InvalidArgumentException('non-nullable email cannot be null');
         }
-        $this->container['success'] = $success;
-
-        return $this;
-    }
-
-    /**
-     * Gets error
-     *
-     * @return string
-     */
-    public function getError()
-    {
-        return $this->container['error'];
-    }
-
-    /**
-     * Sets error
-     *
-     * @param string $error Stable machine-readable failure code. `UNPROCESSABLE_ENTITY` for the generic auth domain rejections (register / verify-email / api-keys); `EMAIL_SAME` for the profile new-email-equals-current rejection. Canonical English; never localised. See `ErrorEnvelope.error`.
-     *
-     * @return self
-     */
-    public function setError($error)
-    {
-        if (is_null($error)) {
-            throw new \InvalidArgumentException('non-nullable error cannot be null');
-        }
-        $this->container['error'] = $error;
-
-        return $this;
-    }
-
-    /**
-     * Gets error_type
-     *
-     * @return string
-     */
-    public function getErrorType()
-    {
-        return $this->container['error_type'];
-    }
-
-    /**
-     * Sets error_type
-     *
-     * @param string $error_type Discriminator for the auth-422 `oneOf` (per ADR-0019). Names the envelope **shape**, not the failure — the failure is in `error`. `unprocessable_entity` for the generic flat auth rejections; `email_same` preserved as the profile-specific pre-existing wire value. Both resolve to this `AuthRejectionEnvelope`. Distinct from `ValidationErrorEnvelope.error_type` (`validation_error`), the other branch of the auth-422 `oneOf`.
-     *
-     * @return self
-     */
-    public function setErrorType($error_type)
-    {
-        if (is_null($error_type)) {
-            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!in_array($error_type, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'error_type', must be one of '%s'",
-                    $error_type,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['error_type'] = $error_type;
-
-        return $this;
-    }
-
-    /**
-     * Gets message
-     *
-     * @return string|null
-     */
-    public function getMessage()
-    {
-        return $this->container['message'];
-    }
-
-    /**
-     * Sets message
-     *
-     * @param string|null $message Human-readable message, localised per `Accept-Language` (fallback `en-GB`). Never parse for control flow. See `ErrorEnvelope.message`.
-     *
-     * @return self
-     */
-    public function setMessage($message)
-    {
-        if (is_null($message)) {
-            throw new \InvalidArgumentException('non-nullable message cannot be null');
-        }
-        $this->container['message'] = $message;
-
-        return $this;
-    }
-
-    /**
-     * Gets message_key
-     *
-     * @return string|null
-     */
-    public function getMessageKey()
-    {
-        return $this->container['message_key'];
-    }
-
-    /**
-     * Sets message_key
-     *
-     * @param string|null $message_key Stable canonical lookup key for the message. Never localised. See `ErrorEnvelope.message_key`.
-     *
-     * @return self
-     */
-    public function setMessageKey($message_key)
-    {
-        if (is_null($message_key)) {
-            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
-        }
-        $this->container['message_key'] = $message_key;
-
-        return $this;
-    }
-
-    /**
-     * Gets locale
-     *
-     * @return string|null
-     */
-    public function getLocale()
-    {
-        return $this->container['locale'];
-    }
-
-    /**
-     * Sets locale
-     *
-     * @param string|null $locale BCP 47 locale tag echoing `Content-Language`. See `ErrorEnvelope.locale`.
-     *
-     * @return self
-     */
-    public function setLocale($locale)
-    {
-        if (is_null($locale)) {
-            throw new \InvalidArgumentException('non-nullable locale cannot be null');
-        }
-        $this->container['locale'] = $locale;
-
-        return $this;
-    }
-
-    /**
-     * Gets message_params
-     *
-     * @return array<string,mixed>|null
-     */
-    public function getMessageParams()
-    {
-        return $this->container['message_params'];
-    }
-
-    /**
-     * Sets message_params
-     *
-     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. See `ErrorEnvelope.message_params`.
-     *
-     * @return self
-     */
-    public function setMessageParams($message_params)
-    {
-        if (is_null($message_params)) {
-            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
-        }
-        $this->container['message_params'] = $message_params;
+        $this->container['email'] = $email;
 
         return $this;
     }

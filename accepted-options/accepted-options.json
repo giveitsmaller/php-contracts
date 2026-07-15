@@ -194,20 +194,6 @@
         },
         "output_format_option": null
       },
-      "document_pdf": {
-        "accepted_options": {
-          "*": [
-            "colorspace",
-            "flatten_forms",
-            "grayscale",
-            "image_dpi",
-            "pages",
-            "profile",
-            "quality"
-          ]
-        },
-        "output_format_option": null
-      },
       "image": {
         "accepted_options": {
           "auto": [
@@ -1201,5 +1187,5 @@
       }
     }
   },
-  "schema_version": "2.162.0"
+  "schema_version": "2.166.0"
 }
