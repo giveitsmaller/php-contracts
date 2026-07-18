@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 168,
+  "capabilities_version": 172,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -253,11 +253,25 @@
       "operation_id": "createWorkflow",
       "required_tier": null
     },
+    "POST /api/workflows/{id}/archive": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "archiveWorkflow",
+      "required_tier": null
+    },
     "POST /api/workflows/{id}/cancel": {
       "auth": "required",
       "availability": "stable",
       "identity_scoped": true,
       "operation_id": "cancelWorkflow",
+      "required_tier": null
+    },
+    "POST /api/workflows/{id}/restore": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "restoreWorkflow",
       "required_tier": null
     },
     "POST /api/workflows/{id}/resume": {
@@ -669,6 +683,7 @@
       "max_inputs": 2,
       "mime_groups": {
         "audio": {
+          "max_input_duration": "PT2H",
           "mimes": [
             "audio/mpeg",
             "audio/aac",
@@ -964,6 +979,7 @@
           }
         },
         "document_epub": {
+          "max_input_size_bytes": 104857600,
           "mimes": [
             "application/epub+zip"
           ],
@@ -990,6 +1006,7 @@
           }
         },
         "document_odf": {
+          "max_input_size_bytes": 104857600,
           "mimes": [
             "application/vnd.oasis.opendocument.text",
             "application/vnd.oasis.opendocument.spreadsheet",
@@ -1018,6 +1035,7 @@
           }
         },
         "document_office": {
+          "max_input_size_bytes": 104857600,
           "mimes": [
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1052,6 +1070,7 @@
           }
         },
         "image": {
+          "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "mimes": [
             "image/gif",
@@ -1175,6 +1194,7 @@
           }
         },
         "image_avif": {
+          "max_input_size_bytes": 20971520,
           "max_output_pixels": 16000000,
           "mimes": [
             "image/avif"
@@ -1345,6 +1365,7 @@
           }
         },
         "image_jpeg": {
+          "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "mimes": [
             "image/jpeg"
@@ -1537,6 +1558,7 @@
           }
         },
         "image_png": {
+          "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "mimes": [
             "image/png"
@@ -1664,6 +1686,7 @@
           }
         },
         "image_svg": {
+          "max_input_size_bytes": 524288000,
           "mimes": [
             "image/svg+xml"
           ],
@@ -1687,9 +1710,12 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives (the server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until supported. See FORMAT.md.",
+              "description": "Output format. `original` = keep input format \u2014 SVG -> SVG optimisation via SVGO. **`original` is PLANNED** (G9O6yrQD): the worker does not implement SVG->SVG optimisation yet (\"SVG is a follow-up\"), so it returns `feature_not_available` (422) rather than 422ing under a `stable` claim. It is also the schema `default`. **KNOWN ENFORCEMENT GAP (api co-land owed):** the API's per-value gate only inspects an EXPLICITLY submitted `output_format` (`CreateWorkflowCommandHandler`: `$requestedFormat = $opDef->options['output_format'] ?? null; if (is_scalar(...))`), so an OMITTED value is not materialized to its default before the check and bypasses this tag \u2014 a bare `compress` on an SVG still dispatches and fails at the worker instead of returning a clean 422. `original` is the first PLANNED DEFAULT in the contract, so nothing exercised that path before. The tag is correct and truthful regardless; closing the gap is api's (gate against the effective default). Ask for `webp` meanwhile \u2014 that route works. `webp` = recompress to WebP: **STABLE and working today** \u2014 this facade route canonicalizes to the `convert` operation (`convert.image_svg` carries its own quality), which is why this group is NOT gated at group level. Concrete format changes are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives (the server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until supported. See FORMAT.md.",
               "per_value_availability": {
                 "auto": {
+                  "availability": "planned"
+                },
+                "original": {
                   "availability": "planned"
                 },
                 "smallest": {
@@ -1707,6 +1733,7 @@
           }
         },
         "image_webp": {
+          "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "mimes": [
             "image/webp"
@@ -2157,7 +2184,7 @@
             },
             "pages": {
               "default": "1",
-              "description": "Page selection (e.g. '1-5,8'). Each resolved page produces a\nseparate output file. **Maximum 200 resolved entries per\nrequest** \u2014 aligns with the `OperationResult.outputs[]`\n`maxItems: 200` cap. Expressions resolving to more than 200\nentries (e.g. `'1-201'`, `'1-100,102-205'`) are out of\ncontract. Duplicate or overlapping entries (e.g. `'1,1'`,\n`'1-100,50-150'`) are counted toward the cap as parsed;\ndeduplication, if any, is a runtime concern and is NOT part\nof this contract.\n",
+              "description": "Page selection (e.g. '1-5,8'). Each resolved page produces a\nseparate output file whose `page_index` is the **literal source\npage number** \u2014 a sparse selection stays sparse: `pages: '1-5,8'`\nyields outputs with `page_index` `1,2,3,4,5,8` (NOT renumbered\n`1..6`), and `pages: '5-7'` yields `5,6,7`. The download `filename`\nsuffix is a separate 0-based array position and does NOT track the\npage number. **Maximum 200 resolved entries per\nrequest** \u2014 aligns with the `OperationResult.outputs[]`\n`maxItems: 200` cap. Expressions resolving to more than 200\nentries (e.g. `'1-201'`, `'1-100,102-205'`) are out of\ncontract. Duplicate or overlapping entries (e.g. `'1,1'`,\n`'1-100,50-150'`) are counted toward the cap as parsed;\ndeduplication, if any, is a runtime concern and is NOT part\nof this contract.\n",
               "type": "string"
             }
           }
@@ -3824,7 +3851,7 @@
     "split": {
       "availability": "beta",
       "default": false,
-      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming**: 3-digit zero-padded \u2014 `output-001` ..\n`output-200`. Matches the convert PDF\u2192N precedent.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based gapless page index)\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts. Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `image_gif` and `document_pdf` mime_groups stay\n`availability: planned` until their cross-repo backend support ships;\ndispatch returns `feature_not_available` (422) for the still-planned\ngroups/classes until then.\n",
+      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming (S3 object key)**: the object-key leaf is 3-digit\nzero-padded \u2014 `output-001` .. `output-200` (ADR-0014 \u00a7D9). This binds the\n**S3 object key**, NOT the user-facing download filename \u2014 the API\nsynthesises that separately (see `OperationDownload.filename` in\n`openapi/api.yaml`). Only the **3-digit zero-padding** follows the convert\nPDF\u2192N precedent \u2014 convert keys are `page-NNN.ext`, split keys are\n`output-NNN.ext`.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based literal source page number).\n  **`mode: page_range` only** \u2014 each output is one page, so `page_index` is\n  that page. For **`mode: page_groups`** an output spans multiple source\n  pages, so a single `page_index` cannot name them all; that grouped-output\n  semantics is NOT specified by this correction and is deferred (do not\n  assume it is the group's first page \u2014 that is unverified).\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts. Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `image_gif` and `document_pdf` mime_groups stay\n`availability: planned` until their cross-repo backend support ships;\ndispatch returns `feature_not_available` (422) for the still-planned\ngroups/classes until then.\n",
       "features": {
         "silence_mode_audio": {
           "availability": "beta",
@@ -4386,7 +4413,6 @@
           "max_output_pixels": 16000000,
           "mimes": [
             "application/pdf",
-            "application/epub+zip",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -4445,7 +4471,79 @@
             },
             "source": {
               "default": "page",
-              "description": "page = render a specific page/slide, cover = extract cover image (EPUB only, ignored for other formats)",
+              "description": "`page` = render a specific page/slide. `cover` = extract a cover image \u2014 only meaningful for EPUB inputs, which are served by the `document_epub` group; on PDF/office/ODF it is accepted and IGNORED (retained for backward compatibility).",
+              "type": "enum",
+              "values": [
+                "page",
+                "cover"
+              ]
+            },
+            "width": {
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). Optional \u2014 when omitted the server applies an aspect-preserving default (both omitted \u2192 longest edge 320px; only one of width/height provided \u2192 the other is derived from the source aspect ratio).",
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            }
+          }
+        },
+        "document_epub": {
+          "availability": "planned",
+          "max_output_pixels": 16000000,
+          "mimes": [
+            "application/epub+zip"
+          ],
+          "options": {
+            "fit": {
+              "default": "crop",
+              "description": "Resize mode",
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "format": {
+              "default": "jpg",
+              "description": "Output format for the thumbnail",
+              "type": "enum",
+              "values": [
+                "jpg",
+                "png",
+                "webp"
+              ]
+            },
+            "height": {
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). Optional \u2014 see `width` for the omitted-default behaviour.",
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            },
+            "page": {
+              "default": 1,
+              "depends_on": {
+                "source": "page"
+              },
+              "description": "1-based index of the printed page to render, after the book's print-layout pagination is applied.",
+              "min": 1,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "format": [
+                  "jpg",
+                  "webp"
+                ]
+              },
+              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "source": {
+              "default": "cover",
+              "description": "`cover` (default) = extract the EPUB's declared cover image \u2014 the cheap path, no rendering. `page` = render a paginated page of the book's XHTML. Cover lookup MUST support both mechanisms: the EPUB 3 `cover-image` property on an OPF manifest item, AND the legacy EPUB 2 `<meta name=\"cover\" content=\"...\"/>` pointing at a manifest item \u2014 supporting only the former misses a large slice of real-world files. A cover image is OPTIONAL per W3C EPUB 3.3, so a cover-less EPUB is a real case. The reject shape for it is NOT yet decided and is deliberately unpromised here: `ErrorCode` (asyncapi) is a CLOSED enum with no \"no cover\" member, so a distinct code is a real cross-repo co-land (enum edit -> SDK regen -> lockstep), not a free string. It is settled when this group graduates \u2014 do not infer one from this description.",
               "type": "enum",
               "values": [
                 "page",
@@ -5006,7 +5104,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.171.0",
+  "schema_version": "2.180.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
@@ -5036,6 +5134,24 @@
             "terminal": {
               "availability": "stable"
             }
+          }
+        }
+      }
+    },
+    "processing": {
+      "class_hint": {
+        "per_value_availability": {
+          "auto": {
+            "availability": "stable"
+          },
+          "long_form_allowed": {
+            "availability": "planned"
+          },
+          "long_form_preferred": {
+            "availability": "planned"
+          },
+          "short_form_only": {
+            "availability": "planned"
           }
         }
       }

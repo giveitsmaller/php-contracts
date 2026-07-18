@@ -7,6 +7,10 @@ declare(strict_types=1);
 namespace Gisl\Generated\Operations\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Gisl\Generated\Operations\ThumbnailDocumentEpubFit;
+use Gisl\Generated\Operations\ThumbnailDocumentEpubFormat;
+use Gisl\Generated\Operations\ThumbnailDocumentEpubOptions;
+use Gisl\Generated\Operations\ThumbnailDocumentEpubSource;
 use Gisl\Generated\Operations\ThumbnailDocumentFit;
 use Gisl\Generated\Operations\ThumbnailDocumentFormat;
 use Gisl\Generated\Operations\ThumbnailDocumentOptions;
@@ -270,6 +274,104 @@ final class ThumbnailTest extends TestCase
             quality: 1,
         );
         $this->assertInstanceOf(ThumbnailDocumentOptions::class, $obj);
+    }
+
+    public function testThumbnailDocumentEpubSourcePageBackingValue(): void
+    {
+        $enum = ThumbnailDocumentEpubSource::from('page');
+        $this->assertSame(ThumbnailDocumentEpubSource::Page, $enum);
+        $this->assertSame('page', $enum->value);
+    }
+
+    public function testThumbnailDocumentEpubSourceCoverBackingValue(): void
+    {
+        $enum = ThumbnailDocumentEpubSource::from('cover');
+        $this->assertSame(ThumbnailDocumentEpubSource::Cover, $enum);
+        $this->assertSame('cover', $enum->value);
+    }
+
+    public function testThumbnailDocumentEpubSourceCaseCount(): void
+    {
+        $this->assertCount(2, ThumbnailDocumentEpubSource::cases());
+    }
+
+    public function testThumbnailDocumentEpubFitMaxBackingValue(): void
+    {
+        $enum = ThumbnailDocumentEpubFit::from('max');
+        $this->assertSame(ThumbnailDocumentEpubFit::Max, $enum);
+        $this->assertSame('max', $enum->value);
+    }
+
+    public function testThumbnailDocumentEpubFitCropBackingValue(): void
+    {
+        $enum = ThumbnailDocumentEpubFit::from('crop');
+        $this->assertSame(ThumbnailDocumentEpubFit::Crop, $enum);
+        $this->assertSame('crop', $enum->value);
+    }
+
+    public function testThumbnailDocumentEpubFitScaleBackingValue(): void
+    {
+        $enum = ThumbnailDocumentEpubFit::from('scale');
+        $this->assertSame(ThumbnailDocumentEpubFit::Scale, $enum);
+        $this->assertSame('scale', $enum->value);
+    }
+
+    public function testThumbnailDocumentEpubFitCaseCount(): void
+    {
+        $this->assertCount(3, ThumbnailDocumentEpubFit::cases());
+    }
+
+    public function testThumbnailDocumentEpubFormatJpgBackingValue(): void
+    {
+        $enum = ThumbnailDocumentEpubFormat::from('jpg');
+        $this->assertSame(ThumbnailDocumentEpubFormat::Jpg, $enum);
+        $this->assertSame('jpg', $enum->value);
+    }
+
+    public function testThumbnailDocumentEpubFormatPngBackingValue(): void
+    {
+        $enum = ThumbnailDocumentEpubFormat::from('png');
+        $this->assertSame(ThumbnailDocumentEpubFormat::Png, $enum);
+        $this->assertSame('png', $enum->value);
+    }
+
+    public function testThumbnailDocumentEpubFormatWebpBackingValue(): void
+    {
+        $enum = ThumbnailDocumentEpubFormat::from('webp');
+        $this->assertSame(ThumbnailDocumentEpubFormat::Webp, $enum);
+        $this->assertSame('webp', $enum->value);
+    }
+
+    public function testThumbnailDocumentEpubFormatCaseCount(): void
+    {
+        $this->assertCount(3, ThumbnailDocumentEpubFormat::cases());
+    }
+
+    public function testThumbnailDocumentEpubOptionsDefaultConstruction(): void
+    {
+        $obj = new ThumbnailDocumentEpubOptions();
+        $this->assertInstanceOf(ThumbnailDocumentEpubOptions::class, $obj);
+        $this->assertSame(ThumbnailDocumentEpubSource::Cover, $obj->source);
+        $this->assertSame(ThumbnailDocumentEpubFit::Crop, $obj->fit);
+        $this->assertSame(ThumbnailDocumentEpubFormat::Jpg, $obj->format);
+        $this->assertNull($obj->page);
+        $this->assertNull($obj->width);
+        $this->assertNull($obj->height);
+        $this->assertNull($obj->quality);
+    }
+
+    public function testThumbnailDocumentEpubOptionsFullConstruction(): void
+    {
+        $obj = new ThumbnailDocumentEpubOptions(
+            source: ThumbnailDocumentEpubSource::Page,
+            page: 1,
+            width: 1,
+            height: 1,
+            fit: ThumbnailDocumentEpubFit::Max,
+            format: ThumbnailDocumentEpubFormat::Jpg,
+            quality: 1,
+        );
+        $this->assertInstanceOf(ThumbnailDocumentEpubOptions::class, $obj);
     }
 
 }

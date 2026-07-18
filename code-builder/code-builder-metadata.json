@@ -739,6 +739,7 @@
       "input_model": "multi",
       "media_groups": {
         "audio": {
+          "max_input_duration": "PT2H",
           "media_group": "audio",
           "mimes": [
             "audio/mpeg",
@@ -1203,6 +1204,7 @@
           }
         },
         "document_epub": {
+          "max_input_size_bytes": 104857600,
           "media_group": "document",
           "mimes": [
             "application/epub+zip"
@@ -1253,6 +1255,7 @@
           }
         },
         "document_odf": {
+          "max_input_size_bytes": 104857600,
           "media_group": "document",
           "mimes": [
             "application/vnd.oasis.opendocument.text",
@@ -1305,6 +1308,7 @@
           }
         },
         "document_office": {
+          "max_input_size_bytes": 104857600,
           "media_group": "document",
           "mimes": [
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -1369,6 +1373,7 @@
           }
         },
         "image": {
+          "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -1566,6 +1571,7 @@
           }
         },
         "image_avif": {
+          "max_input_size_bytes": 20971520,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -1831,6 +1837,7 @@
           }
         },
         "image_jpeg": {
+          "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -2131,6 +2138,7 @@
           }
         },
         "image_png": {
+          "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -2335,6 +2343,7 @@
           }
         },
         "image_svg": {
+          "max_input_size_bytes": 524288000,
           "media_group": "image",
           "mimes": [
             "image/svg+xml"
@@ -2371,7 +2380,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives (the server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until supported. See FORMAT.md.",
+              "description": "Output format. `original` = keep input format \u2014 SVG -> SVG optimisation via SVGO. **`original` is PLANNED** (G9O6yrQD): the worker does not implement SVG->SVG optimisation yet (\"SVG is a follow-up\"), so it returns `feature_not_available` (422) rather than 422ing under a `stable` claim. It is also the schema `default`. **KNOWN ENFORCEMENT GAP (api co-land owed):** the API's per-value gate only inspects an EXPLICITLY submitted `output_format` (`CreateWorkflowCommandHandler`: `$requestedFormat = $opDef->options['output_format'] ?? null; if (is_scalar(...))`), so an OMITTED value is not materialized to its default before the check and bypasses this tag \u2014 a bare `compress` on an SVG still dispatches and fails at the worker instead of returning a clean 422. `original` is the first PLANNED DEFAULT in the contract, so nothing exercised that path before. The tag is correct and truthful regardless; closing the gap is api's (gate against the effective default). Ask for `webp` meanwhile \u2014 that route works. `webp` = recompress to WebP: **STABLE and working today** \u2014 this facade route canonicalizes to the `convert` operation (`convert.image_svg` carries its own quality), which is why this group is NOT gated at group level. Concrete format changes are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives (the server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until supported. See FORMAT.md.",
               "enum_ref": "ImageFormat",
               "enum_translations": {
                 "original": "Original",
@@ -2380,6 +2389,9 @@
               "origin": "contract",
               "per_value_availability": {
                 "auto": {
+                  "availability": "planned"
+                },
+                "original": {
                   "availability": "planned"
                 },
                 "smallest": {
@@ -2391,7 +2403,7 @@
               "type": "enum",
               "value_exposure": {
                 "auto": "coming_soon",
-                "original": "expose",
+                "original": "coming_soon",
                 "smallest": "coming_soon",
                 "webp": "expose"
               },
@@ -2419,6 +2431,7 @@
           }
         },
         "image_webp": {
+          "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -3166,7 +3179,7 @@
             },
             "pages": {
               "default": "1",
-              "description": "Page selection (e.g. '1-5,8'). Each resolved page produces a\nseparate output file. **Maximum 200 resolved entries per\nrequest** \u2014 aligns with the `OperationResult.outputs[]`\n`maxItems: 200` cap. Expressions resolving to more than 200\nentries (e.g. `'1-201'`, `'1-100,102-205'`) are out of\ncontract. Duplicate or overlapping entries (e.g. `'1,1'`,\n`'1-100,50-150'`) are counted toward the cap as parsed;\ndeduplication, if any, is a runtime concern and is NOT part\nof this contract.\n",
+              "description": "Page selection (e.g. '1-5,8'). Each resolved page produces a\nseparate output file whose `page_index` is the **literal source\npage number** \u2014 a sparse selection stays sparse: `pages: '1-5,8'`\nyields outputs with `page_index` `1,2,3,4,5,8` (NOT renumbered\n`1..6`), and `pages: '5-7'` yields `5,6,7`. The download `filename`\nsuffix is a separate 0-based array position and does NOT track the\npage number. **Maximum 200 resolved entries per\nrequest** \u2014 aligns with the `OperationResult.outputs[]`\n`maxItems: 200` cap. Expressions resolving to more than 200\nentries (e.g. `'1-201'`, `'1-100,102-205'`) are out of\ncontract. Duplicate or overlapping entries (e.g. `'1,1'`,\n`'1-100,50-150'`) are counted toward the cap as parsed;\ndeduplication, if any, is a runtime concern and is NOT part\nof this contract.\n",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "pages",
@@ -6197,7 +6210,6 @@
           "media_group": "document",
           "mimes": [
             "application/pdf",
-            "application/epub+zip",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -6281,7 +6293,7 @@
             },
             "source": {
               "default": "page",
-              "description": "page = render a specific page/slide, cover = extract cover image (EPUB only, ignored for other formats)",
+              "description": "`page` = render a specific page/slide. `cover` = extract a cover image \u2014 only meaningful for EPUB inputs, which are served by the `document_epub` group; on PDF/office/ODF it is accepted and IGNORED (retained for backward compatibility).",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "source",
@@ -6301,6 +6313,114 @@
               "min": 1,
               "origin": "contract",
               "sdk_exposure": "expose",
+              "surface_key": "width",
+              "type": "integer"
+            }
+          }
+        },
+        "document_epub": {
+          "availability": "planned",
+          "max_output_pixels": 16000000,
+          "media_group": "document",
+          "mimes": [
+            "application/epub+zip"
+          ],
+          "options": {
+            "fit": {
+              "default": "crop",
+              "description": "Resize mode",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "fit",
+              "type": "enum",
+              "value_exposure": {
+                "crop": "coming_soon",
+                "max": "coming_soon",
+                "scale": "coming_soon"
+              },
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "format": {
+              "default": "jpg",
+              "description": "Output format for the thumbnail",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "format",
+              "type": "enum",
+              "value_exposure": {
+                "jpg": "coming_soon",
+                "png": "coming_soon",
+                "webp": "coming_soon"
+              },
+              "values": [
+                "jpg",
+                "png",
+                "webp"
+              ]
+            },
+            "height": {
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). Optional \u2014 see `width` for the omitted-default behaviour.",
+              "max": 16384,
+              "min": 1,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "height",
+              "type": "integer"
+            },
+            "page": {
+              "default": 1,
+              "depends_on": {
+                "source": "page"
+              },
+              "description": "1-based index of the printed page to render, after the book's print-layout pagination is applied.",
+              "min": 1,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "page",
+              "type": "integer"
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "format": [
+                  "jpg",
+                  "webp"
+                ]
+              },
+              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
+              "max": 100,
+              "min": 1,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "quality",
+              "type": "integer"
+            },
+            "source": {
+              "default": "cover",
+              "description": "`cover` (default) = extract the EPUB's declared cover image \u2014 the cheap path, no rendering. `page` = render a paginated page of the book's XHTML. Cover lookup MUST support both mechanisms: the EPUB 3 `cover-image` property on an OPF manifest item, AND the legacy EPUB 2 `<meta name=\"cover\" content=\"...\"/>` pointing at a manifest item \u2014 supporting only the former misses a large slice of real-world files. A cover image is OPTIONAL per W3C EPUB 3.3, so a cover-less EPUB is a real case. The reject shape for it is NOT yet decided and is deliberately unpromised here: `ErrorCode` (asyncapi) is a CLOSED enum with no \"no cover\" member, so a distinct code is a real cross-repo co-land (enum edit -> SDK regen -> lockstep), not a free string. It is settled when this group graduates \u2014 do not infer one from this description.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "source",
+              "type": "enum",
+              "value_exposure": {
+                "cover": "coming_soon",
+                "page": "coming_soon"
+              },
+              "values": [
+                "page",
+                "cover"
+              ]
+            },
+            "width": {
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). Optional \u2014 when omitted the server applies an aspect-preserving default (both omitted \u2192 longest edge 320px; only one of width/height provided \u2192 the other is derived from the source aspect ratio).",
+              "max": 16384,
+              "min": 1,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
               "surface_key": "width",
               "type": "integer"
             }
@@ -7079,7 +7199,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.171.0",
+  "schema_version": "2.180.0",
   "sdk_spec_version": "2.3.0",
-  "source_hash": "sha256:efe755920ce6da1324ab6d4891c74fd7edc8039631f783fa4cf048300adadc17"
+  "source_hash": "sha256:b6c13412c2b801042e9c5aaf86469e74efc2ea015b04fd1ee771b8030e9cdce0"
 }

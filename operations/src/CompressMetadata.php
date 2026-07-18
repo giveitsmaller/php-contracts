@@ -239,6 +239,9 @@ final class CompressMetadata
                         ),
                         'output_format' => new OptionMetadata(
                             per_value_availability: [
+                                'original' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
                                 'auto' => new AvailabilityEntry(
                                     availability: 'planned',
                                 ),
