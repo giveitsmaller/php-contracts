@@ -276,13 +276,6 @@ final class ThumbnailTest extends TestCase
         $this->assertInstanceOf(ThumbnailDocumentOptions::class, $obj);
     }
 
-    public function testThumbnailDocumentEpubSourcePageBackingValue(): void
-    {
-        $enum = ThumbnailDocumentEpubSource::from('page');
-        $this->assertSame(ThumbnailDocumentEpubSource::Page, $enum);
-        $this->assertSame('page', $enum->value);
-    }
-
     public function testThumbnailDocumentEpubSourceCoverBackingValue(): void
     {
         $enum = ThumbnailDocumentEpubSource::from('cover');
@@ -292,7 +285,7 @@ final class ThumbnailTest extends TestCase
 
     public function testThumbnailDocumentEpubSourceCaseCount(): void
     {
-        $this->assertCount(2, ThumbnailDocumentEpubSource::cases());
+        $this->assertCount(1, ThumbnailDocumentEpubSource::cases());
     }
 
     public function testThumbnailDocumentEpubFitMaxBackingValue(): void
@@ -354,7 +347,6 @@ final class ThumbnailTest extends TestCase
         $this->assertSame(ThumbnailDocumentEpubSource::Cover, $obj->source);
         $this->assertSame(ThumbnailDocumentEpubFit::Crop, $obj->fit);
         $this->assertSame(ThumbnailDocumentEpubFormat::Jpg, $obj->format);
-        $this->assertNull($obj->page);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
         $this->assertNull($obj->quality);
@@ -363,8 +355,7 @@ final class ThumbnailTest extends TestCase
     public function testThumbnailDocumentEpubOptionsFullConstruction(): void
     {
         $obj = new ThumbnailDocumentEpubOptions(
-            source: ThumbnailDocumentEpubSource::Page,
-            page: 1,
+            source: ThumbnailDocumentEpubSource::Cover,
             width: 1,
             height: 1,
             fit: ThumbnailDocumentEpubFit::Max,

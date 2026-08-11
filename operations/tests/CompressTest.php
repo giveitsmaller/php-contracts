@@ -1485,7 +1485,6 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressVideoPreset::Medium, $obj->preset);
         $this->assertSame(true, $obj->faststart);
         $this->assertSame(CompressVideoAudioCodec::Copy, $obj->audio_codec);
-        $this->assertSame(1.0, $obj->speed);
         $this->assertNull($obj->crf);
         $this->assertNull($obj->target_size_bytes);
         $this->assertNull($obj->width);
@@ -1495,6 +1494,7 @@ final class CompressTest extends TestCase
         $this->assertNull($obj->audio_bitrate);
         $this->assertNull($obj->trim_start);
         $this->assertNull($obj->trim_end);
+        $this->assertNull($obj->speed);
     }
 
     public function testCompressVideoOptionsFullConstruction(): void
@@ -1525,9 +1525,9 @@ final class CompressTest extends TestCase
         $obj = new CompressDocumentOfficeOptions();
         $this->assertInstanceOf(CompressDocumentOfficeOptions::class, $obj);
         $this->assertSame(50, $obj->quality);
-        $this->assertSame(true, $obj->strip_macros);
-        $this->assertSame(true, $obj->strip_hidden_data);
-        $this->assertSame(false, $obj->strip_unused_fonts);
+        $this->assertNull($obj->strip_macros);
+        $this->assertNull($obj->strip_hidden_data);
+        $this->assertNull($obj->strip_unused_fonts);
     }
 
     public function testCompressDocumentOfficeOptionsFullConstruction(): void
@@ -1546,8 +1546,8 @@ final class CompressTest extends TestCase
         $obj = new CompressDocumentOdfOptions();
         $this->assertInstanceOf(CompressDocumentOdfOptions::class, $obj);
         $this->assertSame(50, $obj->quality);
-        $this->assertSame(true, $obj->strip_metadata);
-        $this->assertSame(false, $obj->strip_unused_styles);
+        $this->assertNull($obj->strip_metadata);
+        $this->assertNull($obj->strip_unused_styles);
     }
 
     public function testCompressDocumentOdfOptionsFullConstruction(): void
@@ -1565,8 +1565,8 @@ final class CompressTest extends TestCase
         $obj = new CompressDocumentEpubOptions();
         $this->assertInstanceOf(CompressDocumentEpubOptions::class, $obj);
         $this->assertSame(50, $obj->quality);
-        $this->assertSame(true, $obj->font_subsetting);
-        $this->assertSame(false, $obj->strip_unused_css);
+        $this->assertNull($obj->font_subsetting);
+        $this->assertNull($obj->strip_unused_css);
     }
 
     public function testCompressDocumentEpubOptionsFullConstruction(): void

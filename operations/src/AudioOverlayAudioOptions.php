@@ -15,13 +15,13 @@ final class AudioOverlayAudioOptions
         public readonly int $fade_in_ms = 0,
         public readonly int $fade_out_ms = 0,
         public readonly bool $loop = false,
-        public readonly float $silence_threshold_db = -50.0,
-        public readonly int $min_silence_ms = 500,
         public readonly ?float $duration = null,
         public readonly ?float $duck_threshold = null,
         public readonly ?float $duck_ratio = null,
         public readonly ?int $duck_attack_ms = null,
         public readonly ?int $duck_release_ms = null,
         public readonly ?float $loop_interval = null,
+        public readonly ?float $silence_threshold_db = null,
+        public readonly ?int $min_silence_ms = null,
     ) {}
 }

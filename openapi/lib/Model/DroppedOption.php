@@ -1,6 +1,6 @@
 <?php
 /**
- * MultipartPresignSuccessEnvelope
+ * DroppedOption
  *
  * PHP version 8.1
  *
@@ -32,15 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * MultipartPresignSuccessEnvelope Class Doc Comment
+ * DroppedOption Class Doc Comment
  *
  * @category Class
+ * @description One server-supplied option removed from a job before dispatch. **Names the THING, the WHY and the PATH** — the three parts a caller needs to act, and the three a single interpolated string would fuse into something unparseable.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \JsonSerializable
+class DroppedOption implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +50,7 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      *
      * @var string
      */
-    protected static $openAPIModelName = 'MultipartPresignSuccessEnvelope';
+    protected static $openAPIModelName = 'DroppedOption';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +58,11 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var string[]
      */
     protected static $openAPITypes = [
-        'success' => 'bool',
-        'data' => '\Gisl\Generated\OpenApi\Model\MultipartPresignResponse'
+        'option' => 'string',
+        'operation_type' => 'string',
+        'operation_id' => 'string',
+        'processing_class' => '\Gisl\Generated\OpenApi\Model\ProcessingClass',
+        'reason' => 'string'
     ];
 
     /**
@@ -69,8 +73,11 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'success' => null,
-        'data' => null
+        'option' => null,
+        'operation_type' => null,
+        'operation_id' => 'uuid',
+        'processing_class' => null,
+        'reason' => null
     ];
 
     /**
@@ -79,8 +86,11 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'success' => false,
-        'data' => false
+        'option' => false,
+        'operation_type' => false,
+        'operation_id' => false,
+        'processing_class' => false,
+        'reason' => false
     ];
 
     /**
@@ -169,8 +179,11 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var string[]
      */
     protected static $attributeMap = [
-        'success' => 'success',
-        'data' => 'data'
+        'option' => 'option',
+        'operation_type' => 'operation_type',
+        'operation_id' => 'operation_id',
+        'processing_class' => 'processing_class',
+        'reason' => 'reason'
     ];
 
     /**
@@ -179,8 +192,11 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var string[]
      */
     protected static $setters = [
-        'success' => 'setSuccess',
-        'data' => 'setData'
+        'option' => 'setOption',
+        'operation_type' => 'setOperationType',
+        'operation_id' => 'setOperationId',
+        'processing_class' => 'setProcessingClass',
+        'reason' => 'setReason'
     ];
 
     /**
@@ -189,8 +205,11 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var string[]
      */
     protected static $getters = [
-        'success' => 'getSuccess',
-        'data' => 'getData'
+        'option' => 'getOption',
+        'operation_type' => 'getOperationType',
+        'operation_id' => 'getOperationId',
+        'processing_class' => 'getProcessingClass',
+        'reason' => 'getReason'
     ];
 
     /**
@@ -234,6 +253,7 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
         return self::$openAPIModelName;
     }
 
+
     /**
      * Associative array for storing property values
      *
@@ -249,8 +269,11 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('success', $data ?? [], null);
-        $this->setIfExists('data', $data ?? [], null);
+        $this->setIfExists('option', $data ?? [], null);
+        $this->setIfExists('operation_type', $data ?? [], null);
+        $this->setIfExists('operation_id', $data ?? [], null);
+        $this->setIfExists('processing_class', $data ?? [], null);
+        $this->setIfExists('reason', $data ?? [], null);
     }
 
     /**
@@ -280,12 +303,11 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
     {
         $invalidProperties = [];
 
-        if ($this->container['success'] === null) {
-            $invalidProperties[] = "'success' can't be null";
+        if ($this->container['option'] === null) {
+            $invalidProperties[] = "'option' can't be null";
         }
-
-        if ($this->container['data'] === null) {
-            $invalidProperties[] = "'data' can't be null";
+        if ($this->container['reason'] === null) {
+            $invalidProperties[] = "'reason' can't be null";
         }
         return $invalidProperties;
     }
@@ -303,55 +325,136 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
 
 
     /**
-     * Gets success
+     * Gets option
      *
-     * @return bool
+     * @return string
      */
-    public function getSuccess()
+    public function getOption()
     {
-        return $this->container['success'];
+        return $this->container['option'];
     }
 
     /**
-     * Sets success
+     * Sets option
      *
-     * @param bool $success success
+     * @param string $option The option key that was removed, as it appears in the operation schema.
      *
      * @return self
      */
-    public function setSuccess($success)
+    public function setOption($option)
     {
-        if (is_null($success)) {
-            throw new \InvalidArgumentException('non-nullable success cannot be null');
+        if (is_null($option)) {
+            throw new \InvalidArgumentException('non-nullable option cannot be null');
         }
-        $this->container['success'] = $success;
+        $this->container['option'] = $option;
 
         return $this;
     }
 
     /**
-     * Gets data
+     * Gets operation_type
      *
-     * @return \Gisl\Generated\OpenApi\Model\MultipartPresignResponse
+     * @return string|null
      */
-    public function getData()
+    public function getOperationType()
     {
-        return $this->container['data'];
+        return $this->container['operation_type'];
     }
 
     /**
-     * Sets data
+     * Sets operation_type
      *
-     * @param \Gisl\Generated\OpenApi\Model\MultipartPresignResponse $data data
+     * @param string|null $operation_type The operation the option belonged to. Present because a job may carry several operations, so the option key alone does not identify where the drop happened.
      *
      * @return self
      */
-    public function setData($data)
+    public function setOperationType($operation_type)
     {
-        if (is_null($data)) {
-            throw new \InvalidArgumentException('non-nullable data cannot be null');
+        if (is_null($operation_type)) {
+            throw new \InvalidArgumentException('non-nullable operation_type cannot be null');
         }
-        $this->container['data'] = $data;
+        $this->container['operation_type'] = $operation_type;
+
+        return $this;
+    }
+
+    /**
+     * Gets operation_id
+     *
+     * @return string|null
+     */
+    public function getOperationId()
+    {
+        return $this->container['operation_id'];
+    }
+
+    /**
+     * Sets operation_id
+     *
+     * @param string|null $operation_id The specific operation, when the server can attribute the drop to one.
+     *
+     * @return self
+     */
+    public function setOperationId($operation_id)
+    {
+        if (is_null($operation_id)) {
+            throw new \InvalidArgumentException('non-nullable operation_id cannot be null');
+        }
+        $this->container['operation_id'] = $operation_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets processing_class
+     *
+     * @return \Gisl\Generated\OpenApi\Model\ProcessingClass|null
+     */
+    public function getProcessingClass()
+    {
+        return $this->container['processing_class'];
+    }
+
+    /**
+     * Sets processing_class
+     *
+     * @param \Gisl\Generated\OpenApi\Model\ProcessingClass|null $processing_class processing_class
+     *
+     * @return self
+     */
+    public function setProcessingClass($processing_class)
+    {
+        if (is_null($processing_class)) {
+            throw new \InvalidArgumentException('non-nullable processing_class cannot be null');
+        }
+        $this->container['processing_class'] = $processing_class;
+
+        return $this;
+    }
+
+    /**
+     * Gets reason
+     *
+     * @return string
+     */
+    public function getReason()
+    {
+        return $this->container['reason'];
+    }
+
+    /**
+     * Sets reason
+     *
+     * @param string $reason Why the option was dropped. **A documented vocabulary, NOT a strict enum** — deliberately, following `error_code`: a consumer MUST map known values to a friendly reason and MUST degrade an unknown one, so the vocabulary can grow without breaking clients.  **Known values:**  - `unavailable_on_processing_class` — the option is tagged   unavailable for the class this job resolved to (see   `per_class_availability` in `schemas/FORMAT.md`). The   `processing_class` field names which. - `processing_class_unmeasured` — the class could NOT be   measured (see   `ProcessingClassReason.input_metrics_unavailable`), so the   option was dropped rather than refused. **Refusing a   caller on a guessed class is the same error as asserting   a measurement never taken**, so an unmeasured basis   degrades to a drop and never to a 422.  The class token is deliberately NOT interpolated into this string: the reason and the path are separate fields because a fused `not_available_on_<class>` is unparseable and duplicates `processing_class`.
+     *
+     * @return self
+     */
+    public function setReason($reason)
+    {
+        if (is_null($reason)) {
+            throw new \InvalidArgumentException('non-nullable reason cannot be null');
+        }
+        $this->container['reason'] = $reason;
 
         return $this;
     }

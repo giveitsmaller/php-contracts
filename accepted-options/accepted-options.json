@@ -1094,7 +1094,6 @@
             "fit",
             "format",
             "height",
-            "page",
             "quality",
             "source",
             "width"
@@ -1201,5 +1200,5 @@
       }
     }
   },
-  "schema_version": "2.180.0"
+  "schema_version": "2.188.0"
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * MultipartPresignSuccessEnvelope
+ * PerClassAvailabilityEntry
  *
  * PHP version 8.1
  *
@@ -32,15 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * MultipartPresignSuccessEnvelope Class Doc Comment
+ * PerClassAvailabilityEntry Class Doc Comment
  *
  * @category Class
+ * @description Availability of an option (or one of its values) on ONE execution class. Attached as a value within a &#x60;per_class_availability&#x60; map, keyed by a &#x60;processing_class&#x60; name the parent mime_group declares.  Exists because &#x60;processing_class:&#x60; is a SIBLING of &#x60;options:&#x60;, not a parent, so without this overlay \&quot;honoured on short-form, unavailable on long-form\&quot; is inexpressible and the only instrument is an operation-wide &#x60;planned&#x60; — which withdraws a working capability from every caller to describe one path&#39;s gap.  **May only RESTRICT** relative to the scope it overlays, never re-open it (&#x60;schemas/FORMAT.md&#x60; §Precedence; machine-enforced).
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \JsonSerializable
+class PerClassAvailabilityEntry implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +50,7 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      *
      * @var string
      */
-    protected static $openAPIModelName = 'MultipartPresignSuccessEnvelope';
+    protected static $openAPIModelName = 'PerClassAvailabilityEntry';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +58,9 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var string[]
      */
     protected static $openAPITypes = [
-        'success' => 'bool',
-        'data' => '\Gisl\Generated\OpenApi\Model\MultipartPresignResponse'
+        'availability' => '\Gisl\Generated\OpenApi\Model\AvailabilityValue',
+        'eta' => 'string',
+        'documentation_url' => 'string'
     ];
 
     /**
@@ -69,8 +71,9 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'success' => null,
-        'data' => null
+        'availability' => null,
+        'eta' => null,
+        'documentation_url' => 'uri'
     ];
 
     /**
@@ -79,8 +82,9 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'success' => false,
-        'data' => false
+        'availability' => false,
+        'eta' => false,
+        'documentation_url' => false
     ];
 
     /**
@@ -169,8 +173,9 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var string[]
      */
     protected static $attributeMap = [
-        'success' => 'success',
-        'data' => 'data'
+        'availability' => 'availability',
+        'eta' => 'eta',
+        'documentation_url' => 'documentation_url'
     ];
 
     /**
@@ -179,8 +184,9 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var string[]
      */
     protected static $setters = [
-        'success' => 'setSuccess',
-        'data' => 'setData'
+        'availability' => 'setAvailability',
+        'eta' => 'setEta',
+        'documentation_url' => 'setDocumentationUrl'
     ];
 
     /**
@@ -189,8 +195,9 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      * @var string[]
      */
     protected static $getters = [
-        'success' => 'getSuccess',
-        'data' => 'getData'
+        'availability' => 'getAvailability',
+        'eta' => 'getEta',
+        'documentation_url' => 'getDocumentationUrl'
     ];
 
     /**
@@ -234,6 +241,7 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
         return self::$openAPIModelName;
     }
 
+
     /**
      * Associative array for storing property values
      *
@@ -249,8 +257,9 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('success', $data ?? [], null);
-        $this->setIfExists('data', $data ?? [], null);
+        $this->setIfExists('availability', $data ?? [], null);
+        $this->setIfExists('eta', $data ?? [], null);
+        $this->setIfExists('documentation_url', $data ?? [], null);
     }
 
     /**
@@ -280,12 +289,8 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
     {
         $invalidProperties = [];
 
-        if ($this->container['success'] === null) {
-            $invalidProperties[] = "'success' can't be null";
-        }
-
-        if ($this->container['data'] === null) {
-            $invalidProperties[] = "'data' can't be null";
+        if ($this->container['availability'] === null) {
+            $invalidProperties[] = "'availability' can't be null";
         }
         return $invalidProperties;
     }
@@ -303,55 +308,82 @@ class MultipartPresignSuccessEnvelope implements ModelInterface, ArrayAccess, \J
 
 
     /**
-     * Gets success
+     * Gets availability
      *
-     * @return bool
+     * @return \Gisl\Generated\OpenApi\Model\AvailabilityValue
      */
-    public function getSuccess()
+    public function getAvailability()
     {
-        return $this->container['success'];
+        return $this->container['availability'];
     }
 
     /**
-     * Sets success
+     * Sets availability
      *
-     * @param bool $success success
+     * @param \Gisl\Generated\OpenApi\Model\AvailabilityValue $availability availability
      *
      * @return self
      */
-    public function setSuccess($success)
+    public function setAvailability($availability)
     {
-        if (is_null($success)) {
-            throw new \InvalidArgumentException('non-nullable success cannot be null');
+        if (is_null($availability)) {
+            throw new \InvalidArgumentException('non-nullable availability cannot be null');
         }
-        $this->container['success'] = $success;
+        $this->container['availability'] = $availability;
 
         return $this;
     }
 
     /**
-     * Gets data
+     * Gets eta
      *
-     * @return \Gisl\Generated\OpenApi\Model\MultipartPresignResponse
+     * @return string|null
      */
-    public function getData()
+    public function getEta()
     {
-        return $this->container['data'];
+        return $this->container['eta'];
     }
 
     /**
-     * Sets data
+     * Sets eta
      *
-     * @param \Gisl\Generated\OpenApi\Model\MultipartPresignResponse $data data
+     * @param string|null $eta ISO-8601 date or quarter when this class is expected to support it.
      *
      * @return self
      */
-    public function setData($data)
+    public function setEta($eta)
     {
-        if (is_null($data)) {
-            throw new \InvalidArgumentException('non-nullable data cannot be null');
+        if (is_null($eta)) {
+            throw new \InvalidArgumentException('non-nullable eta cannot be null');
         }
-        $this->container['data'] = $data;
+        $this->container['eta'] = $eta;
+
+        return $this;
+    }
+
+    /**
+     * Gets documentation_url
+     *
+     * @return string|null
+     */
+    public function getDocumentationUrl()
+    {
+        return $this->container['documentation_url'];
+    }
+
+    /**
+     * Sets documentation_url
+     *
+     * @param string|null $documentation_url documentation_url
+     *
+     * @return self
+     */
+    public function setDocumentationUrl($documentation_url)
+    {
+        if (is_null($documentation_url)) {
+            throw new \InvalidArgumentException('non-nullable documentation_url cannot be null');
+        }
+        $this->container['documentation_url'] = $documentation_url;
 
         return $this;
     }

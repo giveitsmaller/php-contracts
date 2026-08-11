@@ -108,14 +108,10 @@ final class ThumbnailMetadata
                     per_input_options: [],
                 ),
                 'document_epub' => new MimeGroupMetadata(
-                    availability: 'planned',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
                         'source' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'page' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'width' => new OptionMetadata(

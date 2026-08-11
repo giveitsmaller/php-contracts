@@ -401,7 +401,6 @@
             },
             "min_silence_ms": {
               "availability": "planned",
-              "default": 500,
               "description": "Minimum silence duration (milliseconds) to qualify as an\nanchor region for `sync_to_silence`. Inert until that\nfeature flips to stable.\n",
               "max": 30000,
               "min": 50,
@@ -445,7 +444,6 @@
             },
             "silence_threshold_db": {
               "availability": "planned",
-              "default": -50.0,
               "description": "Silence threshold (dB) for the `sync_to_silence` feature.\nBase audio below this level for at least `min_silence_ms`\nqualifies as a silence region into which the overlay can\nbe anchored. Inert until\n`features.sync_to_silence.availability` flips to stable.\n",
               "max": -10.0,
               "min": -80.0,
@@ -605,7 +603,6 @@
             },
             "min_silence_ms": {
               "availability": "planned",
-              "default": 500,
               "description": "Minimum silence duration (milliseconds) for\n`sync_to_silence`. Inert until that feature flips to\nstable.\n",
               "max": 30000,
               "min": 50,
@@ -667,7 +664,6 @@
             },
             "silence_threshold_db": {
               "availability": "planned",
-              "default": -50.0,
               "description": "Silence threshold (dB) for `sync_to_silence`. Inert\nuntil that feature flips to stable.\n",
               "max": -10.0,
               "min": -80.0,
@@ -1212,7 +1208,6 @@
           "options": {
             "font_subsetting": {
               "availability": "planned",
-              "default": true,
               "description": "Subset embedded fonts to only include glyphs used in the document. Significant size reduction for books with large font files. `planned` \u2014 not yet supported.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
@@ -1231,7 +1226,6 @@
             },
             "strip_unused_css": {
               "availability": "planned",
-              "default": false,
               "description": "Remove CSS rules not referenced by any content. Risk: may affect rendering in some readers. `planned` \u2014 not yet supported.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
@@ -1275,7 +1269,6 @@
             },
             "strip_metadata": {
               "availability": "planned",
-              "default": true,
               "description": "Remove document metadata (author, revision history, comments). `planned` \u2014 not yet supported.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
@@ -1284,7 +1277,6 @@
             },
             "strip_unused_styles": {
               "availability": "planned",
-              "default": false,
               "description": "Remove style definitions not referenced in document content. `planned` \u2014 not yet supported.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
@@ -1328,7 +1320,6 @@
             },
             "strip_hidden_data": {
               "availability": "planned",
-              "default": true,
               "description": "Remove revisions, comments, personal info, hidden rows/columns, and speaker notes. `planned` \u2014 not yet supported.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
@@ -1337,7 +1328,6 @@
             },
             "strip_macros": {
               "availability": "planned",
-              "default": true,
               "description": "Remove VBA macros and ActiveX controls. `planned` \u2014 not yet supported.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
@@ -1346,7 +1336,6 @@
             },
             "strip_unused_fonts": {
               "availability": "planned",
-              "default": false,
               "description": "Remove embedded fonts not referenced in the document. Risk: may affect rendering on systems without the font installed. `planned` \u2014 not yet supported.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
@@ -2299,7 +2288,7 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1-100). For PNG this is the SINGLE lossy/lossless control: `quality` < 100 applies lossy palette quantization (imagequant \u2014 licence-cleared for our server-side SaaS backend, `kkajDFXD`; the value is the quantization level), while `quality: 100` keeps the PNG lossless (oxipng optimisation only \u2014 tune the lossless effort via `optimization_level`). 1 = smallest file, 100 = best quality / lossless. There is no separate lossy/lossless toggle for PNG \u2014 it is purely quality-driven.",
+              "description": "Compression quality (1-100). For PNG this is the SINGLE lossy/lossless control: `quality` < 100 applies lossy palette quantization (the value is the quantization level), while `quality: 100` keeps the PNG lossless (lossless optimisation only \u2014 tune the lossless effort via `optimization_level`). 1 = smallest file, 100 = best quality / lossless. There is no separate lossy/lossless toggle for PNG \u2014 it is purely quality-driven.",
               "honored_on": [
                 "same_format"
               ],
@@ -2380,7 +2369,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. `original` = keep input format \u2014 SVG -> SVG optimisation via SVGO. **`original` is PLANNED** (G9O6yrQD): the worker does not implement SVG->SVG optimisation yet (\"SVG is a follow-up\"), so it returns `feature_not_available` (422) rather than 422ing under a `stable` claim. It is also the schema `default`. **KNOWN ENFORCEMENT GAP (api co-land owed):** the API's per-value gate only inspects an EXPLICITLY submitted `output_format` (`CreateWorkflowCommandHandler`: `$requestedFormat = $opDef->options['output_format'] ?? null; if (is_scalar(...))`), so an OMITTED value is not materialized to its default before the check and bypasses this tag \u2014 a bare `compress` on an SVG still dispatches and fails at the worker instead of returning a clean 422. `original` is the first PLANNED DEFAULT in the contract, so nothing exercised that path before. The tag is correct and truthful regardless; closing the gap is api's (gate against the effective default). Ask for `webp` meanwhile \u2014 that route works. `webp` = recompress to WebP: **STABLE and working today** \u2014 this facade route canonicalizes to the `convert` operation (`convert.image_svg` carries its own quality), which is why this group is NOT gated at group level. Concrete format changes are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives (the server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until supported. See FORMAT.md.",
+              "description": "Output format. `original` = keep input format \u2014 SVG -> SVG optimisation via SVGO. **STABLE and working** (restored 2026-07-21, G9O6yrQD; worker-proven on staging job 019f6aa3-d275-7b10-a5cf-58acc705c7e2 at 24.5% reduction, Form-A attested in lambdas #325). It is also the schema `default`, so a bare `compress` on an SVG takes this route. Optimisation is **visually preserving, NOT lossless** \u2014 SVGO's `preset-default` includes `convertPathData`, which rounds path coordinates within a tolerance. NOTE for anyone re-reading history here: this value was `planned` from 2026-07-17 to 2026-07-21 on a false premise, and because the API materializes an omitted default before the availability gate (api 4a7a2628), that tag 422'd EVERY website SVG compress at create \u2014 the workbench does not send `output_format`, so the defaulted path is the only path a customer has. A `planned` DEFAULT is therefore never a partial restriction; it is a total one. Weigh that before tagging any future default `planned`. `webp` = recompress to WebP: **STABLE and working today** \u2014 this facade route canonicalizes to the `convert` operation (`convert.image_svg` carries its own quality), which is why this group is NOT gated at group level. Concrete format changes are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives (the server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until supported. See FORMAT.md.",
               "enum_ref": "ImageFormat",
               "enum_translations": {
                 "original": "Original",
@@ -2389,9 +2378,6 @@
               "origin": "contract",
               "per_value_availability": {
                 "auto": {
-                  "availability": "planned"
-                },
-                "original": {
                   "availability": "planned"
                 },
                 "smallest": {
@@ -2403,7 +2389,7 @@
               "type": "enum",
               "value_exposure": {
                 "auto": "coming_soon",
-                "original": "coming_soon",
+                "original": "expose",
                 "smallest": "coming_soon",
                 "webp": "expose"
               },
@@ -2964,8 +2950,7 @@
             },
             "speed": {
               "availability": "planned",
-              "default": 1.0,
-              "description": "Playback speed multiplier. 1.0 = unchanged (default), 2.0 = twice as fast (half the output duration), 0.5 = half speed (double the duration); range 0.25\u20134.0. Audio PITCH IS PRESERVED (a tempo-shift, not a resample \u2014 ffmpeg `atempo` semantics), so a 2.0x clip sounds sped up, not chipmunked. Applied BEFORE an explicit `fps`: speed re-times the stream, then `fps` (if set) resamples the retimed stream to the target rate. SHORT-FORM only \u2014 long-form video returns `feature_not_available` (adjust a short clip, or chain a `split`); see the compress.video.speed.longform constraint.\n",
+              "description": "Playback speed multiplier. 1.0 = unchanged, 2.0 = twice as fast (half the output duration), 0.5 = half speed (double the duration); range 0.25\u20134.0. Audio PITCH IS PRESERVED (a tempo-shift, not a resample \u2014 ffmpeg `atempo` semantics), so a 2.0x clip sounds sped up, not chipmunked. Applied BEFORE an explicit `fps`: speed re-times the stream, then `fps` (if set) resamples the retimed stream to the target rate. SHORT-FORM only \u2014 long-form video returns `feature_not_available` (adjust a short clip, or chain a `split`); see the compress.video.speed.longform constraint.\n",
               "max": 4.0,
               "min": 0.25,
               "origin": "contract",
@@ -3288,8 +3273,7 @@
             },
             "metadata": {
               "availability": "planned",
-              "default": "strip",
-              "description": "Metadata handling across a format change. `strip` = remove all EXIF/IPTC/XMP (default), `keep` = preserve. `planned` \u2014 metadata is not yet preserved across a format change. The honoured target subset may narrow (avif/heic targets are re-encoded and cannot keep metadata).",
+              "description": "Metadata handling across a format change. `strip` = remove all EXIF/IPTC/XMP, `keep` = preserve. `planned` \u2014 metadata is not yet preserved across a format change, so this option carries **no default**: omit it and the worker's own behaviour applies. The honoured target subset may narrow (avif/heic targets are re-encoded and cannot keep metadata).",
               "honored_on": [
                 "format_change"
               ],
@@ -4457,15 +4441,15 @@
               "type": "float"
             },
             "fps": {
-              "default": 30,
+              "availability": "planned",
               "depends_on": {
                 "output_type": "video"
               },
-              "description": "Output frame rate",
+              "description": "Output frame rate. **Not yet configurable** \u2014 slideshow output is currently produced at a fixed 30 fps; setting this explicitly is rejected (`feature_not_available`). Omit it to get 30 fps.",
               "max": 60,
               "min": 1,
               "origin": "contract",
-              "sdk_exposure": "expose",
+              "sdk_exposure": "coming_soon",
               "surface_key": "fps",
               "type": "integer"
             },
@@ -4782,6 +4766,21 @@
               },
               "description": "CRF aims for a quality level and lets the file size vary;\ntarget_size aims for a fixed output file size. `target_size`\ncurrently works with `codec=h264` only \u2014 a request pairing it\nwith another codec is rejected as `invalid_options`.\n",
               "origin": "contract",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
+              "per_value_availability": {
+                "target_size": {
+                  "availability": "stable",
+                  "per_class_availability": {
+                    "long_form_re_encode": {
+                      "availability": "planned"
+                    }
+                  }
+                }
+              },
               "per_value_depends_on": {
                 "target_size": {
                   "codec": [
@@ -4803,8 +4802,13 @@
             },
             "normalize_audio": {
               "default": true,
-              "description": "Normalize audio levels across all clips",
+              "description": "Normalize audio levels across all clips. NOT available on the long-form path, which forces loudness normalisation off \u2014 a defaulted value is dropped and reported there rather than silently ignored.",
               "origin": "contract",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "sdk_exposure": "expose",
               "surface_key": "normalizeAudio",
               "type": "boolean"
@@ -6319,7 +6323,6 @@
           }
         },
         "document_epub": {
-          "availability": "planned",
           "max_output_pixels": 16000000,
           "media_group": "document",
           "mimes": [
@@ -6330,13 +6333,13 @@
               "default": "crop",
               "description": "Resize mode",
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "fit",
               "type": "enum",
               "value_exposure": {
-                "crop": "coming_soon",
-                "max": "coming_soon",
-                "scale": "coming_soon"
+                "crop": "expose",
+                "max": "expose",
+                "scale": "expose"
               },
               "values": [
                 "max",
@@ -6348,13 +6351,13 @@
               "default": "jpg",
               "description": "Output format for the thumbnail",
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "format",
               "type": "enum",
               "value_exposure": {
-                "jpg": "coming_soon",
-                "png": "coming_soon",
-                "webp": "coming_soon"
+                "jpg": "expose",
+                "png": "expose",
+                "webp": "expose"
               },
               "values": [
                 "jpg",
@@ -6367,20 +6370,8 @@
               "max": 16384,
               "min": 1,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "height",
-              "type": "integer"
-            },
-            "page": {
-              "default": 1,
-              "depends_on": {
-                "source": "page"
-              },
-              "description": "1-based index of the printed page to render, after the book's print-layout pagination is applied.",
-              "min": 1,
-              "origin": "contract",
-              "sdk_exposure": "coming_soon",
-              "surface_key": "page",
               "type": "integer"
             },
             "quality": {
@@ -6395,23 +6386,21 @@
               "max": 100,
               "min": 1,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "quality",
               "type": "integer"
             },
             "source": {
               "default": "cover",
-              "description": "`cover` (default) = extract the EPUB's declared cover image \u2014 the cheap path, no rendering. `page` = render a paginated page of the book's XHTML. Cover lookup MUST support both mechanisms: the EPUB 3 `cover-image` property on an OPF manifest item, AND the legacy EPUB 2 `<meta name=\"cover\" content=\"...\"/>` pointing at a manifest item \u2014 supporting only the former misses a large slice of real-world files. A cover image is OPTIONAL per W3C EPUB 3.3, so a cover-less EPUB is a real case. The reject shape for it is NOT yet decided and is deliberately unpromised here: `ErrorCode` (asyncapi) is a CLOSED enum with no \"no cover\" member, so a distinct code is a real cross-repo co-land (enum edit -> SDK regen -> lockstep), not a free string. It is settled when this group graduates \u2014 do not infer one from this description.",
+              "description": "`cover` (the only supported value) = extract the EPUB's declared cover image \u2014 the cheap path, no rendering. Cover lookup supports both mechanisms: the EPUB 3 `cover-image` property on an OPF manifest item, AND the legacy EPUB 2 `<meta name=\"cover\" content=\"...\"/>` pointing at a manifest item \u2014 supporting only the former would miss a large slice of real-world files. Both are staging-proven (pL16ZfOw Wave 3). A cover image is OPTIONAL per W3C EPUB 3.3, so a cover-less EPUB is a REAL and expected case: it fails with `error_code: processing_failed` and `is_retryable: false`. That is the live behaviour, not an aspiration \u2014 the worker classifies it as `CoverError::NoCoverDeclared` and maps it there (`epub/error.rs`), and non-retryability is DERIVED from the code rather than set per-call, so it cannot drift. A cover-less EPUB will not grow a cover, so retrying is always futile. A more specific code would be better, and is NOT promised here: `ErrorCode` (asyncapi) is a CLOSED enum with no \"no cover\" member, so adding one is a real cross-repo co-land (enum edit -> SDK regen -> lockstep). Until then this description states what actually happens \u2014 an undecided-reject note on a STABLE route would leave consumers unable to handle a case they will certainly meet.",
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "source",
               "type": "enum",
               "value_exposure": {
-                "cover": "coming_soon",
-                "page": "coming_soon"
+                "cover": "expose"
               },
               "values": [
-                "page",
                 "cover"
               ]
             },
@@ -6420,7 +6409,7 @@
               "max": 16384,
               "min": 1,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "width",
               "type": "integer"
             }
@@ -6505,7 +6494,7 @@
                   "png"
                 ]
               },
-              "description": "Output quality for lossy thumbnail formats (jpg / webp / png): higher = better quality, larger file. For PNG, `quality` < 100 applies lossy palette quantization (imagequant \u2014 transparency preserved); `quality: 100` keeps the PNG lossless. Per-format effective default (server-resolved when `quality` is unset, per ADR-0020 D1): PNG \u2192 70 (more aggressive \u2014 thumbnails target small files), jpg/webp \u2192 85. The schema `default` is the nominal jpg/webp value (85); the FE shows 70 as the initial PNG slider value.",
+              "description": "Output quality for lossy thumbnail formats (jpg / webp / png): higher = better quality, larger file. For PNG, `quality` < 100 applies lossy palette quantization (transparency preserved); `quality: 100` keeps the PNG lossless. Per-format effective default (server-resolved when `quality` is unset, per ADR-0020 D1): PNG \u2192 70 (more aggressive \u2014 thumbnails target small files), jpg/webp \u2192 85. The schema `default` is the nominal jpg/webp value (85); the FE shows 70 as the initial PNG slider value.",
               "max": 100,
               "min": 1,
               "origin": "contract",
@@ -7199,7 +7188,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.180.0",
+  "schema_version": "2.188.0",
   "sdk_spec_version": "2.3.0",
-  "source_hash": "sha256:b6c13412c2b801042e9c5aaf86469e74efc2ea015b04fd1ee771b8030e9cdce0"
+  "source_hash": "sha256:b7b62dfdb750985765fa4265a265ae926407cda76b49b407585b777e6a689894"
 }

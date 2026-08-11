@@ -153,11 +153,11 @@ final class ConvertTest extends TestCase
             output_format: ConvertImageOutputFormat::Jpeg,
         );
         $this->assertInstanceOf(ConvertImageOptions::class, $obj);
-        $this->assertSame(ConvertImageMetadata::Strip, $obj->metadata);
         $this->assertSame(ConvertImageColorProfile::Keep, $obj->color_profile);
         $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->background);
+        $this->assertNull($obj->metadata);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
         $this->assertNull($obj->fit);

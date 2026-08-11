@@ -118,6 +118,7 @@ final class MergeMetadata
                             per_value_availability: [],
                         ),
                         'fps' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'video_format' => new OptionMetadata(
@@ -260,7 +261,11 @@ final class MergeMetadata
                             per_value_availability: [],
                         ),
                         'encoding_mode' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'target_size' => new AvailabilityEntry(
+                                    availability: 'stable',
+                                ),
+                            ],
                         ),
                         'target_size_bytes' => new OptionMetadata(
                             per_value_availability: [],

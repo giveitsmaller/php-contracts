@@ -12,7 +12,6 @@ final class ThumbnailDocumentEpubOptions
         public readonly ThumbnailDocumentEpubSource $source = ThumbnailDocumentEpubSource::Cover,
         public readonly ThumbnailDocumentEpubFit $fit = ThumbnailDocumentEpubFit::Crop,
         public readonly ThumbnailDocumentEpubFormat $format = ThumbnailDocumentEpubFormat::Jpg,
-        public readonly ?int $page = null,
         public readonly ?int $width = null,
         public readonly ?int $height = null,
         public readonly ?int $quality = null,

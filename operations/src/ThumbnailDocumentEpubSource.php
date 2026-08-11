@@ -8,6 +8,5 @@ namespace Gisl\Generated\Operations;
 
 enum ThumbnailDocumentEpubSource: string
 {
-    case Page = 'page';
     case Cover = 'cover';
 }

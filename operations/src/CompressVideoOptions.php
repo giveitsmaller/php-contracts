@@ -15,7 +15,6 @@ final class CompressVideoOptions
         public readonly CompressVideoPreset $preset = CompressVideoPreset::Medium,
         public readonly bool $faststart = true,
         public readonly CompressVideoAudioCodec $audio_codec = CompressVideoAudioCodec::Copy,
-        public readonly float $speed = 1.0,
         public readonly ?int $crf = null,
         public readonly ?int $target_size_bytes = null,
         public readonly ?int $width = null,
@@ -25,5 +24,6 @@ final class CompressVideoOptions
         public readonly ?CompressVideoAudioBitrate $audio_bitrate = null,
         public readonly ?float $trim_start = null,
         public readonly ?float $trim_end = null,
+        public readonly ?float $speed = null,
     ) {}
 }

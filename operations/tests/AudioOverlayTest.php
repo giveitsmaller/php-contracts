@@ -51,14 +51,14 @@ final class AudioOverlayTest extends TestCase
         $this->assertSame(0, $obj->fade_in_ms);
         $this->assertSame(0, $obj->fade_out_ms);
         $this->assertSame(false, $obj->loop);
-        $this->assertSame(-50.0, $obj->silence_threshold_db);
-        $this->assertSame(500, $obj->min_silence_ms);
         $this->assertNull($obj->duration);
         $this->assertNull($obj->duck_threshold);
         $this->assertNull($obj->duck_ratio);
         $this->assertNull($obj->duck_attack_ms);
         $this->assertNull($obj->duck_release_ms);
         $this->assertNull($obj->loop_interval);
+        $this->assertNull($obj->silence_threshold_db);
+        $this->assertNull($obj->min_silence_ms);
     }
 
     public function testAudioOverlayAudioOptionsFullConstruction(): void
@@ -145,14 +145,14 @@ final class AudioOverlayTest extends TestCase
         $this->assertSame(0, $obj->fade_out_ms);
         $this->assertSame(false, $obj->loop);
         $this->assertSame(AudioOverlayVideoNoAudioTrackBehaviour::Reject, $obj->no_audio_track_behaviour);
-        $this->assertSame(-50.0, $obj->silence_threshold_db);
-        $this->assertSame(500, $obj->min_silence_ms);
         $this->assertNull($obj->duration);
         $this->assertNull($obj->duck_threshold);
         $this->assertNull($obj->duck_ratio);
         $this->assertNull($obj->duck_attack_ms);
         $this->assertNull($obj->duck_release_ms);
         $this->assertNull($obj->loop_interval);
+        $this->assertNull($obj->silence_threshold_db);
+        $this->assertNull($obj->min_silence_ms);
     }
 
     public function testAudioOverlayVideoOptionsFullConstruction(): void
