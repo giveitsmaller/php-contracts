@@ -7188,7 +7188,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.188.0",
+  "schema_version": "2.189.0",
   "sdk_spec_version": "2.3.0",
-  "source_hash": "sha256:b7b62dfdb750985765fa4265a265ae926407cda76b49b407585b777e6a689894"
+  "source_hash": "sha256:3eceb0e791bc318f2b0b3ac8fdf4bb4ec5bf222165ab945204df4f713d772f8f"
 }
