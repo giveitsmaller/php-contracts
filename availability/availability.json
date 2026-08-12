@@ -276,7 +276,7 @@
     },
     "POST /api/workflows/{id}/archive": {
       "auth": "required",
-      "availability": "stable",
+      "availability": "planned",
       "identity_scoped": true,
       "operation_id": "archiveWorkflow",
       "required_tier": null
@@ -290,7 +290,7 @@
     },
     "POST /api/workflows/{id}/restore": {
       "auth": "required",
-      "availability": "stable",
+      "availability": "planned",
       "identity_scoped": true,
       "operation_id": "restoreWorkflow",
       "required_tier": null
@@ -996,7 +996,7 @@
           }
         },
         "document_epub": {
-          "max_input_size_bytes": 104857600,
+          "max_input_size_bytes": 209715200,
           "mimes": [
             "application/epub+zip"
           ],
@@ -1021,7 +1021,7 @@
           }
         },
         "document_odf": {
-          "max_input_size_bytes": 104857600,
+          "max_input_size_bytes": 209715200,
           "mimes": [
             "application/vnd.oasis.opendocument.text",
             "application/vnd.oasis.opendocument.spreadsheet",
@@ -1048,7 +1048,7 @@
           }
         },
         "document_office": {
-          "max_input_size_bytes": 104857600,
+          "max_input_size_bytes": 209715200,
           "mimes": [
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -5118,7 +5118,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.191.0",
+  "schema_version": "2.192.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
