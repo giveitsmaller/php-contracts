@@ -1,11 +1,25 @@
 {
-  "capabilities_version": 178,
+  "capabilities_version": 180,
   "endpoints": {
+    "DELETE /api/auth/account": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "requestAccountDeletion",
+      "required_tier": null
+    },
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
       "availability": "stable",
       "identity_scoped": true,
       "operation_id": "revokeApiKey",
+      "required_tier": null
+    },
+    "GET /api/auth/account/export": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "exportAccountData",
       "required_tier": null
     },
     "GET /api/operations/schema": {
@@ -101,9 +115,16 @@
     },
     "POST /api/audio-watermark/decode": {
       "auth": "required",
-      "availability": "stable",
+      "availability": "planned",
       "identity_scoped": false,
       "operation_id": "decodeAudioWatermark",
+      "required_tier": null
+    },
+    "POST /api/auth/account/cancel-deletion": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "cancelAccountDeletion",
       "required_tier": null
     },
     "POST /api/auth/api-keys": {
@@ -178,7 +199,7 @@
     },
     "POST /api/billing/checkout": {
       "auth": "required",
-      "availability": "stable",
+      "availability": "planned",
       "identity_scoped": true,
       "operation_id": "createBillingCheckoutSession",
       "required_tier": null
@@ -192,7 +213,7 @@
     },
     "POST /api/external-imports": {
       "auth": "required",
-      "availability": "stable",
+      "availability": "planned",
       "identity_scoped": false,
       "operation_id": "createExternalImport",
       "required_tier": null
@@ -241,7 +262,7 @@
     },
     "POST /api/uploads/{id}/probe": {
       "auth": "required",
-      "availability": "stable",
+      "availability": "planned",
       "identity_scoped": true,
       "operation_id": "probeUpload",
       "required_tier": null
@@ -5097,7 +5118,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.189.0",
+  "schema_version": "2.191.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
