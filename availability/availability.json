@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 180,
+  "capabilities_version": 181,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -83,7 +83,19 @@
       "availability": "stable",
       "identity_scoped": true,
       "operation_id": "streamWorkflowEvents",
-      "required_tier": null
+      "required_tier": null,
+      "servers": [
+        {
+          "description": "Local development. Same origin as the rest of the API \u2014 local runs\ndo NOT reproduce the split-host topology, so a client that works\nlocally has **not** exercised the cross-origin path. Treat a local\npass as evidence about your code and not about the routing.\n",
+          "replaces": "http://localhost:8080",
+          "url": "http://localhost:8080"
+        },
+        {
+          "description": "Staging stream host. A SEPARATE PUBLIC ENTRY POINT from\n`api.staging.giveitsmaller.com`, which is why it is declared here\nrather than inherited: the API host fronts an integration with no\nresponse-streaming mode, and this is the only endpoint that needs\nstreaming.\n\n\u26a0\ufe0f **THIS HOST ALLOWS EXACTLY ONE CORS ORIGIN, AND IT IS A\nDIFFERENT POLICY FROM THE API HOST.** The stream stack sets\n`cors_allow_origin` (**singular**) to the frontend host alone, in\n**both** environments. The API host sets `cors_allow_origins`\n(**plural**) \u2014 and **the list differs BY ENVIRONMENT**:\n\n    staging api host   localhost:5173, localhost:3000, www.staging\u2026\n    prod    api host   www.giveitsmaller.com   \u2190 NO localhost, never had\n    both    stream     the frontend host only  (singular)\n\n\u21d2 **A BROWSER ON localhost CAN CALL THE STAGING API HOST AND\nCANNOT CALL EITHER STREAM HOST.** The break is **conditional on a\nlocal build choosing this host**: the frontend's local build leaves\n`VITE_SSE_BASE_URL` unset and falls back to the API host, so nothing\nbreaks today (measured by `compression_frontend`, 2026-08-14). **A\nclient that DOES point a localhost browser here is blocked, and the\nfailure arrives as a CORS error that reads as a configuration\nmistake in their own app.**\n\n**This is a local-development concern only; prod never permitted\nlocalhost on any host** (measured by `compression_terraform`,\n2026-08-14 \u2014 an earlier version of this note gave the staging list\nwithout saying it was staging's, which would have read as universal\nand turned a dev-experience issue into an apparent launch one).\n\n\u26a0\ufe0f **\"Just add another origin\" is not a CONFIG CHANGE here, and\nthe reason is our implementation rather than an AWS limit.** An API\nGateway **HTTP** API has a native, declarative CORS configuration\nthat takes a LIST and echoes whichever origin matches. A **REST**\nAPI has no equivalent declarative feature \u2014 the value is whatever\nthe preflight MOCK integration and the backend return \u2014 so\nmulti-origin support is possible but must be **built**\n(validate-the-Origin-then-echo), which is a change with its own\ncorrectness risk rather than an extra list entry.\n\n*(An earlier version of this note said a REST API simply cannot do\nit. That is wrong: AWS documents that for proxy integrations the\nBACKEND returns `Access-Control-Allow-Origin`, so per-origin\nresponses are available to anyone willing to implement them.\nStating a platform prohibition where an implementation choice\nexists closes a door that is open.)*\n\nThe credentialed case does foreclose the other escape: with\n`Allow-Credentials: true` the origin header cannot be `*`.\n\nThe same applies to embedded and third-party consumers, and to any\n**browser build of a published SDK**: `@giveitsmaller/sdk` ships a\nbrowser entry point whose client carries `streamEvents`, so this is\na published-surface limit rather than an internal one.\n\nA server-side caller is unaffected. **The origin list is a property\nof the deployed stack, not of this contract** \u2014 it is stated here\nbecause a client author reading only the URL cannot discover it, and\nit changes only in `compression_terraform`.\n\n\u26a0\ufe0f **AUTH ON THIS HOST IS CROSS-ORIGIN, AND `sessionAuth` IS THE\nONE THAT MAY NOT SURVIVE IT.** This operation advertises\n`bearerAuth`, `sessionAuth` and anonymous access \u2014 but the security\nlist describes what the ENDPOINT accepts, not what a browser can\ndeliver to a different origin.\n\n**Cookie domain scope is necessary and NOT sufficient.** A\ncredentialed cross-origin request additionally requires the client\nto opt in (`EventSource { withCredentials: true }`, or `fetch`\nwith `credentials: 'include'`) **and** the server to answer with\n`Access-Control-Allow-Credentials` and a non-wildcard origin. Bearer\nand capability headers likewise need the header to be permitted by\nthe preflight response.\n\n**None of that is verified by this contract, and contracts has not\nmeasured it.** \u21d2 **A browser client SHOULD prefer `bearerAuth` or\nthe anonymous capability header on this host**, and should treat\ncookie-based session auth over it as unproven until somebody\nmeasures a credentialed cross-origin stream.\n",
+          "replaces": "https://api.staging.giveitsmaller.com",
+          "url": "https://stream.staging.giveitsmaller.com"
+        }
+      ]
     },
     "GET /api/workflows/{id}/status": {
       "auth": "optional",
@@ -5118,7 +5130,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.193.0",
+  "schema_version": "2.194.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
