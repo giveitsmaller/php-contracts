@@ -5,8 +5,8 @@
 
 | | |
 |---|---|
-| Package version | `0.65.0` |
-| Generated from spec | **`v2.194.0`** |
+| Package version | `0.66.0` |
+| Generated from spec | **`v2.195.0`** |
 
 ## Two version lines, and they are not comparable
 
