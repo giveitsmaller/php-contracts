@@ -7,6 +7,12 @@
     },
     "type": "library",
     "license": "Apache-2.0",
+    "homepage": "https://docs.giveitsmaller.com",
+    "support": {
+        "docs": "https://docs.giveitsmaller.com",
+        "issues": "https://github.com/giveitsmaller/php-contracts/issues",
+        "source": "https://github.com/giveitsmaller/php-contracts"
+    },
     "require": {
         "php": "^8.1",
         "ext-curl": "*",
