@@ -11,10 +11,14 @@ use Gisl\Generated\Operations\ThumbnailDocumentEpubFit;
 use Gisl\Generated\Operations\ThumbnailDocumentEpubFormat;
 use Gisl\Generated\Operations\ThumbnailDocumentEpubOptions;
 use Gisl\Generated\Operations\ThumbnailDocumentEpubSource;
-use Gisl\Generated\Operations\ThumbnailDocumentFit;
-use Gisl\Generated\Operations\ThumbnailDocumentFormat;
-use Gisl\Generated\Operations\ThumbnailDocumentOptions;
-use Gisl\Generated\Operations\ThumbnailDocumentSource;
+use Gisl\Generated\Operations\ThumbnailDocumentOfficeFit;
+use Gisl\Generated\Operations\ThumbnailDocumentOfficeFormat;
+use Gisl\Generated\Operations\ThumbnailDocumentOfficeOptions;
+use Gisl\Generated\Operations\ThumbnailDocumentOfficeSource;
+use Gisl\Generated\Operations\ThumbnailDocumentPdfFit;
+use Gisl\Generated\Operations\ThumbnailDocumentPdfFormat;
+use Gisl\Generated\Operations\ThumbnailDocumentPdfOptions;
+use Gisl\Generated\Operations\ThumbnailDocumentPdfSource;
 use Gisl\Generated\Operations\ThumbnailImageFit;
 use Gisl\Generated\Operations\ThumbnailImageFormat;
 use Gisl\Generated\Operations\ThumbnailImageOptions;
@@ -178,102 +182,200 @@ final class ThumbnailTest extends TestCase
         $this->assertInstanceOf(ThumbnailVideoOptions::class, $obj);
     }
 
-    public function testThumbnailDocumentSourcePageBackingValue(): void
+    public function testThumbnailDocumentPdfSourcePageBackingValue(): void
     {
-        $enum = ThumbnailDocumentSource::from('page');
-        $this->assertSame(ThumbnailDocumentSource::Page, $enum);
+        $enum = ThumbnailDocumentPdfSource::from('page');
+        $this->assertSame(ThumbnailDocumentPdfSource::Page, $enum);
         $this->assertSame('page', $enum->value);
     }
 
-    public function testThumbnailDocumentSourceCoverBackingValue(): void
+    public function testThumbnailDocumentPdfSourceCoverBackingValue(): void
     {
-        $enum = ThumbnailDocumentSource::from('cover');
-        $this->assertSame(ThumbnailDocumentSource::Cover, $enum);
+        $enum = ThumbnailDocumentPdfSource::from('cover');
+        $this->assertSame(ThumbnailDocumentPdfSource::Cover, $enum);
         $this->assertSame('cover', $enum->value);
     }
 
-    public function testThumbnailDocumentSourceCaseCount(): void
+    public function testThumbnailDocumentPdfSourceCaseCount(): void
     {
-        $this->assertCount(2, ThumbnailDocumentSource::cases());
+        $this->assertCount(2, ThumbnailDocumentPdfSource::cases());
     }
 
-    public function testThumbnailDocumentFitMaxBackingValue(): void
+    public function testThumbnailDocumentPdfFitMaxBackingValue(): void
     {
-        $enum = ThumbnailDocumentFit::from('max');
-        $this->assertSame(ThumbnailDocumentFit::Max, $enum);
+        $enum = ThumbnailDocumentPdfFit::from('max');
+        $this->assertSame(ThumbnailDocumentPdfFit::Max, $enum);
         $this->assertSame('max', $enum->value);
     }
 
-    public function testThumbnailDocumentFitCropBackingValue(): void
+    public function testThumbnailDocumentPdfFitCropBackingValue(): void
     {
-        $enum = ThumbnailDocumentFit::from('crop');
-        $this->assertSame(ThumbnailDocumentFit::Crop, $enum);
+        $enum = ThumbnailDocumentPdfFit::from('crop');
+        $this->assertSame(ThumbnailDocumentPdfFit::Crop, $enum);
         $this->assertSame('crop', $enum->value);
     }
 
-    public function testThumbnailDocumentFitScaleBackingValue(): void
+    public function testThumbnailDocumentPdfFitScaleBackingValue(): void
     {
-        $enum = ThumbnailDocumentFit::from('scale');
-        $this->assertSame(ThumbnailDocumentFit::Scale, $enum);
+        $enum = ThumbnailDocumentPdfFit::from('scale');
+        $this->assertSame(ThumbnailDocumentPdfFit::Scale, $enum);
         $this->assertSame('scale', $enum->value);
     }
 
-    public function testThumbnailDocumentFitCaseCount(): void
+    public function testThumbnailDocumentPdfFitCaseCount(): void
     {
-        $this->assertCount(3, ThumbnailDocumentFit::cases());
+        $this->assertCount(3, ThumbnailDocumentPdfFit::cases());
     }
 
-    public function testThumbnailDocumentFormatJpgBackingValue(): void
+    public function testThumbnailDocumentPdfFormatJpgBackingValue(): void
     {
-        $enum = ThumbnailDocumentFormat::from('jpg');
-        $this->assertSame(ThumbnailDocumentFormat::Jpg, $enum);
+        $enum = ThumbnailDocumentPdfFormat::from('jpg');
+        $this->assertSame(ThumbnailDocumentPdfFormat::Jpg, $enum);
         $this->assertSame('jpg', $enum->value);
     }
 
-    public function testThumbnailDocumentFormatPngBackingValue(): void
+    public function testThumbnailDocumentPdfFormatPngBackingValue(): void
     {
-        $enum = ThumbnailDocumentFormat::from('png');
-        $this->assertSame(ThumbnailDocumentFormat::Png, $enum);
+        $enum = ThumbnailDocumentPdfFormat::from('png');
+        $this->assertSame(ThumbnailDocumentPdfFormat::Png, $enum);
         $this->assertSame('png', $enum->value);
     }
 
-    public function testThumbnailDocumentFormatWebpBackingValue(): void
+    public function testThumbnailDocumentPdfFormatWebpBackingValue(): void
     {
-        $enum = ThumbnailDocumentFormat::from('webp');
-        $this->assertSame(ThumbnailDocumentFormat::Webp, $enum);
+        $enum = ThumbnailDocumentPdfFormat::from('webp');
+        $this->assertSame(ThumbnailDocumentPdfFormat::Webp, $enum);
         $this->assertSame('webp', $enum->value);
     }
 
-    public function testThumbnailDocumentFormatCaseCount(): void
+    public function testThumbnailDocumentPdfFormatCaseCount(): void
     {
-        $this->assertCount(3, ThumbnailDocumentFormat::cases());
+        $this->assertCount(3, ThumbnailDocumentPdfFormat::cases());
     }
 
-    public function testThumbnailDocumentOptionsDefaultConstruction(): void
+    public function testThumbnailDocumentPdfOptionsDefaultConstruction(): void
     {
-        $obj = new ThumbnailDocumentOptions();
-        $this->assertInstanceOf(ThumbnailDocumentOptions::class, $obj);
-        $this->assertSame(ThumbnailDocumentSource::Page, $obj->source);
-        $this->assertSame(ThumbnailDocumentFit::Crop, $obj->fit);
-        $this->assertSame(ThumbnailDocumentFormat::Jpg, $obj->format);
+        $obj = new ThumbnailDocumentPdfOptions();
+        $this->assertInstanceOf(ThumbnailDocumentPdfOptions::class, $obj);
+        $this->assertSame(ThumbnailDocumentPdfSource::Page, $obj->source);
+        $this->assertSame(ThumbnailDocumentPdfFit::Crop, $obj->fit);
+        $this->assertSame(ThumbnailDocumentPdfFormat::Jpg, $obj->format);
         $this->assertNull($obj->page);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
         $this->assertNull($obj->quality);
     }
 
-    public function testThumbnailDocumentOptionsFullConstruction(): void
+    public function testThumbnailDocumentPdfOptionsFullConstruction(): void
     {
-        $obj = new ThumbnailDocumentOptions(
-            source: ThumbnailDocumentSource::Page,
+        $obj = new ThumbnailDocumentPdfOptions(
+            source: ThumbnailDocumentPdfSource::Page,
             page: 1,
             width: 1,
             height: 1,
-            fit: ThumbnailDocumentFit::Max,
-            format: ThumbnailDocumentFormat::Jpg,
+            fit: ThumbnailDocumentPdfFit::Max,
+            format: ThumbnailDocumentPdfFormat::Jpg,
             quality: 1,
         );
-        $this->assertInstanceOf(ThumbnailDocumentOptions::class, $obj);
+        $this->assertInstanceOf(ThumbnailDocumentPdfOptions::class, $obj);
+    }
+
+    public function testThumbnailDocumentOfficeSourcePageBackingValue(): void
+    {
+        $enum = ThumbnailDocumentOfficeSource::from('page');
+        $this->assertSame(ThumbnailDocumentOfficeSource::Page, $enum);
+        $this->assertSame('page', $enum->value);
+    }
+
+    public function testThumbnailDocumentOfficeSourceCoverBackingValue(): void
+    {
+        $enum = ThumbnailDocumentOfficeSource::from('cover');
+        $this->assertSame(ThumbnailDocumentOfficeSource::Cover, $enum);
+        $this->assertSame('cover', $enum->value);
+    }
+
+    public function testThumbnailDocumentOfficeSourceCaseCount(): void
+    {
+        $this->assertCount(2, ThumbnailDocumentOfficeSource::cases());
+    }
+
+    public function testThumbnailDocumentOfficeFitMaxBackingValue(): void
+    {
+        $enum = ThumbnailDocumentOfficeFit::from('max');
+        $this->assertSame(ThumbnailDocumentOfficeFit::Max, $enum);
+        $this->assertSame('max', $enum->value);
+    }
+
+    public function testThumbnailDocumentOfficeFitCropBackingValue(): void
+    {
+        $enum = ThumbnailDocumentOfficeFit::from('crop');
+        $this->assertSame(ThumbnailDocumentOfficeFit::Crop, $enum);
+        $this->assertSame('crop', $enum->value);
+    }
+
+    public function testThumbnailDocumentOfficeFitScaleBackingValue(): void
+    {
+        $enum = ThumbnailDocumentOfficeFit::from('scale');
+        $this->assertSame(ThumbnailDocumentOfficeFit::Scale, $enum);
+        $this->assertSame('scale', $enum->value);
+    }
+
+    public function testThumbnailDocumentOfficeFitCaseCount(): void
+    {
+        $this->assertCount(3, ThumbnailDocumentOfficeFit::cases());
+    }
+
+    public function testThumbnailDocumentOfficeFormatJpgBackingValue(): void
+    {
+        $enum = ThumbnailDocumentOfficeFormat::from('jpg');
+        $this->assertSame(ThumbnailDocumentOfficeFormat::Jpg, $enum);
+        $this->assertSame('jpg', $enum->value);
+    }
+
+    public function testThumbnailDocumentOfficeFormatPngBackingValue(): void
+    {
+        $enum = ThumbnailDocumentOfficeFormat::from('png');
+        $this->assertSame(ThumbnailDocumentOfficeFormat::Png, $enum);
+        $this->assertSame('png', $enum->value);
+    }
+
+    public function testThumbnailDocumentOfficeFormatWebpBackingValue(): void
+    {
+        $enum = ThumbnailDocumentOfficeFormat::from('webp');
+        $this->assertSame(ThumbnailDocumentOfficeFormat::Webp, $enum);
+        $this->assertSame('webp', $enum->value);
+    }
+
+    public function testThumbnailDocumentOfficeFormatCaseCount(): void
+    {
+        $this->assertCount(3, ThumbnailDocumentOfficeFormat::cases());
+    }
+
+    public function testThumbnailDocumentOfficeOptionsDefaultConstruction(): void
+    {
+        $obj = new ThumbnailDocumentOfficeOptions();
+        $this->assertInstanceOf(ThumbnailDocumentOfficeOptions::class, $obj);
+        $this->assertSame(ThumbnailDocumentOfficeSource::Page, $obj->source);
+        $this->assertSame(ThumbnailDocumentOfficeFit::Crop, $obj->fit);
+        $this->assertSame(ThumbnailDocumentOfficeFormat::Jpg, $obj->format);
+        $this->assertNull($obj->page);
+        $this->assertNull($obj->width);
+        $this->assertNull($obj->height);
+        $this->assertNull($obj->quality);
+    }
+
+    public function testThumbnailDocumentOfficeOptionsFullConstruction(): void
+    {
+        $obj = new ThumbnailDocumentOfficeOptions(
+            source: ThumbnailDocumentOfficeSource::Page,
+            page: 1,
+            width: 1,
+            height: 1,
+            fit: ThumbnailDocumentOfficeFit::Max,
+            format: ThumbnailDocumentOfficeFormat::Jpg,
+            quality: 1,
+        );
+        $this->assertInstanceOf(ThumbnailDocumentOfficeOptions::class, $obj);
     }
 
     public function testThumbnailDocumentEpubSourceCoverBackingValue(): void

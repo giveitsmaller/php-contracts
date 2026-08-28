@@ -1,5 +1,6 @@
 {
-  "capabilities_version": 182,
+  "capabilities_profile": "baseline",
+  "capabilities_version": 184,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -20,6 +21,13 @@
       "availability": "stable",
       "identity_scoped": true,
       "operation_id": "exportAccountData",
+      "required_tier": null
+    },
+    "GET /api/auth/profile": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "getProfile",
       "required_tier": null
     },
     "GET /api/operations/schema": {
@@ -1990,7 +1998,7 @@
             },
             "encoding_mode": {
               "default": "crf",
-              "description": "crf = constant quality (variable file size). target_size = constrained output file size (two-pass). target_size is LIVE for mp4/MOV output; for webm/ogg output and long-form the server returns `feature_not_available` (use crf there) until two-pass for this container ships.",
+              "description": "`crf` = constant quality. `target_size` = constrained output file size\n(two-pass). `target_size` is LIVE for mp4/MOV output; for webm/ogg output\nand long-form the server returns `feature_not_available` (use `crf` there)\nuntil two-pass for this container ships.\n\n\ud83d\udd34 **`crf` DOES NOT MEAN UNCONSTRAINED FILE SIZE. THIS DESCRIPTION USED TO\nSAY \"variable file size\" AND THAT WAS FALSE BY OMISSION.** For **mp4/MOV\noutput**, the worker additionally derives a **source-relative peak-bitrate\nceiling of roughly 60% of the source video bitrate** (`-maxrate`/`-bufsize`),\nand **it binds regardless of an explicit `crf`** \u2014 constrained-CRF. The `crf`\nvalue is still honoured as the **quality ceiling**; the cap adds a peak\nceiling on top of it.\n\n\u26a0\ufe0f **Scope, because \"we cap every video\" would be a second false sentence:**\nthe cap is **mp4/MOV only** \u2014 WebM/VP9 discards it and skips the probe\nentirely \u2014 and it is **best-effort**, so an unprobeable source gets no cap.\n\n\u2b50 **Why it exists, which is also why the old wording surprised in the wrong\ndirection:** plain CRF alone **INFLATES already-efficient sources** \u2014 an\nefficient HEVC re-encoded to H.264 at CRF 23/25/30 grows. The compress\ncontract is *reduce file size*, so the cap is what makes shrinking reliable.\nA caller who deliberately pins a low `crf` on an efficient source therefore\ngets a constrained-CRF transcode rather than a byte-for-byte original: a\ndeliberate, accepted shift.\n\n\ud83d\udd34 **THIS DESCRIPTION IS BOUND TO THE WORKER, NOT DATED AGAINST IT.**\n`tests/test_bitrate_cap_disclosure_matches_the_worker.py` reads\n`compression_lambdas` at `origin/main` and fails if the cap stops\nbeing source-relative, stops being mp4/MOV-only, or stops deriving\nfrom a source probe. **An as-of date would make a superseded\nsentence look deliberate**; a gate makes it go red instead.\n",
               "type": "enum",
               "values": [
                 "crf",
@@ -2054,7 +2062,7 @@
             },
             "preset": {
               "default": "medium",
-              "description": "Encoding speed vs compression ratio trade-off",
+              "description": "x264/x265 encoder effort. **A SIZE LEVER, CONDITIONALLY** \u2014 it moves\noutput size **only while the mp4/MOV peak-bitrate cap is NOT binding.**\n\n**Measured by `compression_lambdas`, medium vs slow, all else held:**\n\n    crf 30, cap inert    1,220,156 vs 1,144,043 bytes   6.2% apart\n    crf 18, cap binding  2,514,788 vs 2,516,986 bytes   0.09% apart\n\n\ud83d\udd34 **THE MECHANISM IS MECHANICAL, NOT EMPIRICAL, AND EXPLAINS BOTH ROWS.**\nIn pure CRF the encoder targets constant QUALITY, so a slower preset spends\nits extra effort producing a **smaller file at the same quality**. Once\n`-maxrate` binds the encode is rate-limited, so the extra effort can only go\ninto **picture at a fixed size** \u2014 an axis a size measurement cannot see.\n\n\u26a0\ufe0f **This description previously said `preset` was effort-only and that `crf`\nwas the size lever. That was wrong**, and it was wrong because a 0.09% figure\nmeasured on a **cap-binding** clip was generalised into a property of `preset`.\n**A measurement is not a property until you know what held it.**\n\n\u21d2 **Callers optimising for size:** `crf` is the primary lever; `preset` adds\nreal reduction **only when the cap is not already constraining the encode** \u2014\nwhich is exactly the high-`crf`, small-output end. See `encoding_mode` for what\nthe cap is and when it applies.\n\n\u26a0\ufe0f **What the extra effort buys once the cap DOES bind is mechanically\nimplied and empirically UNCONFIRMED.** The mechanism says it must go\ninto picture; `compression_lambdas` could not see a difference on 2x\ncrops, but that was **one frame of one 5-second clip**, and preset\ndifferences concentrate in high-motion frames that were not\ndeliberately sampled. **Recorded as unestablished, not asserted.**\n",
               "type": "enum",
               "values": [
                 "ultrafast",
@@ -4451,10 +4459,72 @@
       "description": "Resize an image to specific dimensions, or extract a preview frame/page from a video or document. For images this is a full resizer (1-16384px), not just small previews.",
       "input_model": "single",
       "mime_groups": {
-        "document": {
+        "document_epub": {
+          "max_input_size_bytes": 104857600,
           "max_output_pixels": 16000000,
           "mimes": [
-            "application/pdf",
+            "application/epub+zip"
+          ],
+          "options": {
+            "fit": {
+              "default": "crop",
+              "description": "Resize mode",
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "format": {
+              "default": "jpg",
+              "description": "Output format for the thumbnail",
+              "type": "enum",
+              "values": [
+                "jpg",
+                "png",
+                "webp"
+              ]
+            },
+            "height": {
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). Optional \u2014 see `width` for the omitted-default behaviour.",
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "format": [
+                  "jpg",
+                  "webp"
+                ]
+              },
+              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "source": {
+              "default": "cover",
+              "description": "`cover` (the only supported value) = extract the EPUB's declared cover image \u2014 the cheap path, no rendering. Cover lookup supports both mechanisms: the EPUB 3 `cover-image` property on an OPF manifest item, AND the legacy EPUB 2 `<meta name=\"cover\" content=\"...\"/>` pointing at a manifest item \u2014 supporting only the former would miss a large slice of real-world files. Both are staging-proven (pL16ZfOw Wave 3). A cover image is OPTIONAL per W3C EPUB 3.3, so a cover-less EPUB is a REAL and expected case: it fails with `error_code: processing_failed` and `is_retryable: false`. That is the live behaviour, not an aspiration \u2014 the worker classifies it as `CoverError::NoCoverDeclared` and maps it there (`epub/error.rs`), and non-retryability is DERIVED from the code rather than set per-call, so it cannot drift. A cover-less EPUB will not grow a cover, so retrying is always futile. A more specific code would be better, and is NOT promised here: `ErrorCode` (asyncapi) is a CLOSED enum with no \"no cover\" member, so adding one is a real cross-repo co-land (enum edit -> SDK regen -> lockstep). Until then this description states what actually happens \u2014 an undecided-reject note on a STABLE route would leave consumers unable to handle a case they will certainly meet.",
+              "type": "enum",
+              "values": [
+                "cover"
+              ]
+            },
+            "width": {
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). Optional \u2014 when omitted the server applies an aspect-preserving default (both omitted \u2192 longest edge 320px; only one of width/height provided \u2192 the other is derived from the source aspect ratio).",
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            }
+          }
+        },
+        "document_office": {
+          "max_input_size_bytes": 157286400,
+          "max_output_pixels": 16000000,
+          "mimes": [
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -4528,10 +4598,11 @@
             }
           }
         },
-        "document_epub": {
+        "document_pdf": {
+          "input_size_bound": "processing_time",
           "max_output_pixels": 16000000,
           "mimes": [
-            "application/epub+zip"
+            "application/pdf"
           ],
           "options": {
             "fit": {
@@ -4560,6 +4631,15 @@
               "min": 1,
               "type": "integer"
             },
+            "page": {
+              "default": 1,
+              "depends_on": {
+                "source": "page"
+              },
+              "description": "1-based index of the printed page to render, after print-layout pagination is applied. For office formats this is the page in the document's print layout \u2014 NOT a 1:1 sheet/slide index: a spreadsheet sheet may span multiple printed pages and multi-sheet workbooks paginate their sheets in order. For PDF inputs it is the PDF page number directly.",
+              "min": 1,
+              "type": "integer"
+            },
             "quality": {
               "default": 85,
               "depends_on": {
@@ -4574,10 +4654,11 @@
               "type": "integer"
             },
             "source": {
-              "default": "cover",
-              "description": "`cover` (the only supported value) = extract the EPUB's declared cover image \u2014 the cheap path, no rendering. Cover lookup supports both mechanisms: the EPUB 3 `cover-image` property on an OPF manifest item, AND the legacy EPUB 2 `<meta name=\"cover\" content=\"...\"/>` pointing at a manifest item \u2014 supporting only the former would miss a large slice of real-world files. Both are staging-proven (pL16ZfOw Wave 3). A cover image is OPTIONAL per W3C EPUB 3.3, so a cover-less EPUB is a REAL and expected case: it fails with `error_code: processing_failed` and `is_retryable: false`. That is the live behaviour, not an aspiration \u2014 the worker classifies it as `CoverError::NoCoverDeclared` and maps it there (`epub/error.rs`), and non-retryability is DERIVED from the code rather than set per-call, so it cannot drift. A cover-less EPUB will not grow a cover, so retrying is always futile. A more specific code would be better, and is NOT promised here: `ErrorCode` (asyncapi) is a CLOSED enum with no \"no cover\" member, so adding one is a real cross-repo co-land (enum edit -> SDK regen -> lockstep). Until then this description states what actually happens \u2014 an undecided-reject note on a STABLE route would leave consumers unable to handle a case they will certainly meet.",
+              "default": "page",
+              "description": "`page` = render a specific page/slide. `cover` = extract a cover image \u2014 only meaningful for EPUB inputs, which are served by the `document_epub` group; on PDF/office/ODF it is accepted and IGNORED (retained for backward compatibility).",
               "type": "enum",
               "values": [
+                "page",
                 "cover"
               ]
             },
@@ -5135,7 +5216,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.196.0",
+  "schema_version": "2.198.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

@@ -6,8 +6,9 @@ declare(strict_types=1);
 
 namespace Gisl\Generated\Operations;
 
-enum ThumbnailDocumentSource: string
+enum ThumbnailDocumentPdfFormat: string
 {
-    case Page = 'page';
-    case Cover = 'cover';
+    case Jpg = 'jpg';
+    case Png = 'png';
+    case Webp = 'webp';
 }

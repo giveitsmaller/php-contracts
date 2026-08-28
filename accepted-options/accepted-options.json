@@ -1074,7 +1074,20 @@
       }
     },
     "thumbnail": {
-      "document": {
+      "document_epub": {
+        "accepted_options": {
+          "*": [
+            "fit",
+            "format",
+            "height",
+            "quality",
+            "source",
+            "width"
+          ]
+        },
+        "output_format_option": null
+      },
+      "document_office": {
         "accepted_options": {
           "*": [
             "fit",
@@ -1088,12 +1101,13 @@
         },
         "output_format_option": null
       },
-      "document_epub": {
+      "document_pdf": {
         "accepted_options": {
           "*": [
             "fit",
             "format",
             "height",
+            "page",
             "quality",
             "source",
             "width"
@@ -1200,5 +1214,5 @@
       }
     }
   },
-  "schema_version": "2.196.0"
+  "schema_version": "2.198.0"
 }
