@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 184,
+  "capabilities_version": 185,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -718,7 +718,7 @@
       "sole_op": true
     },
     "audio_to_video": {
-      "availability": "beta",
+      "availability": "stable",
       "default": false,
       "description": "Produce a video from an audio input plus an OPTIONAL still image\noverlay. Use cases: podcast \u2192 YouTube uploads, audio-only tracks\nthat need a video container for platforms requiring it, branded\naudio releases with a static cover image.\n\n**Role asymmetry.** First role-based operation on the contract\nwith an OPTIONAL role \u2014 REQUIRED `base` (audio source) +\nOPTIONAL `overlay` (still image, 0..1). When `overlay` is\nomitted, the video uses a solid `background_color`. The\nmachine-readable cardinality lives in `per_role_cardinality`\non this schema.\n\n**Input vs output asymmetry.** The single `mime_groups.audio`\nblock keys the INPUT MIME family (the `base` role input is\naudio). The OUTPUT is always video \u2014 `output_format` controls\nthe container; `mime_groups` is NOT the output type. Mirrors\nthe `audio_overlay.video` group pattern (input-keyed).\n\nRe-encode required (audio \u2192 video composition always re-encodes).\nA lower framerate plus still-image tuning keeps file size tiny\nwhen the overlay is a still image (the common case).\n\nActivated to `availability: beta`: the backend is live (API\naccepts + publishes), so this is shape-stable + opt-in for callers\nand MUST NOT return `feature_not_available` \u2014 it may still change\nwith notice while beta.\n",
       "input_model": "multi",
@@ -5112,7 +5112,7 @@
       "sole_op": true
     },
     "video_watermark": {
-      "availability": "beta",
+      "availability": "stable",
       "default": false,
       "description": "Apply an image overlay onto a base video\nasset. Multi-input role-based:\nexactly one input with `role: base` (the source video) + exactly\none with `role: overlay` (the watermark image). Each input is a\na multi-input source \u2014 an external_import handle, a vault connection,\nor an upstream `job_output` (uploads are NOT referenced directly\ninside inputs[]). To use an uploaded base or overlay, feed it through\na `passthrough` source job and reference it via `{ type: job_output,\nfrom: <id> }` (per ticket 4som89Uh).\n\n**Dedicated operation, not an extension of `image_watermark`.**\n`image_watermark` handles image-on-image overlay only.\n`video_watermark` requires an overlay + re-encode (no stream-copy escape \u2014 overlay = pixel modification).\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged (stream-copied) \u2014 the watermark applies to the visual\ntrack only.\n\nActivated to `availability: beta` (Wave A, ticket\n[`c3uthIP4`](https://trello.com/c/c3uthIP4)): the cross-repo backend\nis live (API accepts + publishes via the operations SNS\ntopic), so the operation and its `short_form` processing class are\nshape-stable + opt-in and MUST NOT return `feature_not_available`.\n`long_form` stays `planned` (its long-form path is not yet\nprovisioned) and the `multi_overlay_stack` feature stays `planned`\n(backend support unconfirmed); requesting those planned sub-features\nDOES still return `feature_not_available` until they are separately\nactivated.\n",
       "features": {
@@ -5192,7 +5192,7 @@
               "required_tier": "pro"
             },
             "short_form": {
-              "availability": "beta",
+              "availability": "stable",
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -5216,7 +5216,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.199.0",
+  "schema_version": "2.201.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

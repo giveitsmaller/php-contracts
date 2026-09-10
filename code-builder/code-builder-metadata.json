@@ -722,7 +722,7 @@
       "accepts": [
         "audio"
       ],
-      "availability": "beta",
+      "availability": "stable",
       "input": {
         "max": 2,
         "min": 1,
@@ -7167,7 +7167,7 @@
       "accepts": [
         "video"
       ],
-      "availability": "beta",
+      "availability": "stable",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
@@ -7280,7 +7280,7 @@
               "required_tier": "pro"
             },
             "short_form": {
-              "availability": "beta",
+              "availability": "stable",
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -7297,7 +7297,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.199.0",
+  "schema_version": "2.201.0",
   "sdk_spec_version": "2.3.0",
-  "source_hash": "sha256:d844de0a7a64f056fb0dc237e268cad7d0c986b03e97d98dce5fcd4acbd685a4"
+  "source_hash": "sha256:5528ef236b607b83e79ab0f63171e186e21ad557f06d7be30b4c3879b940a250"
 }
