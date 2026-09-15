@@ -625,7 +625,7 @@
       "accepts": [
         "video"
       ],
-      "availability": "planned",
+      "availability": "beta",
       "input": {
         "model": "single"
       },
@@ -732,5 +732,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.201.0"
+  "schema_version": "2.202.0"
 }

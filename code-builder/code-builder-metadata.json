@@ -6975,7 +6975,7 @@
       "accepts": [
         "video"
       ],
-      "availability": "planned",
+      "availability": "beta",
       "input": {
         "model": "single"
       },
@@ -6992,19 +6992,19 @@
               "default": "bottom_right",
               "description": "9-grid anchor position. For `watermark_mode: single`, the\ntext label is placed at this anchor + margin_x/margin_y\noffset on each frame. For `watermark_mode: tiled`, anchor\nis ignored (tiles fill the frame).\n",
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "anchor",
               "type": "enum",
               "value_exposure": {
-                "bottom_center": "coming_soon",
-                "bottom_left": "coming_soon",
-                "bottom_right": "coming_soon",
-                "center": "coming_soon",
-                "center_left": "coming_soon",
-                "center_right": "coming_soon",
-                "top_center": "coming_soon",
-                "top_left": "coming_soon",
-                "top_right": "coming_soon"
+                "bottom_center": "expose",
+                "bottom_left": "expose",
+                "bottom_right": "expose",
+                "center": "expose",
+                "center_left": "expose",
+                "center_right": "expose",
+                "top_center": "expose",
+                "top_left": "expose",
+                "top_right": "expose"
               },
               "values": [
                 "top_left",
@@ -7023,7 +7023,7 @@
               "description": "Text colour as hex RGB (#RRGGBB) or RGBA (#RRGGBBAA).\nDefault is white with 50% alpha. Same vocabulary as\n`text_watermark.image.color`.\n",
               "origin": "contract",
               "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "color",
               "type": "string"
             },
@@ -7031,11 +7031,11 @@
               "default": "liberation_sans",
               "description": "Font family. V2.0 ships with bundled Liberation Sans only;\nuser-uploaded fonts are a future extension (separate\nticket).\n",
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "fontFamily",
               "type": "enum",
               "value_exposure": {
-                "liberation_sans": "coming_soon"
+                "liberation_sans": "expose"
               },
               "values": [
                 "liberation_sans"
@@ -7047,7 +7047,7 @@
               "max": 512.0,
               "min": 8.0,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "fontSize",
               "type": "float"
             },
@@ -7056,7 +7056,7 @@
               "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\")\nor percentage of video frame width (e.g. \"5%\").\nAnchor-relative. Ignored when `watermark_mode: tiled`.\n\n**`anchor: center` exception** (watermark_mode: single\nonly). Non-zero `margin_x` combined with `anchor: center`\nis rejected by the API at workflow-create time as\n`invalid_options` (HTTP 422).\n",
               "origin": "contract",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "marginX",
               "type": "string"
             },
@@ -7065,7 +7065,7 @@
               "description": "Vertical offset from the anchor as pixels or percentage of\nvideo frame height. Ignored when `watermark_mode: tiled`.\n\n**`anchor: center` exception** (watermark_mode: single\nonly). Same rejection rule as `margin_x`.\n",
               "origin": "contract",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "marginY",
               "type": "string"
             },
@@ -7075,7 +7075,7 @@
               "max": 1.0,
               "min": 0.0,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "opacity",
               "type": "float"
             },
@@ -7085,7 +7085,7 @@
               "max": 360.0,
               "min": -360.0,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "rotation",
               "type": "float"
             },
@@ -7094,7 +7094,7 @@
               "origin": "contract",
               "positional": 0,
               "required": true,
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "text",
               "type": "string"
             },
@@ -7106,7 +7106,7 @@
               "max": 1000,
               "min": 0,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "tileSpacing",
               "type": "integer"
             },
@@ -7114,12 +7114,12 @@
               "default": "single",
               "description": "Rendering mode:\n- `single`: one label placed at the anchor + margin offset\n  on each frame.\n- `tiled`: repeated tiles across the entire frame at the\n  rotation angle.\n",
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "watermarkMode",
               "type": "enum",
               "value_exposure": {
-                "single": "coming_soon",
-                "tiled": "coming_soon"
+                "single": "expose",
+                "tiled": "expose"
               },
               "values": [
                 "single",
@@ -7148,7 +7148,7 @@
               "required_tier": "pro"
             },
             "short_form": {
-              "availability": "planned",
+              "availability": "beta",
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -7297,7 +7297,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.201.0",
+  "schema_version": "2.202.0",
   "sdk_spec_version": "2.3.0",
-  "source_hash": "sha256:5528ef236b607b83e79ab0f63171e186e21ad557f06d7be30b4c3879b940a250"
+  "source_hash": "sha256:47050917954df5cb9d0560c701293bc83afa061448a767aabfa9efb8e34b130e"
 }
