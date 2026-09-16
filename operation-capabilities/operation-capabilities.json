@@ -51,7 +51,7 @@
       "accepts": [
         "audio"
       ],
-      "availability": "stable",
+      "availability": "planned",
       "input": {
         "max": 2,
         "min": 1,
@@ -625,7 +625,7 @@
       "accepts": [
         "video"
       ],
-      "availability": "beta",
+      "availability": "planned",
       "input": {
         "model": "single"
       },
@@ -638,7 +638,7 @@
       "accepts": [
         "video"
       ],
-      "availability": "stable",
+      "availability": "planned",
       "input": {
         "max": 2,
         "min": 2,
@@ -732,5 +732,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.202.0"
+  "schema_version": "2.203.0"
 }

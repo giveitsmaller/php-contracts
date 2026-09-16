@@ -11,13 +11,13 @@ final class VideoTextWatermarkMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
-            availability: 'beta',
+            availability: 'planned',
             features: [],
             mime_groups: [
                 'video' => new MimeGroupMetadata(
                     processing_class: [
                         'short_form' => new AvailabilityEntry(
-                            availability: 'beta',
+                            availability: 'planned',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT5M',
                                 max_input_size_bytes: 524288000,

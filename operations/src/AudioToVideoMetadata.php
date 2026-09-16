@@ -11,7 +11,7 @@ final class AudioToVideoMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
-            availability: 'stable',
+            availability: 'planned',
             features: [],
             mime_groups: [
                 'audio' => new MimeGroupMetadata(

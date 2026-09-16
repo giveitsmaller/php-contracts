@@ -11,7 +11,7 @@ final class VideoWatermarkMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
-            availability: 'stable',
+            availability: 'planned',
             features: [
                 'multi_overlay_stack' => new FeatureEntry(
                     availability: 'planned',
@@ -22,7 +22,7 @@ final class VideoWatermarkMetadata
                 'video' => new MimeGroupMetadata(
                     processing_class: [
                         'short_form' => new AvailabilityEntry(
-                            availability: 'stable',
+                            availability: 'planned',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT5M',
                                 max_input_size_bytes: 524288000,
