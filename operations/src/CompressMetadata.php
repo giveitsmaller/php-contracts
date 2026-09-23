@@ -336,7 +336,6 @@ final class CompressMetadata
                         ),
                         'long_form' => new AvailabilityEntry(
                             availability: 'stable',
-                            required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
                                 max_input_size_bytes: 5000000000,

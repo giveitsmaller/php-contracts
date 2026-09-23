@@ -479,8 +479,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "planned",
@@ -699,8 +698,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "planned",
@@ -3026,8 +3024,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "stable",
@@ -3772,8 +3769,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "stable",
@@ -3879,8 +3875,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "planned",
@@ -3888,8 +3883,7 @@
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
                 "max_output_size_bytes": 524288000
-              },
-              "required_tier": "pro"
+              }
             }
           }
         }
@@ -5239,8 +5233,7 @@
                 "max": {
                   "max_total_input_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form_concat": {
               "availability": "stable",
@@ -5393,6 +5386,7 @@
       "media_groups": {
         "audio": {
           "availability": "beta",
+          "input_size_bound": "processing_time",
           "media_group": "audio",
           "mimes": [
             "audio/mpeg",
@@ -5474,7 +5468,7 @@
             },
             "precision": {
               "default": "fast",
-              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the server re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate).\n",
+              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the server re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate).\n\n\ud83d\udd34 **THE TWO VALUES HAVE DIFFERENT DURATION LIMITS, AND ONLY\nONE OF THEM REFUSES.** This is stated here, on the option a\ncaller chooses, because the group declares\n`input_size_bound: processing_time` and no\n`max_input_duration` \u2014 there is no per-value constraint\nprimitive to carry it.\n\n\u26d4 **NEITHER VALUE GIVES A PRE-FLIGHT SIGNAL. BOTH FAIL AFTER\nTHE JOB IS ACCEPTED AND BILLED.** No duration ceiling is\ndeclared on this group, so the API cannot enforce one at\ncreate; the worker's own check reads a probe result, which\nmeans the input has already been uploaded, accepted and\ndownloaded.\n\n- **`exact`: refused when its computed time budget does not\n  fit** \u2014 but WORKER-SIDE, after download and probe. The job\n  returns a terminal `OperationResult` with `error_code:\n  invalid_options`. \u26a0\ufe0f It is NOT an HTTP 422 and it is not a\n  create-time rejection: a worker cannot emit a status code.\n  The boundary does not move with `count` \u2014 once the cap\n  binds, the per-output term stops mattering.\n- **`fast` (the default): no boundary and no refusal at\n  all.** Past the point where its deadline saturates, the time\n  budget stops growing while the work does, so the job fails\n  as a **TIMEOUT** rather than with any reason a caller can\n  act on.\n\n\ud83d\udd34 **TWO LIMITS EXIST AND THE SMALLER ONE BINDS.** The worker\ncarries an internal time budget and the Lambda function\ncarries a platform timeout; **the effective boundary is the\nLOWER of the two**, and the internal budget sits ABOVE the\nplatform timeout.\n\n\u21d2 **`exact`'s refusal threshold is calibrated to a limit that\nis not the one that ends the job.** Its check does fire, and\nfires early \u2014 it reads the probe result before any re-encode\nstarts, so a long-but-small input is refused within seconds.\nBut there is a band of inputs it judges FINE which the\nplatform then hard-kills mid-encode, with no named cause. **So\n`exact` refusing is a reliable signal; `exact` NOT refusing is\nnot a promise the job will finish.**\n\n\u26d4 **NO SECONDS FIGURE IS GIVEN HERE, DELIBERATELY.** v2.205.0\npublished figures keyed to the crate constant \u2014 the larger\nlimit, the one that does not bind. The effective number lands\nonly when that derivation settles AND a job is measured near\nit. **A published number a caller pre-validates against is\nworse wrong than absent**; the shape above is what a caller can\nactually act on today, which is: do not rely on either value\nfailing gracefully.\n\n\u21d2 `exact` at least names a cause when it is reached; `fast`\nnever does. **Both are the accept-then-bill-then-fail shape**,\nwhich is the very thing this group's `input_size_bound`\ndeclaration exists to stop happening silently on the BYTE\naxis. On the DURATION axis it is stated here and not yet\nfixed.\n\n\u26a0\ufe0f Read from `compression_lambdas` `crates/split`. **NOT\nmeasured** \u2014 their audio fixtures reach 145 s, a small\nfraction of any candidate cap, so this describes what the code\nwill do rather than observed behaviour at the boundary.\n",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "precision",
@@ -5722,8 +5716,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "beta",
@@ -6724,8 +6717,7 @@
                 "max": {
                   "max_input_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "stable",
@@ -6952,8 +6944,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "planned",
@@ -6990,7 +6981,7 @@
           "options": {
             "anchor": {
               "default": "bottom_right",
-              "description": "9-grid anchor position. For `watermark_mode: single`, the\ntext label is placed at this anchor + margin_x/margin_y\noffset on each frame. For `watermark_mode: tiled`, anchor\nis ignored (tiles fill the frame).\n",
+              "description": "9-grid anchor position. For `watermark_mode: single`, the\ntext label is placed at this anchor + margin_x/margin_y\noffset on each frame. For `watermark_mode: tiled`, anchor\nis ignored (tiles fill the frame).\n\n\ud83d\udd34 **`center` IGNORES `margin_x` / `margin_y` rather than\nrejecting them. THE REJECTION AS WRITTEN CANNOT SURVIVE A\nNON-ZERO DEFAULT; IGNORING IS THE REPLACEMENT THAT WAS CHOSEN.**\nThe sibling operations still reject a non-zero\nmargin at `anchor: center` as `invalid_options` (422), and\nthat rule is sound THERE because their margin default is\n`0px`: a client that materialises the default sends `0px`,\nwhich is not non-zero, so only a caller who actually asked\nfor an offset is ever refused.\n\n\u26d4 **Here the default is `2%`, and that makes the rejection\nrule unusable as written.** Schema-driven clients fill contract\ndefaults BEFORE sending, so a request with `anchor: center`\narrives carrying `margin_x: \"2%\"` whether the caller chose it\nor never mentioned margins at all. **After default\nmaterialisation an explicit value and a defaulted one are\nINDISTINGUISHABLE on the wire**, so a rejection cannot\nseparate the mistake it exists to catch from the overwhelming\nmajority of requests that simply accepted the default. It\nwould 422 almost every centred watermark.\n\n\u26a0\ufe0f **Rejection is not the only alternative, and this text does\nnot claim it was forced.** A reject-if-it-differs-from-the-\ndefault rule would survive materialisation exactly as the zero\nrule does for the siblings. **Ignoring is the behaviour CHOSEN**\nunder hub decision 465, because margins are meaningless when the\nlabel is centred and a no-op is kinder than a 422 on a request\nthat renders correctly. The cost is stated: a caller who\ndeliberately passes a margin with `anchor: center` gets silence\nrather than a correction.\n\n\u26a0\ufe0f **DO NOT \"align\" `text_watermark` or `image_watermark` to\nthis on the strength of the operation NAME.** Their rejection\nstill works because their default is still `0px`. Changing one\nof THOSE defaults to non-zero is what would force the same move\nthere \u2014 the trigger is a non-zero default, never the operation\nname. (`video_watermark` moved with this operation because its\ndefault moved too, under the same decision.)\n",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
               "surface_key": "anchor",
@@ -7052,8 +7043,8 @@
               "type": "float"
             },
             "margin_x": {
-              "default": "0px",
-              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\")\nor percentage of video frame width (e.g. \"5%\").\nAnchor-relative. Ignored when `watermark_mode: tiled`.\n\n**`anchor: center` exception** (watermark_mode: single\nonly). Non-zero `margin_x` combined with `anchor: center`\nis rejected by the API at workflow-create time as\n`invalid_options` (HTTP 422).\n",
+              "default": "2%",
+              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\")\nor percentage of video frame width (e.g. \"5%\").\nAnchor-relative. Ignored when `watermark_mode: tiled`.\n\n**Defaults to `2%`, i.e. INSET from the frame edge**, because\na watermark flush against the edge is the wrong default for\nvideo: player chrome, safe-area cropping and letterboxing all\neat the outermost pixels. **A true flush remains available by\npassing `\"0px\"` explicitly** \u2014 the default is a default, not a\nfloor.\n\n**`anchor: center`: margins are IGNORED** (watermark_mode:\nsingle only). They are meaningless when the label is centred,\nand this is deliberately a silent no-op rather than a\nrejection. See the `anchor` description for why rejection is\nnot available here.\n",
               "origin": "contract",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "sdk_exposure": "coming_soon",
@@ -7061,8 +7052,8 @@
               "type": "string"
             },
             "margin_y": {
-              "default": "0px",
-              "description": "Vertical offset from the anchor as pixels or percentage of\nvideo frame height. Ignored when `watermark_mode: tiled`.\n\n**`anchor: center` exception** (watermark_mode: single\nonly). Same rejection rule as `margin_x`.\n",
+              "default": "2%",
+              "description": "Vertical offset from the anchor as pixels or percentage of\nvideo frame height. Ignored when `watermark_mode: tiled`.\n\n**Defaults to `2%` (inset), for the reasons on `margin_x`**;\n`\"0px\"` still gives a true flush. **`anchor: center`: ignored**,\nsame as `margin_x`.\n",
               "origin": "contract",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "sdk_exposure": "coming_soon",
@@ -7144,8 +7135,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "planned",
@@ -7194,7 +7184,7 @@
           "options": {
             "anchor": {
               "default": "bottom_right",
-              "description": "9-grid anchor position on each video frame. Same vocabulary\nas `image_watermark.image` and `text_watermark.image`.\n",
+              "description": "9-grid anchor position on each video frame. Same vocabulary\nas `image_watermark.image` and `text_watermark.image`.\n\n\ud83d\udd34 **`center` IGNORES `margin_x` / `margin_y` rather than\nrejecting them. The rejection as written cannot survive a\nnon-zero default; ignoring is the replacement that was CHOSEN.\nThe trigger is the DEFAULT, not this operation.** Schema-driven\nclients materialise contract\ndefaults BEFORE sending, so with a non-zero default a centred\nrequest arrives carrying `margin_x: \"2%\"` whether the caller\nchose it or never mentioned margins. **After materialisation\nan explicit value and a defaulted one are indistinguishable on\nthe wire**, so the old `invalid_options` (422) rule would\nrefuse nearly every centred watermark.\n\n\u26a0\ufe0f Rejection is not the only alternative \u2014 a\nreject-if-it-differs-from-the-default rule would also survive\nmaterialisation. **Ignoring is the behaviour CHOSEN** under hub\ndecision 465, because margins are meaningless when the label is\ncentred. The cost is stated: a caller who deliberately passes a\nmargin with `anchor: center` gets silence, not a correction.\n\n\u26a0\ufe0f **The trigger is a NON-ZERO DEFAULT, never an operation\nname.** `image_watermark` and `text_watermark` keep their 422\nbecause their defaults are still `0px`, where a materialised\ndefault is not non-zero and only a deliberate offset is\nrefused.\n",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
               "surface_key": "anchor",
@@ -7223,8 +7213,8 @@
               ]
             },
             "margin_x": {
-              "default": "0px",
-              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\")\nor percentage of video frame width (e.g. \"5%\"). Direction\nis anchor-relative \u2014 positive moves toward the frame\ncentre.\n\n**`anchor: center` exception.** When the anchor is `center`\nthe centre is the centre \u2014 there is no anchor-relative\ndirection. Non-zero `margin_x` combined with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422). Same rule as the\nother watermark operations.\n",
+              "default": "2%",
+              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\")\nor percentage of video frame width (e.g. \"5%\"). Direction\nis anchor-relative \u2014 positive moves toward the frame\ncentre.\n\n**Defaults to `2%`, i.e. INSET from the frame edge**, because\na watermark flush against the edge is the wrong default for\nvideo: player chrome, safe-area cropping and letterboxing all\neat the outermost pixels. **A true flush remains available by\npassing `\"0px\"` explicitly.**\n\n**`anchor: center`: margins are IGNORED.** The centre is the\ncentre \u2014 there is no anchor-relative direction \u2014 so this is a\nsilent no-op rather than a rejection. See the `anchor`\ndescription for why a rejection is not usable with a non-zero\ndefault.\n",
               "origin": "contract",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "sdk_exposure": "coming_soon",
@@ -7232,8 +7222,8 @@
               "type": "string"
             },
             "margin_y": {
-              "default": "0px",
-              "description": "Vertical offset from the anchor as pixels or percentage of\nvideo frame height. Anchor-relative; positive moves toward\nthe frame centre.\n\n**`anchor: center` exception.** Same rejection rule as\n`margin_x`.\n",
+              "default": "2%",
+              "description": "Vertical offset from the anchor as pixels or percentage of\nvideo frame height. Anchor-relative; positive moves toward\nthe frame centre.\n\n**Defaults to `2%` (inset), for the reasons on `margin_x`**;\n`\"0px\"` still gives a true flush. **`anchor: center`: margins\nare IGNORED**, same as `margin_x`.\n",
               "origin": "contract",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "sdk_exposure": "coming_soon",
@@ -7276,8 +7266,7 @@
                   "max_input_size_bytes": 50000000000,
                   "max_output_size_bytes": 50000000000
                 }
-              },
-              "required_tier": "pro"
+              }
             },
             "short_form": {
               "availability": "planned",
@@ -7297,7 +7286,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.203.0",
+  "schema_version": "2.208.0",
   "sdk_spec_version": "2.3.0",
-  "source_hash": "sha256:7123426cdc40dc649a48968e2589d90eb7ff7da5a3fe32f55bc19a4d6d9f2eaa"
+  "source_hash": "sha256:5b27659d918e263faa1fd74f3ff638acae77f7b666d27aca85d66f803035508f"
 }

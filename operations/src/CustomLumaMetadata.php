@@ -12,14 +12,12 @@ final class CustomLumaMetadata
     {
         return new OperationMetadata(
             availability: 'planned',
-            required_tier: 'pro',
             features: [],
             mime_groups: [
                 'video' => new MimeGroupMetadata(
                     processing_class: [
                         'short_form' => new AvailabilityEntry(
                             availability: 'planned',
-                            required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT5M',
                                 max_input_size_bytes: 524288000,
@@ -28,7 +26,6 @@ final class CustomLumaMetadata
                         ),
                         'long_form' => new AvailabilityEntry(
                             availability: 'planned',
-                            required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
                                 max_input_size_bytes: 5000000000,

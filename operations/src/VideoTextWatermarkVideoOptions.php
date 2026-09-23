@@ -16,8 +16,8 @@ final class VideoTextWatermarkVideoOptions
         public readonly float $rotation = -45.0,
         public readonly VideoTextWatermarkVideoWatermarkMode $watermark_mode = VideoTextWatermarkVideoWatermarkMode::Single,
         public readonly VideoTextWatermarkVideoAnchor $anchor = VideoTextWatermarkVideoAnchor::BottomRight,
-        public readonly string $margin_x = '0px',
-        public readonly string $margin_y = '0px',
+        public readonly string $margin_x = '2%',
+        public readonly string $margin_y = '2%',
         public readonly float $opacity = 1.0,
         public readonly ?int $tile_spacing = null,
     ) {}

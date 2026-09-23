@@ -26,7 +26,6 @@ final class VideoTextWatermarkMetadata
                         ),
                         'long_form' => new AvailabilityEntry(
                             availability: 'planned',
-                            required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
                                 max_input_size_bytes: 5000000000,

@@ -1,6 +1,6 @@
 <?php
 /**
- * BalanceExhaustedResponse
+ * SseConnectionLimitResponse
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * BalanceExhaustedResponse Class Doc Comment
+ * SseConnectionLimitResponse Class Doc Comment
  *
  * @category Class
- * @description 402 response body emitted from &#x60;POST /api/workflows&#x60; when the server-side cost estimate exceeds the caller&#39;s &#x60;available_credits&#x60; (monthly + purchased + overdraft headroom). Per ticket [I23 &#x60;DffjC3zm&#x60;](https://trello.com/c/DffjC3zm) F9 atomic- reservation invariant.  Carries &#x60;error_type: balance_exhausted&#x60; plus a structured &#x60;required_action&#x60; (one of &#x60;add_credits&#x60;, &#x60;upgrade_plan&#x60;, &#x60;wait_for_renewal&#x60;) and &#x60;links&#x60; to the relevant top-up / upgrade page.  **Deliberate omission.** This envelope carries NO numeric deficit fields (no &#x60;required&#x60;, &#x60;available&#x60;, &#x60;shortfall&#x60;). Per plan v5 §F9 round 13 — frontend reads the current state from &#x60;GET /api/v2/credits/balance&#x60;, not from the error envelope. Decoupling the error from numeric state keeps the 402 wire shape stable as cost-model granularity changes (e.g. shift to per-second micro-credits). Frontend re-fetches balance after a 402.  Carries the optional localisation triple (&#x60;message_key&#x60; + &#x60;message&#x60; + &#x60;locale&#x60; + &#x60;message_params&#x60;) per ticket [I26](https://trello.com/c/rcnqwgI4) — see &#x60;ErrorEnvelope&#x60; for the canonical convention. &#x60;message_params&#x60; excludes cost / monetary numbers per the round-13 narrowing (frontend reads numeric balance from &#x60;/credits/balance&#x60;).
+ * @description &#x60;429&#x60; body for &#x60;GET /api/workflows/{id}/events&#x60; when the caller already holds the maximum number of open event streams (&#x60;SSE_CONNECTION_LIMIT_EXCEEDED&#x60;). The limit, who counts as the caller, and the consumer obligation are on that response. Carries the two counts the SDK taxonomy&#39;s &#x60;metadataSchema&#x60; names (&#x60;openStreams&#x60; / &#x60;maxStreams&#x60; after camelCase lowering), so a client can say \&quot;5 of 5 streams open\&quot; without restating the limit.  **Both count fields are REQUIRED when &#x60;error&#x60; is &#x60;SSE_CONNECTION_LIMIT_EXCEEDED&#x60; and absent otherwise**, enforced by the &#x60;if&#x60;/&#x60;then&#x60;/&#x60;else&#x60; branch below rather than a plain &#x60;required&#x60; list, because the endpoint&#39;s other &#x60;429&#x60; — &#x60;TOO_MANY_REQUESTS&#x60; from the start-rate limiter — is the plain &#x60;ErrorEnvelope&#x60; subset of this shape and must validate against it too.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSerializable
+class SseConnectionLimitResponse implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
      *
      * @var string
      */
-    protected static $openAPIModelName = 'BalanceExhaustedResponse';
+    protected static $openAPIModelName = 'SseConnectionLimitResponse';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -64,9 +64,8 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'message_key' => 'string',
         'locale' => 'string',
         'message_params' => 'array<string,mixed>',
-        'error_type' => 'string',
-        'required_action' => 'string',
-        'links' => '\Gisl\Generated\OpenApi\Model\BalanceExhaustedResponseAllOfLinks'
+        'open_streams' => 'int',
+        'max_streams' => 'int'
     ];
 
     /**
@@ -83,9 +82,8 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'message_key' => null,
         'locale' => null,
         'message_params' => null,
-        'error_type' => null,
-        'required_action' => null,
-        'links' => null
+        'open_streams' => null,
+        'max_streams' => null
     ];
 
     /**
@@ -100,9 +98,8 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'message_key' => false,
         'locale' => false,
         'message_params' => false,
-        'error_type' => false,
-        'required_action' => false,
-        'links' => false
+        'open_streams' => false,
+        'max_streams' => false
     ];
 
     /**
@@ -197,9 +194,8 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'message_key' => 'message_key',
         'locale' => 'locale',
         'message_params' => 'message_params',
-        'error_type' => 'error_type',
-        'required_action' => 'required_action',
-        'links' => 'links'
+        'open_streams' => 'open_streams',
+        'max_streams' => 'max_streams'
     ];
 
     /**
@@ -214,9 +210,8 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'message_key' => 'setMessageKey',
         'locale' => 'setLocale',
         'message_params' => 'setMessageParams',
-        'error_type' => 'setErrorType',
-        'required_action' => 'setRequiredAction',
-        'links' => 'setLinks'
+        'open_streams' => 'setOpenStreams',
+        'max_streams' => 'setMaxStreams'
     ];
 
     /**
@@ -231,9 +226,8 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'message_key' => 'getMessageKey',
         'locale' => 'getLocale',
         'message_params' => 'getMessageParams',
-        'error_type' => 'getErrorType',
-        'required_action' => 'getRequiredAction',
-        'links' => 'getLinks'
+        'open_streams' => 'getOpenStreams',
+        'max_streams' => 'getMaxStreams'
     ];
 
     /**
@@ -277,37 +271,6 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         return self::$openAPIModelName;
     }
 
-    public const ERROR_TYPE_BALANCE_EXHAUSTED = 'balance_exhausted';
-    public const REQUIRED_ACTION_ADD_CREDITS = 'add_credits';
-    public const REQUIRED_ACTION_UPGRADE_PLAN = 'upgrade_plan';
-    public const REQUIRED_ACTION_WAIT_FOR_RENEWAL = 'wait_for_renewal';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getErrorTypeAllowableValues()
-    {
-        return [
-            self::ERROR_TYPE_BALANCE_EXHAUSTED,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getRequiredActionAllowableValues()
-    {
-        return [
-            self::REQUIRED_ACTION_ADD_CREDITS,
-            self::REQUIRED_ACTION_UPGRADE_PLAN,
-            self::REQUIRED_ACTION_WAIT_FOR_RENEWAL,
-        ];
-    }
-
     /**
      * Associative array for storing property values
      *
@@ -329,9 +292,8 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         $this->setIfExists('message_key', $data ?? [], null);
         $this->setIfExists('locale', $data ?? [], null);
         $this->setIfExists('message_params', $data ?? [], null);
-        $this->setIfExists('error_type', $data ?? [], null);
-        $this->setIfExists('required_action', $data ?? [], null);
-        $this->setIfExists('links', $data ?? [], null);
+        $this->setIfExists('open_streams', $data ?? [], null);
+        $this->setIfExists('max_streams', $data ?? [], null);
     }
 
     /**
@@ -368,28 +330,12 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
         if ($this->container['error'] === null) {
             $invalidProperties[] = "'error' can't be null";
         }
-        if ($this->container['error_type'] === null) {
-            $invalidProperties[] = "'error_type' can't be null";
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'error_type', must be one of '%s'",
-                $this->container['error_type'],
-                implode("', '", $allowedValues)
-            );
+        if (!is_null($this->container['open_streams']) && ($this->container['open_streams'] < 0)) {
+            $invalidProperties[] = "invalid value for 'open_streams', must be bigger than or equal to 0.";
         }
 
-        if ($this->container['required_action'] === null) {
-            $invalidProperties[] = "'required_action' can't be null";
-        }
-        $allowedValues = $this->getRequiredActionAllowableValues();
-        if (!is_null($this->container['required_action']) && !in_array($this->container['required_action'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'required_action', must be one of '%s'",
-                $this->container['required_action'],
-                implode("', '", $allowedValues)
-            );
+        if (!is_null($this->container['max_streams']) && ($this->container['max_streams'] < 1)) {
+            $invalidProperties[] = "invalid value for 'max_streams', must be bigger than or equal to 1.";
         }
 
         return $invalidProperties;
@@ -474,7 +420,7 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets message
      *
-     * @param string|null $message Human-readable, optionally localised explanation. See `ErrorEnvelope.message`. Never parse for control flow.
+     * @param string|null $message Human-readable error message, localised per the request's `Accept-Language` header (fallback locale `en-GB`). The response carries `Content-Language: <locale>` + `Vary: Accept-Language` headers. **Never parse this field for control flow** — it changes per locale.
      *
      * @return self
      */
@@ -501,7 +447,7 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets message_key
      *
-     * @param string|null $message_key Canonical lookup key per ticket [I26](https://trello.com/c/rcnqwgI4). See `ErrorEnvelope.message_key`.
+     * @param string|null $message_key Stable canonical lookup key for the message (e.g. `error.balance_exhausted.add_credits`, `error.upload_size_exceeds_tier`). Never localised. SDK + frontend translation layers gate on this for client-side i18n catalogs (per ticket X19, cross-repo SDK companion work). Stable across server message-prose updates.
      *
      * @return self
      */
@@ -528,7 +474,7 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets locale
      *
-     * @param string|null $locale BCP 47 locale tag. See `ErrorEnvelope.locale`.
+     * @param string|null $locale BCP 47 locale tag echoing the resolved `Content-Language` response header value. Currently always `en-GB` (the only committed locale per `info.description` Localisation block + ticket [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)); additional values will appear here when their catalogs ship. Lets the SDK confirm which locale the server selected when the request used q-value negotiation across multiple `Accept-Language` values.
      *
      * @return self
      */
@@ -555,7 +501,7 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets message_params
      *
-     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. See `ErrorEnvelope.message_params`. **Excludes cost / monetary numbers** — frontend reads numeric balance from `GET /api/v2/credits/balance` per the round-13 narrowing.
+     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. Keys are stable parameter names referenced by the translation table (e.g. `{ \"filename\": \"photo.heic\", \"max_size_mb\": 100 }`). **Excludes cost / monetary numbers** per plan v5 §F11 round-13 narrowing — pricing-related localisation reads numeric state from `GET /api/v2/credits/balance`, not from this field. Values are JSON-native scalars (`string` / `integer` / `number` / `boolean` / `null`) — no nested objects, to keep translation-table integration simple.
      *
      * @return self
      */
@@ -570,102 +516,65 @@ class BalanceExhaustedResponse implements ModelInterface, ArrayAccess, \JsonSeri
     }
 
     /**
-     * Gets error_type
+     * Gets open_streams
      *
-     * @return string
+     * @return int|null
      */
-    public function getErrorType()
+    public function getOpenStreams()
     {
-        return $this->container['error_type'];
+        return $this->container['open_streams'];
     }
 
     /**
-     * Sets error_type
+     * Sets open_streams
      *
-     * @param string $error_type Discriminator value for this 402 envelope.
+     * @param int|null $open_streams Streams this caller holds open at the moment of refusal.
      *
      * @return self
      */
-    public function setErrorType($error_type)
+    public function setOpenStreams($open_streams)
     {
-        if (is_null($error_type)) {
-            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
+        if (is_null($open_streams)) {
+            throw new \InvalidArgumentException('non-nullable open_streams cannot be null');
         }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!in_array($error_type, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'error_type', must be one of '%s'",
-                    $error_type,
-                    implode("', '", $allowedValues)
-                )
-            );
+
+        if (($open_streams < 0)) {
+            throw new \InvalidArgumentException('invalid value for $open_streams when calling SseConnectionLimitResponse., must be bigger than or equal to 0.');
         }
-        $this->container['error_type'] = $error_type;
+
+        $this->container['open_streams'] = $open_streams;
 
         return $this;
     }
 
     /**
-     * Gets required_action
+     * Gets max_streams
      *
-     * @return string
+     * @return int|null
      */
-    public function getRequiredAction()
+    public function getMaxStreams()
     {
-        return $this->container['required_action'];
+        return $this->container['max_streams'];
     }
 
     /**
-     * Sets required_action
+     * Sets max_streams
      *
-     * @param string $required_action What the caller must do to retry successfully. - `add_credits`: caller has overdraft headroom only on   the purchased pool — buy a top-up. - `upgrade_plan`: caller's tier allowance is too small   for sustained use — upgrade to pro/enterprise. - `wait_for_renewal`: monthly cycle resets soon and   the caller's projected post-renewal balance covers   the cost — no money required.
+     * @param int|null $max_streams The caller's open-stream limit. **Read the limit from here, not from prose** — it is the server's value at refusal time.
      *
      * @return self
      */
-    public function setRequiredAction($required_action)
+    public function setMaxStreams($max_streams)
     {
-        if (is_null($required_action)) {
-            throw new \InvalidArgumentException('non-nullable required_action cannot be null');
+        if (is_null($max_streams)) {
+            throw new \InvalidArgumentException('non-nullable max_streams cannot be null');
         }
-        $allowedValues = $this->getRequiredActionAllowableValues();
-        if (!in_array($required_action, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'required_action', must be one of '%s'",
-                    $required_action,
-                    implode("', '", $allowedValues)
-                )
-            );
+
+        if (($max_streams < 1)) {
+            throw new \InvalidArgumentException('invalid value for $max_streams when calling SseConnectionLimitResponse., must be bigger than or equal to 1.');
         }
-        $this->container['required_action'] = $required_action;
 
-        return $this;
-    }
-
-    /**
-     * Gets links
-     *
-     * @return \Gisl\Generated\OpenApi\Model\BalanceExhaustedResponseAllOfLinks|null
-     */
-    public function getLinks()
-    {
-        return $this->container['links'];
-    }
-
-    /**
-     * Sets links
-     *
-     * @param \Gisl\Generated\OpenApi\Model\BalanceExhaustedResponseAllOfLinks|null $links links
-     *
-     * @return self
-     */
-    public function setLinks($links)
-    {
-        if (is_null($links)) {
-            throw new \InvalidArgumentException('non-nullable links cannot be null');
-        }
-        $this->container['links'] = $links;
+        $this->container['max_streams'] = $max_streams;
 
         return $this;
     }

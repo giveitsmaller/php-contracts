@@ -85,8 +85,8 @@ final class VideoWatermarkTest extends TestCase
         $obj = new VideoWatermarkVideoOptions();
         $this->assertInstanceOf(VideoWatermarkVideoOptions::class, $obj);
         $this->assertSame(VideoWatermarkVideoAnchor::BottomRight, $obj->anchor);
-        $this->assertSame('0px', $obj->margin_x);
-        $this->assertSame('0px', $obj->margin_y);
+        $this->assertSame('2%', $obj->margin_x);
+        $this->assertSame('2%', $obj->margin_y);
         $this->assertSame(0.5, $obj->opacity);
         $this->assertNull($obj->overlay_width);
     }

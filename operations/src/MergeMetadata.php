@@ -138,7 +138,6 @@ final class MergeMetadata
                         ),
                         'long_form_re_encode' => new AvailabilityEntry(
                             availability: 'stable',
-                            required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
                                 max_total_duration: 'PT24H',
                                 max_total_input_size_bytes: 5000000000,
