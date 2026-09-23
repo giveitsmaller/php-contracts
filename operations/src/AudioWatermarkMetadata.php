@@ -12,7 +12,6 @@ final class AudioWatermarkMetadata
     {
         return new OperationMetadata(
             availability: 'planned',
-            required_tier: 'enterprise',
             features: [],
             mime_groups: [
                 'audio' => new MimeGroupMetadata(
@@ -20,7 +19,6 @@ final class AudioWatermarkMetadata
                     processing_class: [
                         'short_form' => new AvailabilityEntry(
                             availability: 'planned',
-                            required_tier: 'enterprise',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT5M',
                                 max_input_size_bytes: 524288000,
@@ -29,11 +27,10 @@ final class AudioWatermarkMetadata
                         ),
                         'long_form' => new AvailabilityEntry(
                             availability: 'planned',
-                            required_tier: 'enterprise',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
-                                max_input_size_bytes: 120000000000,
-                                max_output_size_bytes: 120000000000,
+                                max_input_size_bytes: 5000000000,
+                                max_output_size_bytes: 5000000000,
                             ),
                         ),
                     ],
@@ -63,7 +60,6 @@ final class AudioWatermarkMetadata
                     processing_class: [
                         'short_form' => new AvailabilityEntry(
                             availability: 'planned',
-                            required_tier: 'enterprise',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT5M',
                                 max_input_size_bytes: 524288000,
@@ -72,11 +68,10 @@ final class AudioWatermarkMetadata
                         ),
                         'long_form' => new AvailabilityEntry(
                             availability: 'planned',
-                            required_tier: 'enterprise',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
-                                max_input_size_bytes: 120000000000,
-                                max_output_size_bytes: 120000000000,
+                                max_input_size_bytes: 5000000000,
+                                max_output_size_bytes: 5000000000,
                             ),
                         ),
                     ],

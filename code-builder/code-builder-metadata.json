@@ -918,10 +918,19 @@
               "availability": "planned",
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 120000000000,
-                "max_output_size_bytes": 120000000000
+                "max_input_size_bytes": 5000000000,
+                "max_output_size_bytes": 5000000000
               },
-              "required_tier": "enterprise"
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 120000000000,
+                  "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
+                }
+              }
             },
             "short_form": {
               "availability": "planned",
@@ -929,8 +938,7 @@
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
                 "max_output_size_bytes": 524288000
-              },
-              "required_tier": "enterprise"
+              }
             }
           }
         },
@@ -1015,10 +1023,19 @@
               "availability": "planned",
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 120000000000,
-                "max_output_size_bytes": 120000000000
+                "max_input_size_bytes": 5000000000,
+                "max_output_size_bytes": 5000000000
               },
-              "required_tier": "enterprise"
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 120000000000,
+                  "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
+                }
+              }
             },
             "short_form": {
               "availability": "planned",
@@ -1026,8 +1043,7 @@
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
                 "max_output_size_bytes": 524288000
-              },
-              "required_tier": "enterprise"
+              }
             }
           }
         }
@@ -1114,7 +1130,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output audio format. original = keep input format (default, same-format compression). Non-`original` values re-target the container/codec via the API \"compress+format\" facade (one canonicalized convert pass); see FORMAT.md.",
+              "description": "Output audio format. original = keep input format (default, same-format compression). Other values change the format as part of the same job.",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "outputFormat",
@@ -1481,7 +1497,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported.",
               "enum_ref": "ImageFormat",
               "enum_translations": {
                 "original": "Original",
@@ -1704,7 +1720,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported.",
               "enum_ref": "ImageFormat",
               "enum_translations": {
                 "original": "Original",
@@ -1994,7 +2010,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported.",
               "enum_ref": "ImageFormat",
               "enum_translations": {
                 "original": "Original",
@@ -2253,7 +2269,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported.",
               "enum_ref": "ImageFormat",
               "enum_translations": {
                 "original": "Original",
@@ -2367,7 +2383,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. `original` = keep input format \u2014 SVG -> SVG optimisation via SVGO. **STABLE and working** (restored 2026-07-21, G9O6yrQD; worker-proven on staging job 019f6aa3-d275-7b10-a5cf-58acc705c7e2 at 24.5% reduction, Form-A attested in lambdas #325). It is also the schema `default`, so a bare `compress` on an SVG takes this route. Optimisation is **visually preserving, NOT lossless** \u2014 SVGO's `preset-default` includes `convertPathData`, which rounds path coordinates within a tolerance. NOTE for anyone re-reading history here: this value was `planned` from 2026-07-17 to 2026-07-21 on a false premise, and because the API materializes an omitted default before the availability gate (api 4a7a2628), that tag 422'd EVERY website SVG compress at create \u2014 the workbench does not send `output_format`, so the defaulted path is the only path a customer has. A `planned` DEFAULT is therefore never a partial restriction; it is a total one. Weigh that before tagging any future default `planned`. `webp` = recompress to WebP: **STABLE and working today** \u2014 this facade route canonicalizes to the `convert` operation (`convert.image_svg` carries its own quality), which is why this group is NOT gated at group level. Concrete format changes are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives (the server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until supported. See FORMAT.md.",
+              "description": "Output format. `original` (the default) keeps SVG and optimises it; the result looks the same but is not byte-for-byte lossless \u2014 path coordinates are rounded within a small tolerance. `webp` converts the image to WebP. `auto` and `smallest` (let the server pick the best or smallest format) are planned and not yet available.",
               "enum_ref": "ImageFormat",
               "enum_translations": {
                 "original": "Original",
@@ -2565,7 +2581,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported.",
               "enum_ref": "ImageFormat",
               "enum_translations": {
                 "original": "Original",
@@ -2734,7 +2750,7 @@
             },
             "audio_codec": {
               "default": "copy",
-              "description": "Audio codec. copy = passthrough (keep the source stream as-is; re-encode only on explicit request) \u2014 aac/opus/vorbis re-encode. Default is `copy`: on the same-container path (`output_format` original/absent) the source stream is already container-compatible, so copy is safe. When `output_format` RE-TARGETS the container, an absent/default audio_codec resolves to a container-valid codec via the facade (e.g. webm -> opus), NOT a blind copy of an incompatible stream \u2014 a DEFAULT is never rejected (the exact per-container resolution, incl. ogg vorbis-vs-opus, is an output_format stable-flip prerequisite). A caller-EXPLICIT codec the resolved container cannot carry (e.g. aac on a webm target) is rejected. See FORMAT.md \"Container-conditional defaults\".\n",
+              "description": "Audio codec. copy = passthrough (keep the source stream as-is; re-encode only on explicit request) \u2014 aac/opus/vorbis re-encode. Default is `copy`: on the same-container path (`output_format` original/absent) the source stream is already container-compatible, so copy is safe. When `output_format` RE-TARGETS the container, an absent/default audio_codec resolves to a container-valid codec via the facade (e.g. webm -> opus), NOT a blind copy of an incompatible stream \u2014 a DEFAULT is never rejected (the exact per-container resolution, incl. ogg vorbis-vs-opus, is an output_format stable-flip prerequisite). A caller-EXPLICIT codec the resolved container cannot carry (e.g. aac on a webm target) is rejected.",
               "enum_ref": "AudioCodec",
               "enum_translations": {
                 "aac": "Aac",
@@ -2761,7 +2777,7 @@
             },
             "codec": {
               "default": "h264",
-              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower. The default (h264) is the MP4/MOV standard and is CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input container): for a container that cannot carry it (e.g. WebM, which carries VP8/VP9/ AV1) the server resolves a container-valid codec (WebM -> vp9). A DEFAULT value is never rejected \u2014 including an explicit `output_format: webm` left at the default `h264` (resolves to vp9, not rejected); only a caller-EXPLICIT incompatible codec is rejected. See FORMAT.md \"Container-conditional defaults\".\n",
+              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower. The default (h264) is the MP4/MOV standard and is CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input container): for a container that cannot carry it (e.g. WebM, which carries VP8/VP9/AV1) the server resolves a container-valid codec (WebM -> vp9). A DEFAULT value is never rejected \u2014 including an explicit `output_format: webm` left at the default `h264` (resolves to vp9, not rejected); only a caller-EXPLICIT incompatible codec is rejected.",
               "enum_ref": "VideoCodec",
               "enum_translations": {
                 "av1": "Av1",
@@ -2801,7 +2817,7 @@
             },
             "encoding_mode": {
               "default": "crf",
-              "description": "`crf` = constant quality. `target_size` = constrained output file size\n(two-pass). `target_size` is LIVE for mp4/MOV output; for webm/ogg output\nand long-form the server returns `feature_not_available` (use `crf` there)\nuntil two-pass for this container ships.\n\n\ud83d\udd34 **`crf` DOES NOT MEAN UNCONSTRAINED FILE SIZE. THIS DESCRIPTION USED TO\nSAY \"variable file size\" AND THAT WAS FALSE BY OMISSION.** For **mp4/MOV\noutput**, the worker additionally derives a **source-relative peak-bitrate\nceiling of roughly 60% of the source video bitrate** (`-maxrate`/`-bufsize`),\nand **it binds regardless of an explicit `crf`** \u2014 constrained-CRF. The `crf`\nvalue is still honoured as the **quality ceiling**; the cap adds a peak\nceiling on top of it.\n\n\u26a0\ufe0f **Scope, because \"we cap every video\" would be a second false sentence:**\nthe cap is **mp4/MOV only** \u2014 WebM/VP9 discards it and skips the probe\nentirely \u2014 and it is **best-effort**, so an unprobeable source gets no cap.\n\n\u2b50 **Why it exists, which is also why the old wording surprised in the wrong\ndirection:** plain CRF alone **INFLATES already-efficient sources** \u2014 an\nefficient HEVC re-encoded to H.264 at CRF 23/25/30 grows. The compress\ncontract is *reduce file size*, so the cap is what makes shrinking reliable.\nA caller who deliberately pins a low `crf` on an efficient source therefore\ngets a constrained-CRF transcode rather than a byte-for-byte original: a\ndeliberate, accepted shift.\n\n\ud83d\udd34 **THIS DESCRIPTION IS BOUND TO THE WORKER, NOT DATED AGAINST IT.**\n`tests/test_bitrate_cap_disclosure_matches_the_worker.py` reads\n`compression_lambdas` at `origin/main` and fails if the cap stops\nbeing source-relative, stops being mp4/MOV-only, or stops deriving\nfrom a source probe. **An as-of date would make a superseded\nsentence look deliberate**; a gate makes it go red instead.\n",
+              "description": "`crf` = constant quality. `target_size` = aim for a specific output file size (two-pass); available for mp4/MOV output only \u2014 for webm/ogg output and long-form video it is refused with `feature_not_available` (use `crf`). With `crf` on mp4/MOV output the file size is still bounded: a source-relative peak-bitrate ceiling (about 60% of the source video bitrate) keeps already-efficient sources from growing. That ceiling is mp4/MOV only and best-effort \u2014 it is skipped when the source bitrate cannot be read.",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "encodingMode",
@@ -2817,7 +2833,7 @@
             },
             "faststart": {
               "default": true,
-              "description": "Move the MP4/MOV moov atom to the front so the file starts playing before it is fully downloaded (progressive web playback). MP4/MOV only. CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input): the default (true) is silently inapplicable for a container with no moov atom (e.g. WebM) \u2014 that is NOT a rejection. Only a caller-EXPLICIT faststart:true on such a container is rejected. See FORMAT.md \"Container-conditional defaults\".\n",
+              "description": "Move the MP4/MOV moov atom to the front so the file starts playing before it is fully downloaded (progressive web playback). MP4/MOV only. CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input): the default (true) is silently inapplicable for a container with no moov atom (e.g. WebM) \u2014 that is NOT a rejection. Only a caller-EXPLICIT faststart:true on such a container is rejected.",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "faststart",
@@ -2875,7 +2891,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output container. original = keep the input container (default, same-format compression). Non-`original` values re-target the container via the API \"compress+format\" facade (one canonicalized convert-with-size-cap pass); see FORMAT.md. When set, the RESOLVED target container determines the valid codec/audio_codec/faststart sets \u2014 an absent/default codec resolves to a container-valid one (e.g. webm -> vp9) and is never rejected; only a caller-EXPLICIT incompatible value is rejected.",
+              "description": "Output container. original = keep the input container (default, same-format compression). Other values change the container as part of the same job, keeping the size cap. When set, the RESOLVED target container determines the valid codec/audio_codec/faststart sets \u2014 an absent/default codec resolves to a container-valid one (e.g. webm -> vp9) and is never rejected; only a caller-EXPLICIT incompatible value is rejected.",
               "origin": "contract",
               "per_value_availability": {
                 "mp4": {
@@ -2906,7 +2922,7 @@
             },
             "preset": {
               "default": "medium",
-              "description": "x264/x265 encoder effort. **A SIZE LEVER, CONDITIONALLY** \u2014 it moves\noutput size **only while the mp4/MOV peak-bitrate cap is NOT binding.**\n\n**Measured by `compression_lambdas`, medium vs slow, all else held:**\n\n    crf 30, cap inert    1,220,156 vs 1,144,043 bytes   6.2% apart\n    crf 18, cap binding  2,514,788 vs 2,516,986 bytes   0.09% apart\n\n\ud83d\udd34 **THE MECHANISM IS MECHANICAL, NOT EMPIRICAL, AND EXPLAINS BOTH ROWS.**\nIn pure CRF the encoder targets constant QUALITY, so a slower preset spends\nits extra effort producing a **smaller file at the same quality**. Once\n`-maxrate` binds the encode is rate-limited, so the extra effort can only go\ninto **picture at a fixed size** \u2014 an axis a size measurement cannot see.\n\n\u26a0\ufe0f **This description previously said `preset` was effort-only and that `crf`\nwas the size lever. That was wrong**, and it was wrong because a 0.09% figure\nmeasured on a **cap-binding** clip was generalised into a property of `preset`.\n**A measurement is not a property until you know what held it.**\n\n\u21d2 **Callers optimising for size:** `crf` is the primary lever; `preset` adds\nreal reduction **only when the cap is not already constraining the encode** \u2014\nwhich is exactly the high-`crf`, small-output end. See `encoding_mode` for what\nthe cap is and when it applies.\n\n\u26a0\ufe0f **What the extra effort buys once the cap DOES bind is mechanically\nimplied and empirically UNCONFIRMED.** The mechanism says it must go\ninto picture; `compression_lambdas` could not see a difference on 2x\ncrops, but that was **one frame of one 5-second clip**, and preset\ndifferences concentrate in high-motion frames that were not\ndeliberately sampled. **Recorded as unestablished, not asserted.**\n",
+              "description": "Encoder effort for mp4/MOV output (x264/x265); other output formats ignore it. Slower presets take longer and can produce a smaller file at the same quality \u2014 but only while the peak-bitrate ceiling described under `encoding_mode` is not already limiting the output. For size, `crf` is the main lever.",
               "enum_ref": "VideoPreset",
               "enum_translations": {
                 "fast": "Fast",
@@ -4413,7 +4429,7 @@
               "depends_on": {
                 "output_type": "gif"
               },
-              "description": "Milliseconds between frames",
+              "description": "Milliseconds between frames. GIF timing has a 10 ms resolution, so use a multiple of 10 \u2014 other values cannot be shown exactly.",
               "max": 5000,
               "min": 10,
               "origin": "contract",
@@ -5468,7 +5484,7 @@
             },
             "precision": {
               "default": "fast",
-              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the server re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate).\n\n\ud83d\udd34 **THE TWO VALUES HAVE DIFFERENT DURATION LIMITS, AND ONLY\nONE OF THEM REFUSES.** This is stated here, on the option a\ncaller chooses, because the group declares\n`input_size_bound: processing_time` and no\n`max_input_duration` \u2014 there is no per-value constraint\nprimitive to carry it.\n\n\ud83d\udd34 **TODAY `exact` IS REFUSED AT CREATE** \u2014 the API does not\nyet admit it for any split (the re-encode path is not yet\npriced), so it is tagged `planned` and a request carrying it\nis rejected before anything is uploaded, accepted or billed.\n**Everything below about `exact` describes the worker, i.e.\nwhat it will do once the API admits it.**\n\n\u26a0\ufe0f **TRANSITIONAL ERROR SHAPE.** A `planned` value is refused\nwith `feature_not_available` (422) by this contract's rule.\nUntil the API moves its split gate onto that rule, the refusal\narrives as a validation error on `precision` (`invalid_options`,\nalso 422). A consumer should treat either as \"`exact` is not\navailable\" \u2014 and should not send it, which the `planned` tag\nalready tells it.\n\n\u26d4 **`fast` GIVES NO PRE-FLIGHT SIGNAL, and neither will\n`exact` once admitted: both fail AFTER THE JOB IS ACCEPTED\nAND BILLED.** No duration ceiling is declared on this group,\nso the API cannot enforce one at create; the worker's own\ncheck reads a probe result, which means the input has already\nbeen uploaded, accepted and downloaded.\n\n- **`exact` (once admitted): refused when its computed time\n  budget does not fit** \u2014 but WORKER-SIDE, after download and\n  probe. The job\n  returns a terminal `OperationResult` with `error_code:\n  invalid_options`. \u26a0\ufe0f It is NOT an HTTP 422 and it is not a\n  create-time rejection: a worker cannot emit a status code.\n  The boundary does not move with `count` \u2014 once the cap\n  binds, the per-output term stops mattering.\n- **`fast` (the default): no boundary and no refusal at\n  all.** Past the point where its deadline saturates, the time\n  budget stops growing while the work does, so the job fails\n  as a **TIMEOUT** rather than with any reason a caller can\n  act on.\n\n\ud83d\udd34 **TWO LIMITS EXIST AND THE SMALLER ONE BINDS.** The worker\ncarries an internal time budget and the Lambda function\ncarries a platform timeout; **the effective boundary is the\nLOWER of the two**, and the internal budget sits ABOVE the\nplatform timeout.\n\n\u21d2 **`exact`'s refusal threshold is calibrated to a limit that\nis not the one that ends the job.** Its check does fire, and\nfires early \u2014 it reads the probe result before any re-encode\nstarts, so a long-but-small input is refused within seconds.\nBut there is a band of inputs it judges FINE which the\nplatform then hard-kills mid-encode, with no named cause. **So\n`exact` refusing is a reliable signal; `exact` NOT refusing is\nnot a promise the job will finish.**\n\n\u26d4 **NO SECONDS FIGURE IS GIVEN HERE, DELIBERATELY.** v2.205.0\npublished figures keyed to the crate constant \u2014 the larger\nlimit, the one that does not bind. The effective number lands\nonly when that derivation settles AND a job is measured near\nit. **A published number a caller pre-validates against is\nworse wrong than absent**; the shape above is what a caller can\nactually act on today, which is: do not rely on either value\nfailing gracefully.\n\n\u21d2 `exact` (once admitted) at least names a cause when it is\nreached; `fast` never does. **On today's customer path only\n`fast` is the accept-then-bill-then-fail shape**,\nwhich is the very thing this group's `input_size_bound`\ndeclaration exists to stop happening silently on the BYTE\naxis. On the DURATION axis it is stated here and not yet\nfixed.\n\n\u26a0\ufe0f Read from `compression_lambdas` `crates/split`. **NOT\nmeasured** \u2014 their audio fixtures reach 145 s, a small\nfraction of any candidate cap, so this describes what the code\nwill do rather than observed behaviour at the boundary.\n",
+              "description": "Cut precision. `fast` (default) cuts at packet boundaries, so each cut can drift by a few milliseconds (typically up to about 23 ms for AAC and 26 ms for MP3). `exact` re-encodes to cut precisely at the requested timestamps; it is not yet available and is refused when the workflow is created. Very long audio can run out of processing time and fail rather than be refused up front.",
               "origin": "contract",
               "per_value_availability": {
                 "exact": {
@@ -5571,7 +5587,7 @@
               "depends_on": {
                 "mode": "page_range"
               },
-              "description": "Page-range expression (e.g. \"1-5\", \"1,3,5-7\", \"10-20\").\n1-based inclusive. Required when `mode: page_range`.\nResolved page count MUST be <= 200 (`invalid_options`\n422 if exceeded \u2014 cross-ref\n[`WgCqnMRa`](https://trello.com/c/WgCqnMRa)).\n",
+              "description": "Pages to extract, e.g. \"1-5\", \"1,3,5-7\" or \"10-20\" \u2014 1-based and inclusive. Required when `mode: page_range`. At most 200 pages; more is refused with `invalid_options`.",
               "origin": "contract",
               "pattern": "^\\d+(-\\d+)?(,\\d+(-\\d+)?)*$",
               "required": true,
@@ -6283,7 +6299,7 @@
             },
             "source": {
               "default": "cover",
-              "description": "`cover` (the only supported value) = extract the EPUB's declared cover image \u2014 the cheap path, no rendering. Cover lookup supports both mechanisms: the EPUB 3 `cover-image` property on an OPF manifest item, AND the legacy EPUB 2 `<meta name=\"cover\" content=\"...\"/>` pointing at a manifest item \u2014 supporting only the former would miss a large slice of real-world files. Both are staging-proven (pL16ZfOw Wave 3). A cover image is OPTIONAL per W3C EPUB 3.3, so a cover-less EPUB is a REAL and expected case: it fails with `error_code: processing_failed` and `is_retryable: false`. That is the live behaviour, not an aspiration \u2014 the worker classifies it as `CoverError::NoCoverDeclared` and maps it there (`epub/error.rs`), and non-retryability is DERIVED from the code rather than set per-call, so it cannot drift. A cover-less EPUB will not grow a cover, so retrying is always futile. A more specific code would be better, and is NOT promised here: `ErrorCode` (asyncapi) is a CLOSED enum with no \"no cover\" member, so adding one is a real cross-repo co-land (enum edit -> SDK regen -> lockstep). Until then this description states what actually happens \u2014 an undecided-reject note on a STABLE route would leave consumers unable to handle a case they will certainly meet.",
+              "description": "`cover` (the only supported value) uses the EPUB's declared cover image; no pages are rendered. Both EPUB 3 and legacy EPUB 2 cover declarations are recognised. An EPUB without a cover cannot produce a thumbnail: the job fails with `processing_failed` and retrying will not help.",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "source",
@@ -6606,7 +6622,7 @@
                   "png"
                 ]
               },
-              "description": "Output quality for lossy thumbnail formats (jpg / webp / png): higher = better quality, larger file. For PNG, `quality` < 100 applies lossy palette quantization (transparency preserved); `quality: 100` keeps the PNG lossless. Per-format effective default (server-resolved when `quality` is unset, per ADR-0020 D1): PNG \u2192 70 (more aggressive \u2014 thumbnails target small files), jpg/webp \u2192 85. The schema `default` is the nominal jpg/webp value (85); the FE shows 70 as the initial PNG slider value.",
+              "description": "Output quality for jpg, webp and png thumbnails: higher = better quality, larger file. For PNG, a value below 100 reduces the colour palette (transparency is kept) and 100 keeps it lossless. When unset, PNG thumbnails use 70 and jpg/webp use 85.",
               "max": 100,
               "min": 1,
               "origin": "contract",
@@ -6991,7 +7007,7 @@
           "options": {
             "anchor": {
               "default": "bottom_right",
-              "description": "9-grid anchor position. For `watermark_mode: single`, the\ntext label is placed at this anchor + margin_x/margin_y\noffset on each frame. For `watermark_mode: tiled`, anchor\nis ignored (tiles fill the frame).\n\n\ud83d\udd34 **`center` IGNORES `margin_x` / `margin_y` rather than\nrejecting them. THE REJECTION AS WRITTEN CANNOT SURVIVE A\nNON-ZERO DEFAULT; IGNORING IS THE REPLACEMENT THAT WAS CHOSEN.**\nThe sibling operations still reject a non-zero\nmargin at `anchor: center` as `invalid_options` (422), and\nthat rule is sound THERE because their margin default is\n`0px`: a client that materialises the default sends `0px`,\nwhich is not non-zero, so only a caller who actually asked\nfor an offset is ever refused.\n\n\u26d4 **Here the default is `2%`, and that makes the rejection\nrule unusable as written.** Schema-driven clients fill contract\ndefaults BEFORE sending, so a request with `anchor: center`\narrives carrying `margin_x: \"2%\"` whether the caller chose it\nor never mentioned margins at all. **After default\nmaterialisation an explicit value and a defaulted one are\nINDISTINGUISHABLE on the wire**, so a rejection cannot\nseparate the mistake it exists to catch from the overwhelming\nmajority of requests that simply accepted the default. It\nwould 422 almost every centred watermark.\n\n\u26a0\ufe0f **Rejection is not the only alternative, and this text does\nnot claim it was forced.** A reject-if-it-differs-from-the-\ndefault rule would survive materialisation exactly as the zero\nrule does for the siblings. **Ignoring is the behaviour CHOSEN**\nunder hub decision 465, because margins are meaningless when the\nlabel is centred and a no-op is kinder than a 422 on a request\nthat renders correctly. The cost is stated: a caller who\ndeliberately passes a margin with `anchor: center` gets silence\nrather than a correction.\n\n\u26a0\ufe0f **DO NOT \"align\" `text_watermark` or `image_watermark` to\nthis on the strength of the operation NAME.** Their rejection\nstill works because their default is still `0px`. Changing one\nof THOSE defaults to non-zero is what would force the same move\nthere \u2014 the trigger is a non-zero default, never the operation\nname. (`video_watermark` moved with this operation because its\ndefault moved too, under the same decision.)\n",
+              "description": "Where the text is placed on each frame, on a 3x3 grid. For `watermark_mode: single` the text sits at this anchor, offset by `margin_x` / `margin_y`. For `watermark_mode: tiled` the anchor is ignored. With `center`, the margins are ignored.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
               "surface_key": "anchor",
@@ -7194,7 +7210,7 @@
           "options": {
             "anchor": {
               "default": "bottom_right",
-              "description": "9-grid anchor position on each video frame. Same vocabulary\nas `image_watermark.image` and `text_watermark.image`.\n\n\ud83d\udd34 **`center` IGNORES `margin_x` / `margin_y` rather than\nrejecting them. The rejection as written cannot survive a\nnon-zero default; ignoring is the replacement that was CHOSEN.\nThe trigger is the DEFAULT, not this operation.** Schema-driven\nclients materialise contract\ndefaults BEFORE sending, so with a non-zero default a centred\nrequest arrives carrying `margin_x: \"2%\"` whether the caller\nchose it or never mentioned margins. **After materialisation\nan explicit value and a defaulted one are indistinguishable on\nthe wire**, so the old `invalid_options` (422) rule would\nrefuse nearly every centred watermark.\n\n\u26a0\ufe0f Rejection is not the only alternative \u2014 a\nreject-if-it-differs-from-the-default rule would also survive\nmaterialisation. **Ignoring is the behaviour CHOSEN** under hub\ndecision 465, because margins are meaningless when the label is\ncentred. The cost is stated: a caller who deliberately passes a\nmargin with `anchor: center` gets silence, not a correction.\n\n\u26a0\ufe0f **The trigger is a NON-ZERO DEFAULT, never an operation\nname.** `image_watermark` and `text_watermark` keep their 422\nbecause their defaults are still `0px`, where a materialised\ndefault is not non-zero and only a deliberate offset is\nrefused.\n",
+              "description": "Where the watermark is placed on each frame, on a 3x3 grid (the same positions as image and text watermarks). With `center`, `margin_x` / `margin_y` are ignored.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
               "surface_key": "anchor",
@@ -7296,7 +7312,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.209.0",
+  "schema_version": "2.210.0",
   "sdk_spec_version": "2.3.1",
-  "source_hash": "sha256:8e6042796d668f426adc23e8304f301c060c21bf6be04c936aeb0a43f8c2d0af"
+  "source_hash": "sha256:67223f22e118117fd7a16c413dd6d37231b8e64be5bd9f6d249ff96d53fa4eb2"
 }
