@@ -80,7 +80,11 @@ final class SplitMetadata
                             per_value_availability: [],
                         ),
                         'precision' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'exact' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                     ],
                     per_input_options: [],
@@ -120,7 +124,11 @@ final class SplitMetadata
                             per_value_availability: [],
                         ),
                         'precision' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'exact' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                     ],
                     per_input_options: [],

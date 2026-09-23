@@ -5468,13 +5468,18 @@
             },
             "precision": {
               "default": "fast",
-              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the server re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate).\n\n\ud83d\udd34 **THE TWO VALUES HAVE DIFFERENT DURATION LIMITS, AND ONLY\nONE OF THEM REFUSES.** This is stated here, on the option a\ncaller chooses, because the group declares\n`input_size_bound: processing_time` and no\n`max_input_duration` \u2014 there is no per-value constraint\nprimitive to carry it.\n\n\u26d4 **NEITHER VALUE GIVES A PRE-FLIGHT SIGNAL. BOTH FAIL AFTER\nTHE JOB IS ACCEPTED AND BILLED.** No duration ceiling is\ndeclared on this group, so the API cannot enforce one at\ncreate; the worker's own check reads a probe result, which\nmeans the input has already been uploaded, accepted and\ndownloaded.\n\n- **`exact`: refused when its computed time budget does not\n  fit** \u2014 but WORKER-SIDE, after download and probe. The job\n  returns a terminal `OperationResult` with `error_code:\n  invalid_options`. \u26a0\ufe0f It is NOT an HTTP 422 and it is not a\n  create-time rejection: a worker cannot emit a status code.\n  The boundary does not move with `count` \u2014 once the cap\n  binds, the per-output term stops mattering.\n- **`fast` (the default): no boundary and no refusal at\n  all.** Past the point where its deadline saturates, the time\n  budget stops growing while the work does, so the job fails\n  as a **TIMEOUT** rather than with any reason a caller can\n  act on.\n\n\ud83d\udd34 **TWO LIMITS EXIST AND THE SMALLER ONE BINDS.** The worker\ncarries an internal time budget and the Lambda function\ncarries a platform timeout; **the effective boundary is the\nLOWER of the two**, and the internal budget sits ABOVE the\nplatform timeout.\n\n\u21d2 **`exact`'s refusal threshold is calibrated to a limit that\nis not the one that ends the job.** Its check does fire, and\nfires early \u2014 it reads the probe result before any re-encode\nstarts, so a long-but-small input is refused within seconds.\nBut there is a band of inputs it judges FINE which the\nplatform then hard-kills mid-encode, with no named cause. **So\n`exact` refusing is a reliable signal; `exact` NOT refusing is\nnot a promise the job will finish.**\n\n\u26d4 **NO SECONDS FIGURE IS GIVEN HERE, DELIBERATELY.** v2.205.0\npublished figures keyed to the crate constant \u2014 the larger\nlimit, the one that does not bind. The effective number lands\nonly when that derivation settles AND a job is measured near\nit. **A published number a caller pre-validates against is\nworse wrong than absent**; the shape above is what a caller can\nactually act on today, which is: do not rely on either value\nfailing gracefully.\n\n\u21d2 `exact` at least names a cause when it is reached; `fast`\nnever does. **Both are the accept-then-bill-then-fail shape**,\nwhich is the very thing this group's `input_size_bound`\ndeclaration exists to stop happening silently on the BYTE\naxis. On the DURATION axis it is stated here and not yet\nfixed.\n\n\u26a0\ufe0f Read from `compression_lambdas` `crates/split`. **NOT\nmeasured** \u2014 their audio fixtures reach 145 s, a small\nfraction of any candidate cap, so this describes what the code\nwill do rather than observed behaviour at the boundary.\n",
+              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the server re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate).\n\n\ud83d\udd34 **THE TWO VALUES HAVE DIFFERENT DURATION LIMITS, AND ONLY\nONE OF THEM REFUSES.** This is stated here, on the option a\ncaller chooses, because the group declares\n`input_size_bound: processing_time` and no\n`max_input_duration` \u2014 there is no per-value constraint\nprimitive to carry it.\n\n\ud83d\udd34 **TODAY `exact` IS REFUSED AT CREATE** \u2014 the API does not\nyet admit it for any split (the re-encode path is not yet\npriced), so it is tagged `planned` and a request carrying it\nis rejected before anything is uploaded, accepted or billed.\n**Everything below about `exact` describes the worker, i.e.\nwhat it will do once the API admits it.**\n\n\u26a0\ufe0f **TRANSITIONAL ERROR SHAPE.** A `planned` value is refused\nwith `feature_not_available` (422) by this contract's rule.\nUntil the API moves its split gate onto that rule, the refusal\narrives as a validation error on `precision` (`invalid_options`,\nalso 422). A consumer should treat either as \"`exact` is not\navailable\" \u2014 and should not send it, which the `planned` tag\nalready tells it.\n\n\u26d4 **`fast` GIVES NO PRE-FLIGHT SIGNAL, and neither will\n`exact` once admitted: both fail AFTER THE JOB IS ACCEPTED\nAND BILLED.** No duration ceiling is declared on this group,\nso the API cannot enforce one at create; the worker's own\ncheck reads a probe result, which means the input has already\nbeen uploaded, accepted and downloaded.\n\n- **`exact` (once admitted): refused when its computed time\n  budget does not fit** \u2014 but WORKER-SIDE, after download and\n  probe. The job\n  returns a terminal `OperationResult` with `error_code:\n  invalid_options`. \u26a0\ufe0f It is NOT an HTTP 422 and it is not a\n  create-time rejection: a worker cannot emit a status code.\n  The boundary does not move with `count` \u2014 once the cap\n  binds, the per-output term stops mattering.\n- **`fast` (the default): no boundary and no refusal at\n  all.** Past the point where its deadline saturates, the time\n  budget stops growing while the work does, so the job fails\n  as a **TIMEOUT** rather than with any reason a caller can\n  act on.\n\n\ud83d\udd34 **TWO LIMITS EXIST AND THE SMALLER ONE BINDS.** The worker\ncarries an internal time budget and the Lambda function\ncarries a platform timeout; **the effective boundary is the\nLOWER of the two**, and the internal budget sits ABOVE the\nplatform timeout.\n\n\u21d2 **`exact`'s refusal threshold is calibrated to a limit that\nis not the one that ends the job.** Its check does fire, and\nfires early \u2014 it reads the probe result before any re-encode\nstarts, so a long-but-small input is refused within seconds.\nBut there is a band of inputs it judges FINE which the\nplatform then hard-kills mid-encode, with no named cause. **So\n`exact` refusing is a reliable signal; `exact` NOT refusing is\nnot a promise the job will finish.**\n\n\u26d4 **NO SECONDS FIGURE IS GIVEN HERE, DELIBERATELY.** v2.205.0\npublished figures keyed to the crate constant \u2014 the larger\nlimit, the one that does not bind. The effective number lands\nonly when that derivation settles AND a job is measured near\nit. **A published number a caller pre-validates against is\nworse wrong than absent**; the shape above is what a caller can\nactually act on today, which is: do not rely on either value\nfailing gracefully.\n\n\u21d2 `exact` (once admitted) at least names a cause when it is\nreached; `fast` never does. **On today's customer path only\n`fast` is the accept-then-bill-then-fail shape**,\nwhich is the very thing this group's `input_size_bound`\ndeclaration exists to stop happening silently on the BYTE\naxis. On the DURATION axis it is stated here and not yet\nfixed.\n\n\u26a0\ufe0f Read from `compression_lambdas` `crates/split`. **NOT\nmeasured** \u2014 their audio fixtures reach 145 s, a small\nfraction of any candidate cap, so this describes what the code\nwill do rather than observed behaviour at the boundary.\n",
               "origin": "contract",
+              "per_value_availability": {
+                "exact": {
+                  "availability": "planned"
+                }
+              },
               "sdk_exposure": "expose",
               "surface_key": "precision",
               "type": "enum",
               "value_exposure": {
-                "exact": "expose",
+                "exact": "coming_soon",
                 "fast": "expose"
               },
               "values": [
@@ -5686,11 +5691,16 @@
               "default": "fast",
               "description": "Cut precision. Under `fast`, video cuts are keyframe-\naligned (drift bounded by GOP size \u2014 typically up to 1-2\nseconds depending on encoder). Under `exact`, the backend\nre-encodes to align cuts precisely at the requested\ntimestamps (slower, larger output, but frame-accurate).\n",
               "origin": "contract",
+              "per_value_availability": {
+                "exact": {
+                  "availability": "planned"
+                }
+              },
               "sdk_exposure": "expose",
               "surface_key": "precision",
               "type": "enum",
               "value_exposure": {
-                "exact": "expose",
+                "exact": "coming_soon",
                 "fast": "expose"
               },
               "values": [
@@ -7286,7 +7296,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.208.0",
-  "sdk_spec_version": "2.3.0",
-  "source_hash": "sha256:5b27659d918e263faa1fd74f3ff638acae77f7b666d27aca85d66f803035508f"
+  "schema_version": "2.209.0",
+  "sdk_spec_version": "2.3.1",
+  "source_hash": "sha256:8e6042796d668f426adc23e8304f301c060c21bf6be04c936aeb0a43f8c2d0af"
 }
