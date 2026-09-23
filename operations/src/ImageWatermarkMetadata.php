@@ -11,6 +11,7 @@ final class ImageWatermarkMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
+            sole_op: true,
             features: [
                 'multi_overlay_stack' => new FeatureEntry(
                     availability: 'stable',

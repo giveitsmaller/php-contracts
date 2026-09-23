@@ -11,6 +11,7 @@ final class ArchiveMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
+            sole_op: true,
             features: [],
             mime_groups: [],
             direct_options: [

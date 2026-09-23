@@ -11,6 +11,7 @@ final class MergeMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
+            sole_op: true,
             features: [],
             mime_groups: [
                 'image' => new MimeGroupMetadata(

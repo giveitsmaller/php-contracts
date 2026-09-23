@@ -12,6 +12,7 @@ final class SplitMetadata
     {
         return new OperationMetadata(
             availability: 'beta',
+            sole_op: true,
             features: [
                 'silence_mode_audio' => new FeatureEntry(
                     availability: 'beta',

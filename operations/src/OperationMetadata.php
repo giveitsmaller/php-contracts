@@ -19,5 +19,6 @@ final class OperationMetadata
         public readonly array $direct_options = [],
         public readonly ?string $availability = null,
         public readonly ?string $required_tier = null,
+        public readonly bool $sole_op = false,
     ) {}
 }

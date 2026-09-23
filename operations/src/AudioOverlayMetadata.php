@@ -12,6 +12,7 @@ final class AudioOverlayMetadata
     {
         return new OperationMetadata(
             availability: 'planned',
+            sole_op: true,
             features: [
                 'multi_overlay_stack' => new FeatureEntry(
                     availability: 'planned',

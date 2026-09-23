@@ -12,6 +12,7 @@ final class VideoTextWatermarkMetadata
     {
         return new OperationMetadata(
             availability: 'planned',
+            sole_op: true,
             features: [],
             mime_groups: [
                 'video' => new MimeGroupMetadata(

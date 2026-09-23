@@ -12,6 +12,7 @@ final class AudioToVideoMetadata
     {
         return new OperationMetadata(
             availability: 'planned',
+            sole_op: true,
             features: [],
             mime_groups: [
                 'audio' => new MimeGroupMetadata(
