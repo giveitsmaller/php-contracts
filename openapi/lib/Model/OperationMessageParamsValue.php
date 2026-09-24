@@ -1,6 +1,6 @@
 <?php
 /**
- * UploadSource
+ * OperationMessageParamsValue
  *
  * PHP version 8.1
  *
@@ -32,16 +32,15 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * UploadSource Class Doc Comment
+ * OperationMessageParamsValue Class Doc Comment
  *
  * @category Class
- * @description References an upload created via &#x60;POST /api/uploads&#x60; (single) or completed via &#x60;POST /api/uploads/multipart/complete&#x60; (multipart). Both flows yield the same &#x60;file_id&#x60; shape.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
+class OperationMessageParamsValue implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +49,7 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @var string
      */
-    protected static $openAPIModelName = 'UploadSource';
+    protected static $openAPIModelName = 'OperationMessageParams_value';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,8 +57,7 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $openAPITypes = [
-        'type' => 'string',
-        'file_id' => 'string'
+        
     ];
 
     /**
@@ -70,8 +68,7 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'type' => null,
-        'file_id' => 'uuid'
+        
     ];
 
     /**
@@ -80,8 +77,7 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'type' => false,
-        'file_id' => false
+        
     ];
 
     /**
@@ -170,8 +166,7 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'type' => 'type',
-        'file_id' => 'file_id'
+        
     ];
 
     /**
@@ -180,8 +175,7 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'type' => 'setType',
-        'file_id' => 'setFileId'
+        
     ];
 
     /**
@@ -190,8 +184,7 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'type' => 'getType',
-        'file_id' => 'getFileId'
+        
     ];
 
     /**
@@ -235,19 +228,6 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
         return self::$openAPIModelName;
     }
 
-    public const TYPE_UPLOAD = 'upload';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getTypeAllowableValues()
-    {
-        return [
-            self::TYPE_UPLOAD,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -264,8 +244,6 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('type', $data ?? [], null);
-        $this->setIfExists('file_id', $data ?? [], null);
     }
 
     /**
@@ -295,25 +273,6 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['type'] === null) {
-            $invalidProperties[] = "'type' can't be null";
-        }
-        $allowedValues = $this->getTypeAllowableValues();
-        if (!is_null($this->container['type']) && !in_array($this->container['type'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'type', must be one of '%s'",
-                $this->container['type'],
-                implode("', '", $allowedValues)
-            );
-        }
-
-        if ($this->container['file_id'] === null) {
-            $invalidProperties[] = "'file_id' can't be null";
-        }
-        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['file_id'])) {
-            $invalidProperties[] = "invalid value for 'file_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
-        }
-
         return $invalidProperties;
     }
 
@@ -328,75 +287,6 @@ class UploadSource implements ModelInterface, ArrayAccess, \JsonSerializable
         return count($this->listInvalidProperties()) === 0;
     }
 
-
-    /**
-     * Gets type
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->container['type'];
-    }
-
-    /**
-     * Sets type
-     *
-     * @param string $type type
-     *
-     * @return self
-     */
-    public function setType($type)
-    {
-        if (is_null($type)) {
-            throw new \InvalidArgumentException('non-nullable type cannot be null');
-        }
-        $allowedValues = $this->getTypeAllowableValues();
-        if (!in_array($type, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'type', must be one of '%s'",
-                    $type,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['type'] = $type;
-
-        return $this;
-    }
-
-    /**
-     * Gets file_id
-     *
-     * @return string
-     */
-    public function getFileId()
-    {
-        return $this->container['file_id'];
-    }
-
-    /**
-     * Sets file_id
-     *
-     * @param string $file_id UUID v7 format identifier (time-ordered)
-     *
-     * @return self
-     */
-    public function setFileId($file_id)
-    {
-        if (is_null($file_id)) {
-            throw new \InvalidArgumentException('non-nullable file_id cannot be null');
-        }
-
-        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($file_id)))) {
-            throw new \InvalidArgumentException("invalid value for \$file_id when calling UploadSource., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
-        }
-
-        $this->container['file_id'] = $file_id;
-
-        return $this;
-    }
     /**
      * Returns true if offset exists. False otherwise.
      *

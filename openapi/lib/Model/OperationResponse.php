@@ -13,9 +13,9 @@
 /**
  * GISL Compression API
  *
- * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
+ * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.210.0
+ * The version of the OpenAPI document: 2.211.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -65,7 +65,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'result' => '\Gisl\Generated\OpenApi\Model\OperationResult',
         'result_metadata' => '\Gisl\Generated\OpenApi\Model\OperationResultMetadata',
         'error_code' => 'string',
-        'error_message' => 'string'
+        'error_message' => 'string',
+        'message_key' => 'string',
+        'message_params' => 'array<string,mixed>'
     ];
 
     /**
@@ -83,7 +85,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'result' => null,
         'result_metadata' => null,
         'error_code' => null,
-        'error_message' => null
+        'error_message' => null,
+        'message_key' => null,
+        'message_params' => null
     ];
 
     /**
@@ -99,7 +103,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'result' => false,
         'result_metadata' => false,
         'error_code' => false,
-        'error_message' => false
+        'error_message' => false,
+        'message_key' => false,
+        'message_params' => false
     ];
 
     /**
@@ -195,7 +201,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'result' => 'result',
         'result_metadata' => 'result_metadata',
         'error_code' => 'error_code',
-        'error_message' => 'error_message'
+        'error_message' => 'error_message',
+        'message_key' => 'message_key',
+        'message_params' => 'message_params'
     ];
 
     /**
@@ -211,7 +219,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'result' => 'setResult',
         'result_metadata' => 'setResultMetadata',
         'error_code' => 'setErrorCode',
-        'error_message' => 'setErrorMessage'
+        'error_message' => 'setErrorMessage',
+        'message_key' => 'setMessageKey',
+        'message_params' => 'setMessageParams'
     ];
 
     /**
@@ -227,7 +237,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'result' => 'getResult',
         'result_metadata' => 'getResultMetadata',
         'error_code' => 'getErrorCode',
-        'error_message' => 'getErrorMessage'
+        'error_message' => 'getErrorMessage',
+        'message_key' => 'getMessageKey',
+        'message_params' => 'getMessageParams'
     ];
 
     /**
@@ -295,6 +307,8 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         $this->setIfExists('result_metadata', $data ?? [], null);
         $this->setIfExists('error_code', $data ?? [], null);
         $this->setIfExists('error_message', $data ?? [], null);
+        $this->setIfExists('message_key', $data ?? [], null);
+        $this->setIfExists('message_params', $data ?? [], null);
     }
 
     /**
@@ -343,6 +357,10 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
 
         if (!is_null($this->container['progress']) && ($this->container['progress'] < 0)) {
             $invalidProperties[] = "invalid value for 'progress', must be bigger than or equal to 0.";
+        }
+
+        if (!is_null($this->container['message_key']) && !preg_match("/^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$/", $this->container['message_key'])) {
+            $invalidProperties[] = "invalid value for 'message_key', must be conform to the pattern /^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$/.";
         }
 
         return $invalidProperties;
@@ -548,7 +566,7 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets error_code
      *
-     * @param string|null $error_code Machine-readable operation failure code. Present when `status` is `failed`; absent otherwise. Mirrors `SseOperationFailedData.error_code` (same diagnostic the SSE `operation.failed` event carries) and the AsyncAPI `OperationResult.error_code` / `ErrorCode` enum (the source of truth). The worker emits a CLOSED, curated set; consumers SHOULD map known values to a friendly reason and MUST degrade an unknown value to a generic reason (a future contract version MAY add a variant). Left `type: string` (not a strict enum) deliberately: this same field rides the `WebhookPayload.workflow` callback, where a strict enum would read as a request-narrowing, and tolerate-unknown is the intended consumer behaviour.  Distinct from the workflow/API create-time `ErrorEnvelope.error` vocabulary — this is the per-operation processing failure.  **Retry semantics — DERIVE THEM FROM THIS FIELD.** Retryability is a property OF THE ERROR CODE, not an independent fact about an occurrence: the same code is always equally retryable, so there is no per-response boolean on this surface to read. The transient codes are `out_of_memory`, `timeout`, `s3_download_failed` and `s3_upload_failed`; the AsyncAPI `ErrorCode` enum groups every value under **Retryable** / **Non-retryable** headings and is the source of truth for that mapping.  Note a reported failure is **always terminal** regardless: transient codes are auto-redriven (SQS) and exhausted before a failure ever surfaces here, so retryability only tells the caller whether **re-submitting** is worthwhile.  **This docstring previously referred to \"the sibling `is_retryable`\". There is no such field on the OpenAPI surface** — it exists only on the AsyncAPI worker→API channel, so no generated REST client could ever carry it, and the contract was describing to consumers something it does not deliver (ticket `wdOF3ol4`). Deliberately corrected by REMOVING the promise rather than by adding the field: a per-response boolean would be a second source of truth for a fact the code already determines, free to drift from it, and it would break again when the `retryable` boolean→enum change lands.  **Codes** (closed set; meaning): `invalid_options` (options invalid for this op — most common), `invalid_request` (malformed OperationRequest), `invalid_format` (input type unsupported), `format_mismatch` (declared MIME ≠ content), `decode_failed` (input unreadable/corrupt), `output_too_large` (output exceeded the size limit), `missing_source` (source not found — fail-fast), `invalid_key` (storage key invalid), `processing_failed` (non-specific processing failure), `s3_access_denied` (storage access denied — fail-fast, non-retryable), `input_too_large` (input exceeds our PROCESSING limits — deterministic, user-actionable via downscaling or a higher tier; distinct from the byte caps, which are refused at create and never reach a worker), `never_started` (the operation was terminated without ever running because its job reached a terminal state first — an upstream failure OR a cancellation; API-derived, never worker-emitted), `unknown` (unclassified), `out_of_memory` (retryable), `timeout` (retryable), `s3_download_failed` (retryable), `s3_upload_failed` (retryable).
+     * @param string|null $error_code Machine-readable operation failure code. Present when `status` is `failed`; absent otherwise. Mirrors `SseOperationFailedData.error_code` (same diagnostic the SSE `operation.failed` event carries) and the AsyncAPI `OperationResult.error_code` / `ErrorCode` enum (the source of truth). The worker emits a CLOSED, curated set; consumers SHOULD map known values to a friendly reason and MUST degrade an unknown value to a generic reason (a future contract version MAY add a variant). Left `type: string` (not a strict enum) deliberately: this same field rides the `WebhookPayload.workflow` callback, where a strict enum would read as a request-narrowing, and tolerate-unknown is the intended consumer behaviour.  Distinct from the workflow/API create-time `ErrorEnvelope.error` vocabulary — this is the per-operation processing failure.  **Retry semantics — DERIVE THEM FROM THIS FIELD.** Retryability is a property OF THE ERROR CODE, not an independent fact about an occurrence: the same code is always equally retryable, so there is no per-response boolean on this surface to read. The transient codes are `out_of_memory`, `timeout`, `s3_download_failed` and `s3_upload_failed`; the AsyncAPI `ErrorCode` enum groups every value under **Retryable** / **Non-retryable** headings and is the source of truth for that mapping.  Note a reported failure is **always terminal** regardless: transient codes are auto-redriven (SQS) and exhausted before a failure ever surfaces here, so retryability only tells the caller whether **re-submitting** is worthwhile.  **This docstring previously referred to \"the sibling `is_retryable`\". There is no such field on the OpenAPI surface** — it exists only on the AsyncAPI worker→API channel, so no generated REST client could ever carry it, and the contract was describing to consumers something it does not deliver (ticket `wdOF3ol4`). Deliberately corrected by REMOVING the promise rather than by adding the field: a per-response boolean would be a second source of truth for a fact the code already determines, free to drift from it, and it would break again when the `retryable` boolean→enum change lands.  **Codes** (closed set; meaning): `invalid_options` (options invalid for this op — most common), `invalid_request` (malformed OperationRequest), `invalid_format` (input type unsupported), `format_mismatch` (declared MIME ≠ content), `decode_failed` (input unreadable/corrupt), `output_too_large` (output exceeded the size limit), `missing_source` (source not found — fail-fast), `invalid_key` (storage key invalid), `processing_failed` (non-specific processing failure), `s3_access_denied` (storage access denied — fail-fast, non-retryable), `input_too_large` (input exceeds our PROCESSING limits — deterministic, user-actionable via downscaling or a higher tier; distinct from the byte caps, which are refused at create and never reach a worker), `never_started` (the operation was terminated without ever running because its job reached a terminal state first — an upstream failure OR a cancellation; API-derived, never worker-emitted), `processing_limit_exceeded` (a processing tool was killed at a budget set from this input — deterministic, non-retryable; a transient deadline is `timeout`), `unknown` (unclassified), `out_of_memory` (retryable), `timeout` (retryable), `s3_download_failed` (retryable), `s3_upload_failed` (retryable).
      *
      * @return self
      */
@@ -585,6 +603,65 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
             throw new \InvalidArgumentException('non-nullable error_message cannot be null');
         }
         $this->container['error_message'] = $error_message;
+
+        return $this;
+    }
+
+    /**
+     * Gets message_key
+     *
+     * @return string|null
+     */
+    public function getMessageKey()
+    {
+        return $this->container['message_key'];
+    }
+
+    /**
+     * Sets message_key
+     *
+     * @param string|null $message_key Stable, never-localised key REFINING `error_code` on a failed operation, so a client can show specific, localised copy (e.g. `thumbnail.epub.no_cover`). OPTIONAL, failed only. Every value is declared, with the codes it may accompany and its parameters, in `schemas/operation-message-keys.yaml` (the one registry). Passed through unchanged from the worker's OperationResult. A client that does not know a key, or receives one whose registry `error_codes` do not include this `error_code`, ignores the key and falls back to the `error_code` headline; retry is still decided from the code. Ticket U7GQhjhX.
+     *
+     * @return self
+     */
+    public function setMessageKey($message_key)
+    {
+        if (is_null($message_key)) {
+            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
+        }
+
+        if ((!preg_match("/^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$/", ObjectSerializer::toString($message_key)))) {
+            throw new \InvalidArgumentException("invalid value for \$message_key when calling OperationResponse., must conform to the pattern /^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$/.");
+        }
+
+        $this->container['message_key'] = $message_key;
+
+        return $this;
+    }
+
+    /**
+     * Gets message_params
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getMessageParams()
+    {
+        return $this->container['message_params'];
+    }
+
+    /**
+     * Sets message_params
+     *
+     * @param array<string,mixed>|null $message_params Interpolation values for `message_key`, named and typed in `schemas/operation-message-keys.yaml`. JSON scalars only (string, integer, number, boolean) — no nested objects. Absent when the key declares no parameters (`params: {}`), and carries exactly the registry's parameters otherwise. Never carries free-text diagnostics; those stay in `error_message`.
+     *
+     * @return self
+     */
+    public function setMessageParams($message_params)
+    {
+        if (is_null($message_params)) {
+            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
+        }
+        $this->container['message_params'] = $message_params;
 
         return $this;
     }

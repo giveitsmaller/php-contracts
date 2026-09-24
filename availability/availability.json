@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 196,
+  "capabilities_version": 205,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -28,6 +28,13 @@
       "availability": "stable",
       "identity_scoped": true,
       "operation_id": "getProfile",
+      "required_tier": null
+    },
+    "GET /api/billing/checkout/{sessionId}/status": {
+      "auth": "required",
+      "availability": "planned",
+      "identity_scoped": true,
+      "operation_id": "getCheckoutSessionStatus",
       "required_tier": null
     },
     "GET /api/operations/schema": {
@@ -2572,7 +2579,7 @@
                   "mkv"
                 ]
               },
-              "description": "CRF (Constant Rate Factor): 0 = lossless/best, 51 = worst. Lower = higher quality + larger file (the inverse of image `quality`). Video outputs only \u2014 NOT applicable to a `gif` output (frame extraction has no CRF). An explicit `crf` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit.\n",
+              "description": "CRF (Constant Rate Factor): 0 = lossless/best, 51 = worst. Lower = higher quality + larger file (the inverse of image `quality`). Video outputs only \u2014 NOT applicable to a `gif` output (frame extraction has no CRF). An explicit `crf` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit. Left at 23 (the default) when converting an MP4 to MOV and the streams can be carried over as they are, the video is copied without re-encoding, so its quality is unchanged. Choose any other value to force a re-encode.\n",
               "max": 51,
               "min": 0,
               "type": "integer"
@@ -3912,7 +3919,7 @@
       "features": {
         "silence_mode_audio": {
           "availability": "beta",
-          "description": "Silence-detect cut mode for audio (`mode: silence` \u2014\nserver-side silence detection). `beta`: shape-stable + opt-in.\nThe mode ships dark until the API regenerates enum validation\nto accept `mode: silence`. The `silence` enum value carries a\nmatching `per_value_availability: beta` on `audio.mode`.\n"
+          "description": "Silence-detect cut mode for audio (`mode: silence` \u2014\nserver-side silence detection). `beta`: shape-stable + opt-in.\nAccepted at workflow-create by any API build that vendors this\nvalue, since the validator reads the enum from the vendored\nschema. The `silence` enum value carries a\nmatching `per_value_availability: beta` on `audio.mode`.\n"
         }
       },
       "input_model": "single",
@@ -5063,8 +5070,8 @@
               "type": "float"
             },
             "rotation": {
-              "default": -45.0,
-              "description": "Rotation angle in degrees. Default -45\u00b0 suits tiled mode\n(angled diagonal pattern). Clamped to range.\n",
+              "availability": "planned",
+              "description": "Rotation angle of the watermark text, in degrees. Not available yet.\n",
               "max": 360.0,
               "min": -360.0,
               "type": "float"
@@ -5229,7 +5236,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.210.0",
+  "schema_version": "2.211.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

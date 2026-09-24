@@ -13,9 +13,9 @@
 /**
  * GISL Compression API
  *
- * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
+ * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.210.0
+ * The version of the OpenAPI document: 2.211.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -63,6 +63,8 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => '\Gisl\Generated\OpenApi\Model\UserTier',
         'per_mime_availability' => 'array<string,\Gisl\Generated\OpenApi\Model\PerValueAvailabilityEntry>',
         'max_input_size_bytes' => 'int',
+        'max_output_pixels' => 'int',
+        'input_size_bound' => 'string',
         'max_input_duration' => 'string',
         'processing_class' => 'array<string,\Gisl\Generated\OpenApi\Model\ProcessingClassEntry>',
         'options' => 'array<string,\Gisl\Generated\OpenApi\Model\OptionSchema>',
@@ -82,6 +84,8 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => null,
         'per_mime_availability' => null,
         'max_input_size_bytes' => 'int64',
+        'max_output_pixels' => 'int64',
+        'input_size_bound' => null,
         'max_input_duration' => null,
         'processing_class' => null,
         'options' => null,
@@ -99,6 +103,8 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => false,
         'per_mime_availability' => false,
         'max_input_size_bytes' => false,
+        'max_output_pixels' => false,
+        'input_size_bound' => false,
         'max_input_duration' => false,
         'processing_class' => false,
         'options' => false,
@@ -196,6 +202,8 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => 'required_tier',
         'per_mime_availability' => 'per_mime_availability',
         'max_input_size_bytes' => 'max_input_size_bytes',
+        'max_output_pixels' => 'max_output_pixels',
+        'input_size_bound' => 'input_size_bound',
         'max_input_duration' => 'max_input_duration',
         'processing_class' => 'processing_class',
         'options' => 'options',
@@ -213,6 +221,8 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => 'setRequiredTier',
         'per_mime_availability' => 'setPerMimeAvailability',
         'max_input_size_bytes' => 'setMaxInputSizeBytes',
+        'max_output_pixels' => 'setMaxOutputPixels',
+        'input_size_bound' => 'setInputSizeBound',
         'max_input_duration' => 'setMaxInputDuration',
         'processing_class' => 'setProcessingClass',
         'options' => 'setOptions',
@@ -230,6 +240,8 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => 'getRequiredTier',
         'per_mime_availability' => 'getPerMimeAvailability',
         'max_input_size_bytes' => 'getMaxInputSizeBytes',
+        'max_output_pixels' => 'getMaxOutputPixels',
+        'input_size_bound' => 'getInputSizeBound',
         'max_input_duration' => 'getMaxInputDuration',
         'processing_class' => 'getProcessingClass',
         'options' => 'getOptions',
@@ -277,6 +289,19 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         return self::$openAPIModelName;
     }
 
+    public const INPUT_SIZE_BOUND_PROCESSING_TIME = 'processing_time';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getInputSizeBoundAllowableValues()
+    {
+        return [
+            self::INPUT_SIZE_BOUND_PROCESSING_TIME,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -298,6 +323,8 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('required_tier', $data ?? [], null);
         $this->setIfExists('per_mime_availability', $data ?? [], null);
         $this->setIfExists('max_input_size_bytes', $data ?? [], null);
+        $this->setIfExists('max_output_pixels', $data ?? [], null);
+        $this->setIfExists('input_size_bound', $data ?? [], null);
         $this->setIfExists('max_input_duration', $data ?? [], null);
         $this->setIfExists('processing_class', $data ?? [], null);
         $this->setIfExists('options', $data ?? [], null);
@@ -336,6 +363,19 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         }
         if (!is_null($this->container['max_input_size_bytes']) && ($this->container['max_input_size_bytes'] < 1)) {
             $invalidProperties[] = "invalid value for 'max_input_size_bytes', must be bigger than or equal to 1.";
+        }
+
+        if (!is_null($this->container['max_output_pixels']) && ($this->container['max_output_pixels'] < 1)) {
+            $invalidProperties[] = "invalid value for 'max_output_pixels', must be bigger than or equal to 1.";
+        }
+
+        $allowedValues = $this->getInputSizeBoundAllowableValues();
+        if (!is_null($this->container['input_size_bound']) && !in_array($this->container['input_size_bound'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'input_size_bound', must be one of '%s'",
+                $this->container['input_size_bound'],
+                implode("', '", $allowedValues)
+            );
         }
 
         if ($this->container['options'] === null) {
@@ -477,7 +517,7 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets max_input_size_bytes
      *
-     * @param int|null $max_input_size_bytes Optional mime-group-level INPUT-file size ceiling in BYTES (ticket [`uKsFzORi`](https://trello.com/c/uKsFzORi)). Sibling of `max_output_pixels`. **Applies to the enclosing operation's input**, and a consumer MUST scope it to the operation whose schema carries it — **the same MIME can carry different ceilings under different operations, because different workers process it.** ⚠️ This line previously said the ceilings were authored on `compress` only; they are not, and reading a `compress` number as the binding one for a `[compress, thumbnail]` chain is what let a 128 MB EPUB upload succeed and then be refused (`jLxWpQEZ`). **Do not enumerate the values here** — a restated table is one nothing re-measures; read them from the operation's own schema.  🔴 **A GROUP WITH NO `max_input_size_bytes` HAS NOT SAID THERE IS NO LIMIT.** It has said nothing. A group whose worker imposes no byte ceiling declares `input_size_bound: processing_time` instead, and exactly one of the two keys is present when either is. An oversize input is rejected at create-time (ADR-0012 band-ceiling 422 family).  **XOR with `processing_class` caps (ADR-0011):** a group carries this group-level cap ONLY when it has NO `processing_class` band. Banded media (e.g. `video`) put input caps in `processing_class.<class>.constraints.max_input_size_bytes` instead — never both, so the input ceiling lives in exactly one place per group. CI-enforced by `scripts/check-per-tier-constraints.py`.
+     * @param int|null $max_input_size_bytes Optional mime-group-level INPUT-file size ceiling in BYTES (ticket [`uKsFzORi`](https://trello.com/c/uKsFzORi)). Sibling of `max_output_pixels` (declared below). **Applies to the enclosing operation's input**, and a consumer MUST scope it to the operation whose schema carries it — **the same MIME can carry different ceilings under different operations, because different workers process it.** ⚠️ This line previously said the ceilings were authored on `compress` only; they are not, and reading a `compress` number as the binding one for a `[compress, thumbnail]` chain is what let a 128 MB EPUB upload succeed and then be refused (`jLxWpQEZ`). **Do not enumerate the values here** — a restated table is one nothing re-measures; read them from the operation's own schema.  🔴 **A GROUP WITH NO `max_input_size_bytes` HAS NOT SAID THERE IS NO LIMIT.** It has said nothing. A group whose worker imposes no byte ceiling declares `input_size_bound: processing_time` instead, and exactly one of the two keys is present when either is. An oversize input is rejected at create-time (ADR-0012 band-ceiling 422 family).  **XOR with `processing_class` caps (ADR-0011):** a group carries this group-level cap ONLY when it has NO `processing_class` band. Banded media (e.g. `video`) put input caps in `processing_class.<class>.constraints.max_input_size_bytes` instead — never both, so the input ceiling lives in exactly one place per group. CI-enforced by `scripts/check-per-tier-constraints.py`.
      *
      * @return self
      */
@@ -492,6 +532,75 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         }
 
         $this->container['max_input_size_bytes'] = $max_input_size_bytes;
+
+        return $this;
+    }
+
+    /**
+     * Gets max_output_pixels
+     *
+     * @return int|null
+     */
+    public function getMaxOutputPixels()
+    {
+        return $this->container['max_output_pixels'];
+    }
+
+    /**
+     * Sets max_output_pixels
+     *
+     * @param int|null $max_output_pixels Optional mime-group-level OUTPUT area cap: a request is valid on this axis iff `width × height <= max_output_pixels`, read from the two option values. Declared here since 2026-09-23 (`gACSVjiK`): it was named as a \"sibling\" of `max_input_size_bytes` while existing only in the operation schemas and the availability sidecar, and a consumer diffing the served schema reported it as a missing key. ⚠️ **Optional, and not yet round-tripped by `GET /api/operations/schema`** — the operation schemas under `schemas/` and `availability/availability.json` carry it today. See `schemas/FORMAT.md` §`max_output_pixels`.
+     *
+     * @return self
+     */
+    public function setMaxOutputPixels($max_output_pixels)
+    {
+        if (is_null($max_output_pixels)) {
+            throw new \InvalidArgumentException('non-nullable max_output_pixels cannot be null');
+        }
+
+        if (($max_output_pixels < 1)) {
+            throw new \InvalidArgumentException('invalid value for $max_output_pixels when calling MimeGroupSchema., must be bigger than or equal to 1.');
+        }
+
+        $this->container['max_output_pixels'] = $max_output_pixels;
+
+        return $this;
+    }
+
+    /**
+     * Gets input_size_bound
+     *
+     * @return string|null
+     */
+    public function getInputSizeBound()
+    {
+        return $this->container['input_size_bound'];
+    }
+
+    /**
+     * Sets input_size_bound
+     *
+     * @param string|null $input_size_bound Declares that the group has **no byte ceiling on purpose**: the worker is bounded by processing time instead. XOR with `max_input_size_bytes` — exactly one is present when either is, so an absent pair means \"nothing declared\", never \"unlimited\". Declared here since 2026-09-23 (`gACSVjiK`) for the same reason as `max_output_pixels`, with the same round-trip caveat. See `schemas/FORMAT.md` §`input_size_bound`.
+     *
+     * @return self
+     */
+    public function setInputSizeBound($input_size_bound)
+    {
+        if (is_null($input_size_bound)) {
+            throw new \InvalidArgumentException('non-nullable input_size_bound cannot be null');
+        }
+        $allowedValues = $this->getInputSizeBoundAllowableValues();
+        if (!in_array($input_size_bound, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'input_size_bound', must be one of '%s'",
+                    $input_size_bound,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['input_size_bound'] = $input_size_bound;
 
         return $this;
     }

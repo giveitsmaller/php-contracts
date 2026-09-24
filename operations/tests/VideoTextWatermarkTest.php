@@ -122,12 +122,12 @@ final class VideoTextWatermarkTest extends TestCase
         $this->assertSame(48.0, $obj->font_size);
         $this->assertSame('#FFFFFF80', $obj->color);
         $this->assertSame(VideoTextWatermarkVideoFontFamily::LiberationSans, $obj->font_family);
-        $this->assertSame(-45.0, $obj->rotation);
         $this->assertSame(VideoTextWatermarkVideoWatermarkMode::Single, $obj->watermark_mode);
         $this->assertSame(VideoTextWatermarkVideoAnchor::BottomRight, $obj->anchor);
         $this->assertSame('2%', $obj->margin_x);
         $this->assertSame('2%', $obj->margin_y);
         $this->assertSame(1.0, $obj->opacity);
+        $this->assertNull($obj->rotation);
         $this->assertNull($obj->tile_spacing);
     }
 

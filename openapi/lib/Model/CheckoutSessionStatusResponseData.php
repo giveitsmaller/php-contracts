@@ -1,6 +1,6 @@
 <?php
 /**
- * ProcessingClassExceedsBandResponse
+ * CheckoutSessionStatusResponseData
  *
  * PHP version 8.1
  *
@@ -32,16 +32,15 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * ProcessingClassExceedsBandResponse Class Doc Comment
+ * CheckoutSessionStatusResponseData Class Doc Comment
  *
  * @category Class
- * @description 422 response body when one or more jobs cannot be classified because input size/duration exceeds the &#x60;long_form&#x60; (or &#x60;long_form_re_encode&#x60;) ceiling under the caller&#39;s effective per-tier caps (per [ADR-0011](../docs/decisions/0011-per-tier-processing-class-constraints.md) &#x60;per_tier_constraints&#x60;).  Distinct from &#x60;TierRestrictionResponse&#x60; (403, request-level tier-quota — resolvable by upload-size reduction or quota change) and from &#x60;FeatureNotAvailableResponse&#x60; (422, feature tagged not-yet-shipped — resolvable by waiting for the availability flip). Resolution path is per-violation: &#x60;required_tier&#x60; on each &#x60;ProcessingClassBandViolation&#x60; names the tier (if any) whose &#x60;per_tier_constraints&#x60; would accommodate the request; &#x60;null&#x60; means terminal (e.g. enterprise already at the 120 GB hard ceiling).  Per [ADR-0012](../docs/decisions/0012-processing-class-band-reject-envelope.md) for the band-vs-tier rationale and routing rule (why this envelope is 422, not an extension of &#x60;TierRestrictionResponse&#x60; on 403).  Delivered on &#x60;POST /api/workflows&#x60; 422 in a discriminated &#x60;oneOf&#x60; alongside &#x60;ValidationErrorEnvelope&#x60;, &#x60;FeatureNotAvailableResponse&#x60;, and &#x60;ProbePendingResponse&#x60; (per [ADR-0018](../docs/decisions/0018-universal-422-error-type-discriminator.md)) — this branch&#39;s &#x60;error_type&#x60; discriminator value is &#x60;processing_class_exceeds_band&#x60;.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess, \JsonSerializable
+class CheckoutSessionStatusResponseData implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +49,7 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
      *
      * @var string
      */
-    protected static $openAPIModelName = 'ProcessingClassExceedsBandResponse';
+    protected static $openAPIModelName = 'CheckoutSessionStatusResponse_data';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,14 +57,8 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
      * @var string[]
      */
     protected static $openAPITypes = [
-        'success' => 'bool',
-        'error' => 'string',
-        'message' => 'string',
-        'message_key' => 'string',
-        'locale' => 'string',
-        'message_params' => 'array<string,mixed>',
-        'error_type' => 'string',
-        'violations' => '\Gisl\Generated\OpenApi\Model\ProcessingClassBandViolation[]'
+        'session_id' => 'string',
+        'status' => 'string'
     ];
 
     /**
@@ -76,14 +69,8 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'success' => null,
-        'error' => null,
-        'message' => null,
-        'message_key' => null,
-        'locale' => null,
-        'message_params' => null,
-        'error_type' => null,
-        'violations' => null
+        'session_id' => null,
+        'status' => null
     ];
 
     /**
@@ -92,14 +79,8 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'success' => false,
-        'error' => false,
-        'message' => false,
-        'message_key' => false,
-        'locale' => false,
-        'message_params' => false,
-        'error_type' => false,
-        'violations' => false
+        'session_id' => false,
+        'status' => false
     ];
 
     /**
@@ -188,14 +169,8 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
      * @var string[]
      */
     protected static $attributeMap = [
-        'success' => 'success',
-        'error' => 'error',
-        'message' => 'message',
-        'message_key' => 'message_key',
-        'locale' => 'locale',
-        'message_params' => 'message_params',
-        'error_type' => 'error_type',
-        'violations' => 'violations'
+        'session_id' => 'session_id',
+        'status' => 'status'
     ];
 
     /**
@@ -204,14 +179,8 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
      * @var string[]
      */
     protected static $setters = [
-        'success' => 'setSuccess',
-        'error' => 'setError',
-        'message' => 'setMessage',
-        'message_key' => 'setMessageKey',
-        'locale' => 'setLocale',
-        'message_params' => 'setMessageParams',
-        'error_type' => 'setErrorType',
-        'violations' => 'setViolations'
+        'session_id' => 'setSessionId',
+        'status' => 'setStatus'
     ];
 
     /**
@@ -220,14 +189,8 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
      * @var string[]
      */
     protected static $getters = [
-        'success' => 'getSuccess',
-        'error' => 'getError',
-        'message' => 'getMessage',
-        'message_key' => 'getMessageKey',
-        'locale' => 'getLocale',
-        'message_params' => 'getMessageParams',
-        'error_type' => 'getErrorType',
-        'violations' => 'getViolations'
+        'session_id' => 'getSessionId',
+        'status' => 'getStatus'
     ];
 
     /**
@@ -271,17 +234,21 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
         return self::$openAPIModelName;
     }
 
-    public const ERROR_TYPE_PROCESSING_CLASS_EXCEEDS_BAND = 'processing_class_exceeds_band';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_UNKNOWN = 'unknown';
 
     /**
      * Gets allowable values of the enum
      *
      * @return string[]
      */
-    public function getErrorTypeAllowableValues()
+    public function getStatusAllowableValues()
     {
         return [
-            self::ERROR_TYPE_PROCESSING_CLASS_EXCEEDS_BAND,
+            self::STATUS_PAID,
+            self::STATUS_PENDING,
+            self::STATUS_UNKNOWN,
         ];
     }
 
@@ -300,14 +267,8 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('success', $data ?? [], null);
-        $this->setIfExists('error', $data ?? [], null);
-        $this->setIfExists('message', $data ?? [], null);
-        $this->setIfExists('message_key', $data ?? [], null);
-        $this->setIfExists('locale', $data ?? [], null);
-        $this->setIfExists('message_params', $data ?? [], null);
-        $this->setIfExists('error_type', $data ?? [], null);
-        $this->setIfExists('violations', $data ?? [], null);
+        $this->setIfExists('session_id', $data ?? [], null);
+        $this->setIfExists('status', $data ?? [], null);
     }
 
     /**
@@ -337,30 +298,19 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
     {
         $invalidProperties = [];
 
-        if ($this->container['success'] === null) {
-            $invalidProperties[] = "'success' can't be null";
+        if ($this->container['session_id'] === null) {
+            $invalidProperties[] = "'session_id' can't be null";
         }
-
-        if ($this->container['error'] === null) {
-            $invalidProperties[] = "'error' can't be null";
+        if ($this->container['status'] === null) {
+            $invalidProperties[] = "'status' can't be null";
         }
-        if ($this->container['error_type'] === null) {
-            $invalidProperties[] = "'error_type' can't be null";
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
+        $allowedValues = $this->getStatusAllowableValues();
+        if (!is_null($this->container['status']) && !in_array($this->container['status'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'error_type', must be one of '%s'",
-                $this->container['error_type'],
+                "invalid value '%s' for 'status', must be one of '%s'",
+                $this->container['status'],
                 implode("', '", $allowedValues)
             );
-        }
-
-        if ($this->container['violations'] === null) {
-            $invalidProperties[] = "'violations' can't be null";
-        }
-        if ((count($this->container['violations']) < 1)) {
-            $invalidProperties[] = "invalid value for 'violations', number of items must be greater than or equal to 1.";
         }
 
         return $invalidProperties;
@@ -379,232 +329,65 @@ class ProcessingClassExceedsBandResponse implements ModelInterface, ArrayAccess,
 
 
     /**
-     * Gets success
-     *
-     * @return bool
-     */
-    public function getSuccess()
-    {
-        return $this->container['success'];
-    }
-
-    /**
-     * Sets success
-     *
-     * @param bool $success success
-     *
-     * @return self
-     */
-    public function setSuccess($success)
-    {
-        if (is_null($success)) {
-            throw new \InvalidArgumentException('non-nullable success cannot be null');
-        }
-        $this->container['success'] = $success;
-
-        return $this;
-    }
-
-    /**
-     * Gets error
+     * Gets session_id
      *
      * @return string
      */
-    public function getError()
+    public function getSessionId()
     {
-        return $this->container['error'];
+        return $this->container['session_id'];
     }
 
     /**
-     * Sets error
+     * Sets session_id
      *
-     * @param string $error Machine-readable error code. **Each published code is stable; the SET is open** (`x-string-vocabulary: open`): handle an unknown code as a generic error. E.g. `VALIDATION_FAILED`, `BALANCE_EXHAUSTED`, `REQUIRES_REENCODE`). Canonical English; never localised. SDKs duck-type on this field for typed error-branch helpers — **except where an HTTP-status-shaped code (`UNPROCESSABLE_ENTITY`, `BAD_REQUEST`, …) covers several branches: there `error_type` is the discriminator.** Example: `POST /api/billing/checkout` answers `UNPROCESSABLE_ENTITY` both when checkout is switched off (`error_type: feature_not_available`) and when a pack or plan is not provisioned (no `error_type`); only `error_type` tells them apart.  Multipart-session resume codes (per ticket [`HxUmVr3Y`](https://trello.com/c/HxUmVr3Y), V2.10.0): - `MULTIPART_SESSION_NOT_FOUND` (404) — upload_id does   not match an in-flight session (expired / never   existed / wrong account namespace). Fired by /status,   /presign, /keepalive. - `MULTIPART_SESSION_OWNERSHIP` (403) — authenticated   caller is not the session owner. Fired by /status,   /presign, /keepalive, /complete (when manifest.userId   is non-null and differs). - `MULTIPART_SESSION_AUTH_REQUIRED` (403) — session was   anonymously initiated; the three resume endpoints   require authentication. The `8LABloaz` follow-up will   flip `/initiate` to also require auth. - `FILE_TOO_LARGE_FOR_MULTIPART` (422) — assembled object   would exceed the S3 multipart capacity cap. Pre-S3   server-side capacity gate; distinct from tier-quota   rejections (`upload_size_exceeds_tier`).  Workflow-create code (per ticket [`nGYbgChX`](https://trello.com/c/nGYbgChX) / sdks [`DRjIyMt9`](https://trello.com/c/DRjIyMt9)): - `UPLOAD_NOT_FOUND` (404) — a `POST /api/workflows` request   references an upload that does not exist OR exists but is   owned by a different identity (deliberate BOLA/IDOR   existence-mask: reported as not-found, **never 403**, so the   response does not reveal another user's upload exists).   `message_key: \"upload.not_found\"`. See the createWorkflow   404 response + ADR-0016 Amendment. - `LONG_FORM_CONCURRENCY_LIMIT_EXCEEDED` (429) — caller already   holds the maximum concurrent in-flight long-form workflows   their tier permits (values: the API's   `UserTier.maxConcurrentLongFormJobs`, not restated here).   DISTINCT from an infra rate-limit 429: carries no   `Retry-After` (it clears on workflow completion) and adds a   `links.upgrade` CTA. `message_key:   \"job.long_form_concurrency_exceeded\"`. See the createWorkflow   429 response + `LongFormConcurrencyLimitResponse`.
+     * @param string $session_id Echo of the path parameter.
      *
      * @return self
      */
-    public function setError($error)
+    public function setSessionId($session_id)
     {
-        if (is_null($error)) {
-            throw new \InvalidArgumentException('non-nullable error cannot be null');
+        if (is_null($session_id)) {
+            throw new \InvalidArgumentException('non-nullable session_id cannot be null');
         }
-        $this->container['error'] = $error;
+        $this->container['session_id'] = $session_id;
 
         return $this;
     }
 
     /**
-     * Gets message
-     *
-     * @return string|null
-     */
-    public function getMessage()
-    {
-        return $this->container['message'];
-    }
-
-    /**
-     * Sets message
-     *
-     * @param string|null $message Human-readable error message, localised per the request's `Accept-Language` header (fallback locale `en-GB`). The response carries `Content-Language: <locale>` + `Vary: Accept-Language` headers. **Never parse this field for control flow** — it changes per locale.
-     *
-     * @return self
-     */
-    public function setMessage($message)
-    {
-        if (is_null($message)) {
-            throw new \InvalidArgumentException('non-nullable message cannot be null');
-        }
-        $this->container['message'] = $message;
-
-        return $this;
-    }
-
-    /**
-     * Gets message_key
-     *
-     * @return string|null
-     */
-    public function getMessageKey()
-    {
-        return $this->container['message_key'];
-    }
-
-    /**
-     * Sets message_key
-     *
-     * @param string|null $message_key Stable canonical lookup key for the message (e.g. `error.balance_exhausted.add_credits`, `error.upload_size_exceeds_tier`). Never localised. SDK + frontend translation layers gate on this for client-side i18n catalogs (per ticket X19, cross-repo SDK companion work). Stable across server message-prose updates.
-     *
-     * @return self
-     */
-    public function setMessageKey($message_key)
-    {
-        if (is_null($message_key)) {
-            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
-        }
-        $this->container['message_key'] = $message_key;
-
-        return $this;
-    }
-
-    /**
-     * Gets locale
-     *
-     * @return string|null
-     */
-    public function getLocale()
-    {
-        return $this->container['locale'];
-    }
-
-    /**
-     * Sets locale
-     *
-     * @param string|null $locale BCP 47 locale tag echoing the resolved `Content-Language` response header value. Currently always `en-GB` (the only committed locale per `info.description` Localisation block + ticket [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)); additional values will appear here when their catalogs ship. Lets the SDK confirm which locale the server selected when the request used q-value negotiation across multiple `Accept-Language` values.
-     *
-     * @return self
-     */
-    public function setLocale($locale)
-    {
-        if (is_null($locale)) {
-            throw new \InvalidArgumentException('non-nullable locale cannot be null');
-        }
-        $this->container['locale'] = $locale;
-
-        return $this;
-    }
-
-    /**
-     * Gets message_params
-     *
-     * @return array<string,mixed>|null
-     */
-    public function getMessageParams()
-    {
-        return $this->container['message_params'];
-    }
-
-    /**
-     * Sets message_params
-     *
-     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. Keys are stable parameter names referenced by the translation table (e.g. `{ \"filename\": \"photo.heic\", \"max_size_mb\": 100 }`). **Excludes cost / monetary numbers** per plan v5 §F11 round-13 narrowing — pricing-related localisation reads numeric state from `GET /api/v2/credits/balance`, not from this field. Values are JSON-native scalars (`string` / `integer` / `number` / `boolean` / `null`) — no nested objects, to keep translation-table integration simple.
-     *
-     * @return self
-     */
-    public function setMessageParams($message_params)
-    {
-        if (is_null($message_params)) {
-            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
-        }
-        $this->container['message_params'] = $message_params;
-
-        return $this;
-    }
-
-    /**
-     * Gets error_type
+     * Gets status
      *
      * @return string
      */
-    public function getErrorType()
+    public function getStatus()
     {
-        return $this->container['error_type'];
+        return $this->container['status'];
     }
 
     /**
-     * Sets error_type
+     * Sets status
      *
-     * @param string $error_type Discriminator for the 422 oneOf. Always `processing_class_exceeds_band` for this envelope.
+     * @param string $status `paid` / `pending` / `unknown` — see `GET /api/billing/checkout/{sessionId}/status`. `unknown` collapses \"not yours\" and \"never existed\" on purpose.
      *
      * @return self
      */
-    public function setErrorType($error_type)
+    public function setStatus($status)
     {
-        if (is_null($error_type)) {
-            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
+        if (is_null($status)) {
+            throw new \InvalidArgumentException('non-nullable status cannot be null');
         }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!in_array($error_type, $allowedValues, true)) {
+        $allowedValues = $this->getStatusAllowableValues();
+        if (!in_array($status, $allowedValues, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "Invalid value '%s' for 'error_type', must be one of '%s'",
-                    $error_type,
+                    "Invalid value '%s' for 'status', must be one of '%s'",
+                    $status,
                     implode("', '", $allowedValues)
                 )
             );
         }
-        $this->container['error_type'] = $error_type;
-
-        return $this;
-    }
-
-    /**
-     * Gets violations
-     *
-     * @return \Gisl\Generated\OpenApi\Model\ProcessingClassBandViolation[]
-     */
-    public function getViolations()
-    {
-        return $this->container['violations'];
-    }
-
-    /**
-     * Sets violations
-     *
-     * @param \Gisl\Generated\OpenApi\Model\ProcessingClassBandViolation[] $violations One entry per offending job/input. Per ADR-0001 §F6 batched-violations rule, multiple violations in a single request are ALL returned here (fail-all, not fail-fast).
-     *
-     * @return self
-     */
-    public function setViolations($violations)
-    {
-        if (is_null($violations)) {
-            throw new \InvalidArgumentException('non-nullable violations cannot be null');
-        }
-
-
-        if ((count($violations) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $violations when calling ProcessingClassExceedsBandResponse., number of items must be greater than or equal to 1.');
-        }
-        $this->container['violations'] = $violations;
+        $this->container['status'] = $status;
 
         return $this;
     }

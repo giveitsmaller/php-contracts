@@ -13,9 +13,9 @@
 /**
  * GISL Compression API
  *
- * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
+ * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.210.0
+ * The version of the OpenAPI document: 2.211.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -35,7 +35,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * OperationResultMetadata Class Doc Comment
  *
  * @category Class
- * @description Whitelisted, named operation-level result metadata — a **CLOSED** set of declared keys. The API serves ONLY these declared keys (a whitelist projection), never the raw stored metadata bag, so internal diagnostics never leak. New keys are **additive named cuts** (the &#x60;additionalProperties: false&#x60; closure is the point — an unmodelled key is a coordinated contract change, not a silent rollout). Twin of the AsyncAPI &#x60;OperationResultMetadata&#x60; (wire ↔ read parity). Distinct from &#x60;OperationResult&#x60; (the deliverable output file): this carries small per-operation metadata, not the output. Per &#x60;EurbZLMH&#x60; (B1).
+ * @description Whitelisted, named operation-level result metadata — a **CLOSED** set of declared keys. The API serves ONLY these declared keys (a whitelist projection), never the raw stored metadata bag, so internal diagnostics never leak. New keys are **additive named cuts** (the &#x60;additionalProperties: false&#x60; closure is the point — an unmodelled key is a coordinated contract change, not a silent rollout). Twin of the AsyncAPI &#x60;OperationResultMetadata&#x60; (wire ↔ read parity), except &#x60;already_optimal&#x60; / &#x60;estimated_saving_pct&#x60;, which the API projects from the wire &#x60;OperationMetrics&#x60; where the worker emits them. Distinct from &#x60;OperationResult&#x60; (the deliverable output file): this carries small per-operation metadata, not the output. Per &#x60;EurbZLMH&#x60; (B1).
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -58,7 +58,9 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $openAPITypes = [
-        'watermark_id' => 'string'
+        'watermark_id' => 'string',
+        'already_optimal' => 'bool',
+        'estimated_saving_pct' => 'float'
     ];
 
     /**
@@ -69,7 +71,9 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'watermark_id' => 'uuid'
+        'watermark_id' => 'uuid',
+        'already_optimal' => null,
+        'estimated_saving_pct' => null
     ];
 
     /**
@@ -78,7 +82,9 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'watermark_id' => false
+        'watermark_id' => false,
+        'already_optimal' => false,
+        'estimated_saving_pct' => false
     ];
 
     /**
@@ -167,7 +173,9 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $attributeMap = [
-        'watermark_id' => 'watermark_id'
+        'watermark_id' => 'watermark_id',
+        'already_optimal' => 'already_optimal',
+        'estimated_saving_pct' => 'estimated_saving_pct'
     ];
 
     /**
@@ -176,7 +184,9 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $setters = [
-        'watermark_id' => 'setWatermarkId'
+        'watermark_id' => 'setWatermarkId',
+        'already_optimal' => 'setAlreadyOptimal',
+        'estimated_saving_pct' => 'setEstimatedSavingPct'
     ];
 
     /**
@@ -185,7 +195,9 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $getters = [
-        'watermark_id' => 'getWatermarkId'
+        'watermark_id' => 'getWatermarkId',
+        'already_optimal' => 'getAlreadyOptimal',
+        'estimated_saving_pct' => 'getEstimatedSavingPct'
     ];
 
     /**
@@ -246,6 +258,8 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
     public function __construct(?array $data = null)
     {
         $this->setIfExists('watermark_id', $data ?? [], null);
+        $this->setIfExists('already_optimal', $data ?? [], null);
+        $this->setIfExists('estimated_saving_pct', $data ?? [], null);
     }
 
     /**
@@ -274,6 +288,14 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
     public function listInvalidProperties()
     {
         $invalidProperties = [];
+
+        if (!is_null($this->container['estimated_saving_pct']) && ($this->container['estimated_saving_pct'] > 100)) {
+            $invalidProperties[] = "invalid value for 'estimated_saving_pct', must be smaller than or equal to 100.";
+        }
+
+        if (!is_null($this->container['estimated_saving_pct']) && ($this->container['estimated_saving_pct'] < 0)) {
+            $invalidProperties[] = "invalid value for 'estimated_saving_pct', must be bigger than or equal to 0.";
+        }
 
         return $invalidProperties;
     }
@@ -313,6 +335,68 @@ class OperationResultMetadata implements ModelInterface, ArrayAccess, \JsonSeria
             throw new \InvalidArgumentException('non-nullable watermark_id cannot be null');
         }
         $this->container['watermark_id'] = $watermark_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets already_optimal
+     *
+     * @return bool|null
+     */
+    public function getAlreadyOptimal()
+    {
+        return $this->container['already_optimal'];
+    }
+
+    /**
+     * Sets already_optimal
+     *
+     * @param bool|null $already_optimal `true` when the operation completed by returning the ORIGINAL file unchanged, because compressing it would not have made it smaller (or the source was already efficiently encoded). The operation is a success, not a failure: `result` is the original. Show it as \"already optimised\", not as \"same size\". On an ordinary result it is absent or `false`; treat the two the same. Projected by the API from the wire `OperationMetrics.already_optimal` (ticket `roNRMilt`).
+     *
+     * @return self
+     */
+    public function setAlreadyOptimal($already_optimal)
+    {
+        if (is_null($already_optimal)) {
+            throw new \InvalidArgumentException('non-nullable already_optimal cannot be null');
+        }
+        $this->container['already_optimal'] = $already_optimal;
+
+        return $this;
+    }
+
+    /**
+     * Gets estimated_saving_pct
+     *
+     * @return float|null
+     */
+    public function getEstimatedSavingPct()
+    {
+        return $this->container['estimated_saving_pct'];
+    }
+
+    /**
+     * Sets estimated_saving_pct
+     *
+     * @param float|null $estimated_saving_pct OPTIONAL, only with `already_optimal: true`: the worker's ESTIMATE of how much smaller, as a percentage of the input size, a re-encode would have made the file, when it declined before encoding. Absent when no estimate was made. An estimate, not a guarantee. Projected from the wire `OperationMetrics.estimated_saving_pct`.
+     *
+     * @return self
+     */
+    public function setEstimatedSavingPct($estimated_saving_pct)
+    {
+        if (is_null($estimated_saving_pct)) {
+            throw new \InvalidArgumentException('non-nullable estimated_saving_pct cannot be null');
+        }
+
+        if (($estimated_saving_pct > 100)) {
+            throw new \InvalidArgumentException('invalid value for $estimated_saving_pct when calling OperationResultMetadata., must be smaller than or equal to 100.');
+        }
+        if (($estimated_saving_pct < 0)) {
+            throw new \InvalidArgumentException('invalid value for $estimated_saving_pct when calling OperationResultMetadata., must be bigger than or equal to 0.');
+        }
+
+        $this->container['estimated_saving_pct'] = $estimated_saving_pct;
 
         return $this;
     }

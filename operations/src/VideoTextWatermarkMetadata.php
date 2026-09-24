@@ -49,6 +49,7 @@ final class VideoTextWatermarkMetadata
                             per_value_availability: [],
                         ),
                         'rotation' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'watermark_mode' => new OptionMetadata(
