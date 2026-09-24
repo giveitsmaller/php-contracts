@@ -492,7 +492,10 @@ class ObjectSerializer
 
 
         if (method_exists($class, 'getAllowableEnumValues')) {
-            if (!in_array($data, $class::getAllowableEnumValues(), true)) {
+            // drJpKvXS (sdks postprocess): a response may carry a STRING enum value
+            // this SDK predates - pass it through verbatim. A non-string payload
+            // (number, array, object) is still rejected (codex 9853ff74e58f).
+            if (!is_string($data) && !in_array($data, $class::getAllowableEnumValues(), true)) {
                 $imploded = implode("', '", $class::getAllowableEnumValues());
                 throw new \InvalidArgumentException("Invalid value for enum '$class', must be one of: '$imploded'");
             }
@@ -532,7 +535,21 @@ class ObjectSerializer
 
                 if (isset($data->{$instance::attributeMap()[$property]})) {
                     $propertyValue = $data->{$instance::attributeMap()[$property]};
-                    $instance->$propertySetter(self::deserialize($propertyValue, $type, null));
+                    $value = self::deserialize($propertyValue, $type, null);
+                    // drJpKvXS (sdks postprocess): an INLINE-enum setter throws on a
+                    // value this SDK predates. For exactly that case - the property
+                    // declares allowable values and this STRING is not one (a new
+                    // vocabulary value) - store it verbatim. Every other value still
+                    // goes through the setter, so its other validation and discriminator
+                    // handling are unchanged; numeric enums (const-pinned thresholds,
+                    // which also carry min/max checks) stay strict (codex ac616ebad85d).
+                    $allowableGetter = 'get' . str_replace('_', '', ucwords($property, '_')) . 'AllowableValues';
+                    if (is_string($value) && method_exists($instance, $allowableGetter)
+                        && !in_array($value, $instance->$allowableGetter(), true)) {
+                        $instance[$property] = $value;
+                    } else {
+                        $instance->$propertySetter($value);
+                    }
                 }
             }
             return $instance;
