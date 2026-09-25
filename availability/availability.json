@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 216,
+  "capabilities_version": 219,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -5301,7 +5301,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.213.0",
+  "schema_version": "2.214.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
