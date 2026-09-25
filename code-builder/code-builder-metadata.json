@@ -2256,10 +2256,8 @@
             },
             "optimization_level": {
               "default": 3,
-              "description": "PNG optimization effort (0-6). Higher = smaller file, slower encode. Default 3.",
-              "honored_on": [
-                "same_format"
-              ],
+              "description": "Currently has no effect on PNG output: it is accepted and ignored.",
+              "honored_on": [],
               "max": 6,
               "min": 0,
               "origin": "contract",
@@ -2302,7 +2300,7 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1-100). For PNG this is the SINGLE lossy/lossless control: `quality` < 100 applies lossy palette quantization (the value is the quantization level), while `quality: 100` keeps the PNG lossless (lossless optimisation only \u2014 tune the lossless effort via `optimization_level`). 1 = smallest file, 100 = best quality / lossless. There is no separate lossy/lossless toggle for PNG \u2014 it is purely quality-driven.",
+              "description": "Compression quality (1-100). PNG compression reduces the image to a palette of at most 256 colours at every quality setting; this is what makes PNGs smaller. 1 = smallest file, 100 = closest to the original. No value is guaranteed lossless, including 100: when an image with more than 256 colours (a photo, a gradient) is made smaller, it loses some colour detail. If compressing would not make the file smaller, the original is returned unchanged.",
               "honored_on": [
                 "same_format"
               ],
@@ -7272,6 +7270,39 @@
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
                 "max_output_size_bytes": 524288000
+              },
+              "resolution_bands": {
+                "gt_1080p": {
+                  "basis": "not_served"
+                },
+                "le_720p": {
+                  "basis": "measured",
+                  "constraints": {
+                    "max_input_duration": "PT4M35S"
+                  },
+                  "derivation": {
+                    "cap_s": 600,
+                    "intercept_s": 3.0,
+                    "slope_s_per_s": 2.167
+                  }
+                },
+                "p1080": {
+                  "basis": "measured",
+                  "constraints": {
+                    "max_input_duration": "PT2M3S"
+                  },
+                  "derivation": {
+                    "cap_s": 600,
+                    "intercept_s": -3.0,
+                    "slope_s_per_s": 4.867
+                  }
+                },
+                "unknown": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT4M35S"
+                  }
+                }
               }
             }
           }
@@ -7415,7 +7446,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.212.0",
+  "schema_version": "2.213.0",
   "sdk_spec_version": "2.7.0",
-  "source_hash": "sha256:2b32ac138c97f2afe8857eb2252d7d92076d79655a4b43aa58585a216095e9a2"
+  "source_hash": "sha256:9104bbbd681370c85aee6e222cca9c73edb3a9f4527e0545d13e7ea8bc5ca8bc"
 }

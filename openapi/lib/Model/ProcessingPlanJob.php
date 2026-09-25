@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.212.0
+ * The version of the OpenAPI document: 2.213.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -65,6 +65,7 @@ class ProcessingPlanJob implements ModelInterface, ArrayAccess, \JsonSerializabl
         'estimated_processing_seconds' => '\Gisl\Generated\OpenApi\Model\EstimateRange',
         'estimate_quality' => '\Gisl\Generated\OpenApi\Model\EstimateQuality',
         'reason' => '\Gisl\Generated\OpenApi\Model\ProcessingClassReason',
+        'resolution_band' => '\Gisl\Generated\OpenApi\Model\ResolutionBand',
         'dropped_options' => '\Gisl\Generated\OpenApi\Model\DroppedOption[]'
     ];
 
@@ -83,6 +84,7 @@ class ProcessingPlanJob implements ModelInterface, ArrayAccess, \JsonSerializabl
         'estimated_processing_seconds' => null,
         'estimate_quality' => null,
         'reason' => null,
+        'resolution_band' => null,
         'dropped_options' => null
     ];
 
@@ -99,6 +101,7 @@ class ProcessingPlanJob implements ModelInterface, ArrayAccess, \JsonSerializabl
         'estimated_processing_seconds' => false,
         'estimate_quality' => false,
         'reason' => false,
+        'resolution_band' => false,
         'dropped_options' => false
     ];
 
@@ -195,6 +198,7 @@ class ProcessingPlanJob implements ModelInterface, ArrayAccess, \JsonSerializabl
         'estimated_processing_seconds' => 'estimated_processing_seconds',
         'estimate_quality' => 'estimate_quality',
         'reason' => 'reason',
+        'resolution_band' => 'resolution_band',
         'dropped_options' => 'dropped_options'
     ];
 
@@ -211,6 +215,7 @@ class ProcessingPlanJob implements ModelInterface, ArrayAccess, \JsonSerializabl
         'estimated_processing_seconds' => 'setEstimatedProcessingSeconds',
         'estimate_quality' => 'setEstimateQuality',
         'reason' => 'setReason',
+        'resolution_band' => 'setResolutionBand',
         'dropped_options' => 'setDroppedOptions'
     ];
 
@@ -227,6 +232,7 @@ class ProcessingPlanJob implements ModelInterface, ArrayAccess, \JsonSerializabl
         'estimated_processing_seconds' => 'getEstimatedProcessingSeconds',
         'estimate_quality' => 'getEstimateQuality',
         'reason' => 'getReason',
+        'resolution_band' => 'getResolutionBand',
         'dropped_options' => 'getDroppedOptions'
     ];
 
@@ -294,6 +300,7 @@ class ProcessingPlanJob implements ModelInterface, ArrayAccess, \JsonSerializabl
         $this->setIfExists('estimated_processing_seconds', $data ?? [], null);
         $this->setIfExists('estimate_quality', $data ?? [], null);
         $this->setIfExists('reason', $data ?? [], null);
+        $this->setIfExists('resolution_band', $data ?? [], null);
         $this->setIfExists('dropped_options', $data ?? [], null);
     }
 
@@ -545,6 +552,33 @@ class ProcessingPlanJob implements ModelInterface, ArrayAccess, \JsonSerializabl
             throw new \InvalidArgumentException('non-nullable reason cannot be null');
         }
         $this->container['reason'] = $reason;
+
+        return $this;
+    }
+
+    /**
+     * Gets resolution_band
+     *
+     * @return \Gisl\Generated\OpenApi\Model\ResolutionBand|null
+     */
+    public function getResolutionBand()
+    {
+        return $this->container['resolution_band'];
+    }
+
+    /**
+     * Sets resolution_band
+     *
+     * @param \Gisl\Generated\OpenApi\Model\ResolutionBand|null $resolution_band The resolution band whose ceiling the class decision was taken against, when the operation's classes declare `resolution_bands`; omitted otherwise. `unknown` says the resolution could not be determined, so `reason` (which names the AXIS, e.g. `input_duration_exceeds_short_form`) was judged against the `unknown` band's ceiling.
+     *
+     * @return self
+     */
+    public function setResolutionBand($resolution_band)
+    {
+        if (is_null($resolution_band)) {
+            throw new \InvalidArgumentException('non-nullable resolution_band cannot be null');
+        }
+        $this->container['resolution_band'] = $resolution_band;
 
         return $this;
     }

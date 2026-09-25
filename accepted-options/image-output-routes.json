@@ -15,6 +15,7 @@
             "quality",
             "width"
           ],
+          "inert_options": [],
           "max_output_pixels": 16000000,
           "planned_options": [
             "metadata"
@@ -30,6 +31,7 @@
             "output_format",
             "width"
           ],
+          "inert_options": [],
           "max_output_pixels": 16000000,
           "planned_options": [
             "metadata"
@@ -47,6 +49,7 @@
             "quality",
             "width"
           ],
+          "inert_options": [],
           "max_output_pixels": 16000000,
           "planned_options": [
             "metadata"
@@ -62,6 +65,7 @@
             "output_format",
             "width"
           ],
+          "inert_options": [],
           "max_output_pixels": 16000000,
           "planned_options": [
             "metadata"
@@ -77,6 +81,7 @@
             "output_format",
             "width"
           ],
+          "inert_options": [],
           "max_output_pixels": 16000000,
           "planned_options": [
             "metadata"
@@ -93,6 +98,7 @@
             "quality",
             "width"
           ],
+          "inert_options": [],
           "max_output_pixels": 16000000,
           "planned_options": [
             "metadata"
@@ -126,6 +132,7 @@
             "target_size_bytes",
             "width"
           ],
+          "inert_options": [],
           "input_mime": "image/avif",
           "max_output_pixels": 16000000,
           "planned_options": [],
@@ -142,6 +149,7 @@
             "quality",
             "width"
           ],
+          "inert_options": [],
           "input_mime": "image/gif",
           "max_output_pixels": 16000000,
           "planned_options": [],
@@ -164,6 +172,7 @@
             "target_size_bytes",
             "width"
           ],
+          "inert_options": [],
           "input_mime": "image/jpeg",
           "max_output_pixels": 16000000,
           "planned_options": [],
@@ -176,10 +185,12 @@
             "fit",
             "height",
             "metadata",
-            "optimization_level",
             "output_format",
             "quality",
             "width"
+          ],
+          "inert_options": [
+            "optimization_level"
           ],
           "input_mime": "image/png",
           "max_output_pixels": 16000000,
@@ -191,6 +202,7 @@
             "metadata",
             "output_format"
           ],
+          "inert_options": [],
           "input_mime": "image/svg+xml",
           "planned_options": [],
           "source_op": "compress"
@@ -206,6 +218,7 @@
             "quality",
             "width"
           ],
+          "inert_options": [],
           "input_mime": "image/tiff",
           "max_output_pixels": 16000000,
           "planned_options": [],
@@ -226,6 +239,7 @@
             "target_size_bytes",
             "width"
           ],
+          "inert_options": [],
           "input_mime": "image/webp",
           "max_output_pixels": 16000000,
           "planned_options": [],
@@ -246,5 +260,5 @@
       "source_op": "compress"
     }
   },
-  "schema_version": "2.212.0"
+  "schema_version": "2.213.0"
 }

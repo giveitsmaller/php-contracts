@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 210,
+  "capabilities_version": 216,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -1691,10 +1691,8 @@
             },
             "optimization_level": {
               "default": 3,
-              "description": "PNG optimization effort (0-6). Higher = smaller file, slower encode. Default 3.",
-              "honored_on": [
-                "same_format"
-              ],
+              "description": "Currently has no effect on PNG output: it is accepted and ignored.",
+              "honored_on": [],
               "max": 6,
               "min": 0,
               "type": "integer"
@@ -1720,7 +1718,7 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1-100). For PNG this is the SINGLE lossy/lossless control: `quality` < 100 applies lossy palette quantization (the value is the quantization level), while `quality: 100` keeps the PNG lossless (lossless optimisation only \u2014 tune the lossless effort via `optimization_level`). 1 = smallest file, 100 = best quality / lossless. There is no separate lossy/lossless toggle for PNG \u2014 it is purely quality-driven.",
+              "description": "Compression quality (1-100). PNG compression reduces the image to a palette of at most 256 colours at every quality setting; this is what makes PNGs smaller. 1 = smallest file, 100 = closest to the original. No value is guaranteed lossless, including 100: when an image with more than 256 colours (a photo, a gradient) is made smaller, it loses some colour detail. If compressing would not make the file smaller, the original is returned unchanged.",
               "honored_on": [
                 "same_format"
               ],
@@ -3949,7 +3947,7 @@
     "split": {
       "availability": "beta",
       "default": false,
-      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming (S3 object key)**: the object-key leaf is 3-digit\nzero-padded \u2014 `output-001` .. `output-200` (ADR-0014 \u00a7D9). This binds the\n**S3 object key**, NOT the user-facing download filename \u2014 the API\nsynthesises that separately (see `OperationDownload.filename` in\n`openapi/api.yaml`). Only the **3-digit zero-padding** follows the convert\nPDF\u2192N precedent \u2014 convert keys are `page-NNN.ext`, split keys are\n`output-NNN.ext`.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based literal source page number).\n  **`mode: page_range` only** \u2014 each output is one page, so `page_index` is\n  that page. For **`mode: page_groups`** an output spans multiple source\n  pages, so a single `page_index` cannot name them all; that grouped-output\n  semantics is NOT specified by this correction and is deferred (do not\n  assume it is the group's first page \u2014 that is unverified).\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts (`planned` \u2014 the API refuses it at create until the\nre-encode path is priced). Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `image_gif` and `document_pdf` mime_groups stay\n`availability: planned` until their cross-repo backend support ships;\ndispatch returns `feature_not_available` (422) for the still-planned\ngroups/classes until then.\n",
+      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming (S3 object key)**: the object-key leaf is 3-digit\nzero-padded \u2014 `output-001` .. `output-200` (ADR-0014 \u00a7D9). This binds the\n**S3 object key**, NOT the user-facing download filename \u2014 the API\nsynthesises that separately (see `OperationDownload.filename` in\n`openapi/api.yaml`). Only the **3-digit zero-padding** follows the convert\nPDF\u2192N precedent \u2014 convert keys are `page-NNN.ext`, split keys are\n`output-NNN.ext`.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based literal source page number).\n  With **`mode: page_range`** each output is one page, so `page_index` is\n  that page. With **`mode: page_groups`** each output is a group of\n  consecutive pages and `page_index` is the group's FIRST source page;\n  the group covers `page_index` .. `page_index + page_groups - 1`, and\n  the last group ends at the document's last page (so it may be\n  shorter). Verified in the worker, not assumed: `compression_lambdas`\n  `crates/split/src/processor.rs` passes each range's START page as the\n  index, over ranges from `resolve_page_groups` (`pdf_range.rs`, tests\n  `page_groups_remainder` / `page_groups_size_larger_than_total`).\n  Specified 2026-09-25 (card `jGTLrpzK`); the group stays `planned`\n  until a production record exists.\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts (`planned` \u2014 the API refuses it at create until the\nre-encode path is priced). Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `image_gif` and `document_pdf` mime_groups stay\n`availability: planned` until their cross-repo backend support ships;\ndispatch returns `feature_not_available` (422) for the still-planned\ngroups/classes until then.\n",
       "features": {
         "silence_mode_audio": {
           "availability": "beta",
@@ -5159,6 +5157,39 @@
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
                 "max_output_size_bytes": 524288000
+              },
+              "resolution_bands": {
+                "gt_1080p": {
+                  "basis": "not_served"
+                },
+                "le_720p": {
+                  "basis": "measured",
+                  "constraints": {
+                    "max_input_duration": "PT4M35S"
+                  },
+                  "derivation": {
+                    "cap_s": 600,
+                    "intercept_s": 3.0,
+                    "slope_s_per_s": 2.167
+                  }
+                },
+                "p1080": {
+                  "basis": "measured",
+                  "constraints": {
+                    "max_input_duration": "PT2M3S"
+                  },
+                  "derivation": {
+                    "cap_s": 600,
+                    "intercept_s": -3.0,
+                    "slope_s_per_s": 4.867
+                  }
+                },
+                "unknown": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT4M35S"
+                  }
+                }
               }
             }
           }
@@ -5270,7 +5301,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.212.0",
+  "schema_version": "2.213.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
