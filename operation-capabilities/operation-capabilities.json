@@ -492,6 +492,62 @@
             ]
           },
           "wire_code": "invalid_options"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "image_watermark.center_anchor_needs_zero_margin",
+          "message": "`anchor: center` needs `margin_x` and `margin_y` to be zero (or absent): a margin has no direction from the centre. Use a peripheral anchor and a positive margin to nudge a roughly-centred mark.",
+          "when": {
+            "all": [
+              {
+                "equals": "center",
+                "field": "image_watermark.anchor"
+              },
+              {
+                "any": [
+                  {
+                    "all": [
+                      {
+                        "field": "image_watermark.margin_x",
+                        "isSet": true
+                      },
+                      {
+                        "not": {
+                          "field": "image_watermark.margin_x",
+                          "in": [
+                            "0px",
+                            "0%",
+                            "0.0px",
+                            "0.0%"
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "field": "image_watermark.margin_y",
+                        "isSet": true
+                      },
+                      {
+                        "not": {
+                          "field": "image_watermark.margin_y",
+                          "in": [
+                            "0px",
+                            "0%",
+                            "0.0px",
+                            "0.0%"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
         }
       ],
       "produces": {
@@ -566,6 +622,78 @@
       "input": {
         "model": "single"
       },
+      "option_conflicts": [
+        {
+          "availability": "stable",
+          "constraint_id": "text_watermark.center_anchor_needs_zero_margin",
+          "message": "`anchor: center` needs `margin_x` and `margin_y` to be zero (or absent): a margin has no direction from the centre. Use a peripheral anchor and a positive margin to nudge a roughly-centred mark.",
+          "when": {
+            "all": [
+              {
+                "equals": "center",
+                "field": "text_watermark.anchor"
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "field": "text_watermark.watermark_mode",
+                      "isSet": true
+                    }
+                  },
+                  {
+                    "equals": "single",
+                    "field": "text_watermark.watermark_mode"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "all": [
+                      {
+                        "field": "text_watermark.margin_x",
+                        "isSet": true
+                      },
+                      {
+                        "not": {
+                          "field": "text_watermark.margin_x",
+                          "in": [
+                            "0px",
+                            "0%",
+                            "0.0px",
+                            "0.0%"
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "field": "text_watermark.margin_y",
+                        "isSet": true
+                      },
+                      {
+                        "not": {
+                          "field": "text_watermark.margin_y",
+                          "in": [
+                            "0px",
+                            "0%",
+                            "0.0px",
+                            "0.0%"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
+        }
+      ],
       "produces": {
         "same_as_input": true
       },
@@ -732,5 +860,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.211.0"
+  "schema_version": "2.212.0"
 }

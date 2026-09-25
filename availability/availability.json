@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 205,
+  "capabilities_version": 210,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -1228,7 +1228,7 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1 = smallest file, 100 = best quality). For animated GIF this is honoured but real-world size reduction is typically small.",
+              "description": "Compression quality (1 = smallest file, 100 = best quality). For animated GIF this is honoured but real-world size reduction is typically small. Ignored when a TIFF stays a TIFF: it is re-encoded losslessly, so this setting has no effect on a TIFF output. It does apply when a TIFF is converted to another format (for example WebP).",
               "honored_on": [
                 "same_format"
               ],
@@ -3796,6 +3796,40 @@
                 "max_total_duration": "PT24H",
                 "max_total_input_size_bytes": 5000000000
               },
+              "input_uniformity": {
+                "attributes": {
+                  "audio": [
+                    "codec",
+                    "sample_rate",
+                    "channels",
+                    "channel_layout",
+                    "sample_fmt",
+                    "timebase"
+                  ],
+                  "field_presence": [
+                    "input_metadata_inconsistent"
+                  ],
+                  "video": [
+                    "codec",
+                    "codec_tag",
+                    "framerate",
+                    "pix_fmt",
+                    "profile",
+                    "resolution",
+                    "sar",
+                    "timebase"
+                  ]
+                },
+                "refusal": "INPUTS_NOT_CONCAT_UNIFORM",
+                "structural": [
+                  "input_count_below_minimum",
+                  "input_topology_not_single_video",
+                  "input_topology_multi_audio",
+                  "input_topology_extra_streams",
+                  "input_stream_topology_mismatch",
+                  "input_stream_order_mismatch"
+                ]
+              },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_total_input_size_bytes": 120000000000
@@ -5236,7 +5270,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.211.0",
+  "schema_version": "2.212.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

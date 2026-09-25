@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.211.0
+ * The version of the OpenAPI document: 2.212.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -71,6 +71,19 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         'sample_rate_hz' => 'int',
         'page_count' => 'int',
         'dpi' => 'int',
+        'video_stream_count' => 'int',
+        'audio_stream_count' => 'int',
+        'other_stream_count' => 'int',
+        'stream_order' => 'string[]',
+        'r_frame_rate' => 'string',
+        'avg_frame_rate' => 'string',
+        'pix_fmt' => 'string',
+        'sar' => 'string',
+        'video_time_base' => 'string',
+        'audio_time_base' => 'string',
+        'codec_tag' => 'string',
+        'profile' => 'string',
+        'sample_fmt' => 'string',
         'probed_at' => '\DateTime'
     ];
 
@@ -95,6 +108,19 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         'sample_rate_hz' => null,
         'page_count' => null,
         'dpi' => null,
+        'video_stream_count' => null,
+        'audio_stream_count' => null,
+        'other_stream_count' => null,
+        'stream_order' => null,
+        'r_frame_rate' => null,
+        'avg_frame_rate' => null,
+        'pix_fmt' => null,
+        'sar' => null,
+        'video_time_base' => null,
+        'audio_time_base' => null,
+        'codec_tag' => null,
+        'profile' => null,
+        'sample_fmt' => null,
         'probed_at' => 'date-time'
     ];
 
@@ -117,6 +143,19 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         'sample_rate_hz' => false,
         'page_count' => false,
         'dpi' => false,
+        'video_stream_count' => false,
+        'audio_stream_count' => false,
+        'other_stream_count' => false,
+        'stream_order' => false,
+        'r_frame_rate' => false,
+        'avg_frame_rate' => false,
+        'pix_fmt' => false,
+        'sar' => false,
+        'video_time_base' => false,
+        'audio_time_base' => false,
+        'codec_tag' => false,
+        'profile' => false,
+        'sample_fmt' => false,
         'probed_at' => false
     ];
 
@@ -219,6 +258,19 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         'sample_rate_hz' => 'sample_rate_hz',
         'page_count' => 'page_count',
         'dpi' => 'dpi',
+        'video_stream_count' => 'video_stream_count',
+        'audio_stream_count' => 'audio_stream_count',
+        'other_stream_count' => 'other_stream_count',
+        'stream_order' => 'stream_order',
+        'r_frame_rate' => 'r_frame_rate',
+        'avg_frame_rate' => 'avg_frame_rate',
+        'pix_fmt' => 'pix_fmt',
+        'sar' => 'sar',
+        'video_time_base' => 'video_time_base',
+        'audio_time_base' => 'audio_time_base',
+        'codec_tag' => 'codec_tag',
+        'profile' => 'profile',
+        'sample_fmt' => 'sample_fmt',
         'probed_at' => 'probed_at'
     ];
 
@@ -241,6 +293,19 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         'sample_rate_hz' => 'setSampleRateHz',
         'page_count' => 'setPageCount',
         'dpi' => 'setDpi',
+        'video_stream_count' => 'setVideoStreamCount',
+        'audio_stream_count' => 'setAudioStreamCount',
+        'other_stream_count' => 'setOtherStreamCount',
+        'stream_order' => 'setStreamOrder',
+        'r_frame_rate' => 'setRFrameRate',
+        'avg_frame_rate' => 'setAvgFrameRate',
+        'pix_fmt' => 'setPixFmt',
+        'sar' => 'setSar',
+        'video_time_base' => 'setVideoTimeBase',
+        'audio_time_base' => 'setAudioTimeBase',
+        'codec_tag' => 'setCodecTag',
+        'profile' => 'setProfile',
+        'sample_fmt' => 'setSampleFmt',
         'probed_at' => 'setProbedAt'
     ];
 
@@ -263,6 +328,19 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         'sample_rate_hz' => 'getSampleRateHz',
         'page_count' => 'getPageCount',
         'dpi' => 'getDpi',
+        'video_stream_count' => 'getVideoStreamCount',
+        'audio_stream_count' => 'getAudioStreamCount',
+        'other_stream_count' => 'getOtherStreamCount',
+        'stream_order' => 'getStreamOrder',
+        'r_frame_rate' => 'getRFrameRate',
+        'avg_frame_rate' => 'getAvgFrameRate',
+        'pix_fmt' => 'getPixFmt',
+        'sar' => 'getSar',
+        'video_time_base' => 'getVideoTimeBase',
+        'audio_time_base' => 'getAudioTimeBase',
+        'codec_tag' => 'getCodecTag',
+        'profile' => 'getProfile',
+        'sample_fmt' => 'getSampleFmt',
         'probed_at' => 'getProbedAt'
     ];
 
@@ -307,6 +385,23 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         return self::$openAPIModelName;
     }
 
+    public const STREAM_ORDER_VIDEO = 'video';
+    public const STREAM_ORDER_AUDIO = 'audio';
+    public const STREAM_ORDER_OTHER = 'other';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getStreamOrderAllowableValues()
+    {
+        return [
+            self::STREAM_ORDER_VIDEO,
+            self::STREAM_ORDER_AUDIO,
+            self::STREAM_ORDER_OTHER,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -336,6 +431,19 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         $this->setIfExists('sample_rate_hz', $data ?? [], null);
         $this->setIfExists('page_count', $data ?? [], null);
         $this->setIfExists('dpi', $data ?? [], null);
+        $this->setIfExists('video_stream_count', $data ?? [], null);
+        $this->setIfExists('audio_stream_count', $data ?? [], null);
+        $this->setIfExists('other_stream_count', $data ?? [], null);
+        $this->setIfExists('stream_order', $data ?? [], null);
+        $this->setIfExists('r_frame_rate', $data ?? [], null);
+        $this->setIfExists('avg_frame_rate', $data ?? [], null);
+        $this->setIfExists('pix_fmt', $data ?? [], null);
+        $this->setIfExists('sar', $data ?? [], null);
+        $this->setIfExists('video_time_base', $data ?? [], null);
+        $this->setIfExists('audio_time_base', $data ?? [], null);
+        $this->setIfExists('codec_tag', $data ?? [], null);
+        $this->setIfExists('profile', $data ?? [], null);
+        $this->setIfExists('sample_fmt', $data ?? [], null);
         $this->setIfExists('probed_at', $data ?? [], null);
     }
 
@@ -400,6 +508,38 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
 
         if (!is_null($this->container['dpi']) && ($this->container['dpi'] < 1)) {
             $invalidProperties[] = "invalid value for 'dpi', must be bigger than or equal to 1.";
+        }
+
+        if (!is_null($this->container['video_stream_count']) && ($this->container['video_stream_count'] < 0)) {
+            $invalidProperties[] = "invalid value for 'video_stream_count', must be bigger than or equal to 0.";
+        }
+
+        if (!is_null($this->container['audio_stream_count']) && ($this->container['audio_stream_count'] < 0)) {
+            $invalidProperties[] = "invalid value for 'audio_stream_count', must be bigger than or equal to 0.";
+        }
+
+        if (!is_null($this->container['other_stream_count']) && ($this->container['other_stream_count'] < 0)) {
+            $invalidProperties[] = "invalid value for 'other_stream_count', must be bigger than or equal to 0.";
+        }
+
+        if (!is_null($this->container['r_frame_rate']) && !preg_match("/^[0-9]+\/[0-9]+$/", $this->container['r_frame_rate'])) {
+            $invalidProperties[] = "invalid value for 'r_frame_rate', must be conform to the pattern /^[0-9]+\/[0-9]+$/.";
+        }
+
+        if (!is_null($this->container['avg_frame_rate']) && !preg_match("/^[0-9]+\/[0-9]+$/", $this->container['avg_frame_rate'])) {
+            $invalidProperties[] = "invalid value for 'avg_frame_rate', must be conform to the pattern /^[0-9]+\/[0-9]+$/.";
+        }
+
+        if (!is_null($this->container['sar']) && !preg_match("/^[0-9]+:[0-9]+$/", $this->container['sar'])) {
+            $invalidProperties[] = "invalid value for 'sar', must be conform to the pattern /^[0-9]+:[0-9]+$/.";
+        }
+
+        if (!is_null($this->container['video_time_base']) && !preg_match("/^[0-9]+\/[0-9]+$/", $this->container['video_time_base'])) {
+            $invalidProperties[] = "invalid value for 'video_time_base', must be conform to the pattern /^[0-9]+\/[0-9]+$/.";
+        }
+
+        if (!is_null($this->container['audio_time_base']) && !preg_match("/^[0-9]+\/[0-9]+$/", $this->container['audio_time_base'])) {
+            $invalidProperties[] = "invalid value for 'audio_time_base', must be conform to the pattern /^[0-9]+\/[0-9]+$/.";
         }
 
         if ($this->container['probed_at'] === null) {
@@ -812,6 +952,406 @@ class UploadProbeMediaMetadata implements ModelInterface, ArrayAccess, \JsonSeri
         }
 
         $this->container['dpi'] = $dpi;
+
+        return $this;
+    }
+
+    /**
+     * Gets video_stream_count
+     *
+     * @return int|null
+     */
+    public function getVideoStreamCount()
+    {
+        return $this->container['video_stream_count'];
+    }
+
+    /**
+     * Sets video_stream_count
+     *
+     * @param int|null $video_stream_count Streams whose ffprobe `codec_type` is `video`.
+     *
+     * @return self
+     */
+    public function setVideoStreamCount($video_stream_count)
+    {
+        if (is_null($video_stream_count)) {
+            throw new \InvalidArgumentException('non-nullable video_stream_count cannot be null');
+        }
+
+        if (($video_stream_count < 0)) {
+            throw new \InvalidArgumentException('invalid value for $video_stream_count when calling UploadProbeMediaMetadata., must be bigger than or equal to 0.');
+        }
+
+        $this->container['video_stream_count'] = $video_stream_count;
+
+        return $this;
+    }
+
+    /**
+     * Gets audio_stream_count
+     *
+     * @return int|null
+     */
+    public function getAudioStreamCount()
+    {
+        return $this->container['audio_stream_count'];
+    }
+
+    /**
+     * Sets audio_stream_count
+     *
+     * @param int|null $audio_stream_count Streams whose ffprobe `codec_type` is `audio`.
+     *
+     * @return self
+     */
+    public function setAudioStreamCount($audio_stream_count)
+    {
+        if (is_null($audio_stream_count)) {
+            throw new \InvalidArgumentException('non-nullable audio_stream_count cannot be null');
+        }
+
+        if (($audio_stream_count < 0)) {
+            throw new \InvalidArgumentException('invalid value for $audio_stream_count when calling UploadProbeMediaMetadata., must be bigger than or equal to 0.');
+        }
+
+        $this->container['audio_stream_count'] = $audio_stream_count;
+
+        return $this;
+    }
+
+    /**
+     * Gets other_stream_count
+     *
+     * @return int|null
+     */
+    public function getOtherStreamCount()
+    {
+        return $this->container['other_stream_count'];
+    }
+
+    /**
+     * Sets other_stream_count
+     *
+     * @param int|null $other_stream_count Every other stream: `codec_type` subtitle, data, attachment, or unknown — the worker gate's `other` bucket.
+     *
+     * @return self
+     */
+    public function setOtherStreamCount($other_stream_count)
+    {
+        if (is_null($other_stream_count)) {
+            throw new \InvalidArgumentException('non-nullable other_stream_count cannot be null');
+        }
+
+        if (($other_stream_count < 0)) {
+            throw new \InvalidArgumentException('invalid value for $other_stream_count when calling UploadProbeMediaMetadata., must be bigger than or equal to 0.');
+        }
+
+        $this->container['other_stream_count'] = $other_stream_count;
+
+        return $this;
+    }
+
+    /**
+     * Gets stream_order
+     *
+     * @return string[]|null
+     */
+    public function getStreamOrder()
+    {
+        return $this->container['stream_order'];
+    }
+
+    /**
+     * Sets stream_order
+     *
+     * @param string[]|null $stream_order Per stream index, in container order, its kind (`other` as above). Two inputs are order-compatible iff these are equal.
+     *
+     * @return self
+     */
+    public function setStreamOrder($stream_order)
+    {
+        if (is_null($stream_order)) {
+            throw new \InvalidArgumentException('non-nullable stream_order cannot be null');
+        }
+        $allowedValues = $this->getStreamOrderAllowableValues();
+        if (array_diff($stream_order, $allowedValues)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value for 'stream_order', must be one of '%s'",
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['stream_order'] = $stream_order;
+
+        return $this;
+    }
+
+    /**
+     * Gets r_frame_rate
+     *
+     * @return string|null
+     */
+    public function getRFrameRate()
+    {
+        return $this->container['r_frame_rate'];
+    }
+
+    /**
+     * Sets r_frame_rate
+     *
+     * @param string|null $r_frame_rate ffprobe `r_frame_rate` of the video stream, raw (`30000/1001`; ffprobe's `0/0` is carried as-is and means UNUSABLE). NOT the average rate in `fps`, which drifts between concat-uniform clips. **The worker's frame-rate rule, which a create-time comparison must reproduce exactly:** (1) `r_frame_rate` and `avg_frame_rate` must each be present on all inputs or absent on all (else `input_metadata_inconsistent`); (2) if every input has a usable `r_frame_rate`, compare those as parsed rationals; (3) otherwise compare `avg_frame_rate` as parsed rationals. Both comparisons are by VALUE (`60/2` equals `30/1`), never by string.
+     *
+     * @return self
+     */
+    public function setRFrameRate($r_frame_rate)
+    {
+        if (is_null($r_frame_rate)) {
+            throw new \InvalidArgumentException('non-nullable r_frame_rate cannot be null');
+        }
+
+        if ((!preg_match("/^[0-9]+\/[0-9]+$/", ObjectSerializer::toString($r_frame_rate)))) {
+            throw new \InvalidArgumentException("invalid value for \$r_frame_rate when calling UploadProbeMediaMetadata., must conform to the pattern /^[0-9]+\/[0-9]+$/.");
+        }
+
+        $this->container['r_frame_rate'] = $r_frame_rate;
+
+        return $this;
+    }
+
+    /**
+     * Gets avg_frame_rate
+     *
+     * @return string|null
+     */
+    public function getAvgFrameRate()
+    {
+        return $this->container['avg_frame_rate'];
+    }
+
+    /**
+     * Sets avg_frame_rate
+     *
+     * @param string|null $avg_frame_rate ffprobe `avg_frame_rate` of the video stream, raw rational. Presence-checked always; compared only as the fallback in the `r_frame_rate` rule. `fps` is its lossy numeric form.
+     *
+     * @return self
+     */
+    public function setAvgFrameRate($avg_frame_rate)
+    {
+        if (is_null($avg_frame_rate)) {
+            throw new \InvalidArgumentException('non-nullable avg_frame_rate cannot be null');
+        }
+
+        if ((!preg_match("/^[0-9]+\/[0-9]+$/", ObjectSerializer::toString($avg_frame_rate)))) {
+            throw new \InvalidArgumentException("invalid value for \$avg_frame_rate when calling UploadProbeMediaMetadata., must conform to the pattern /^[0-9]+\/[0-9]+$/.");
+        }
+
+        $this->container['avg_frame_rate'] = $avg_frame_rate;
+
+        return $this;
+    }
+
+    /**
+     * Gets pix_fmt
+     *
+     * @return string|null
+     */
+    public function getPixFmt()
+    {
+        return $this->container['pix_fmt'];
+    }
+
+    /**
+     * Sets pix_fmt
+     *
+     * @param string|null $pix_fmt ffprobe `pix_fmt` of the video stream (e.g. `yuv420p`).
+     *
+     * @return self
+     */
+    public function setPixFmt($pix_fmt)
+    {
+        if (is_null($pix_fmt)) {
+            throw new \InvalidArgumentException('non-nullable pix_fmt cannot be null');
+        }
+        $this->container['pix_fmt'] = $pix_fmt;
+
+        return $this;
+    }
+
+    /**
+     * Gets sar
+     *
+     * @return string|null
+     */
+    public function getSar()
+    {
+        return $this->container['sar'];
+    }
+
+    /**
+     * Sets sar
+     *
+     * @param string|null $sar Sample aspect ratio of the video stream (`1:1`).
+     *
+     * @return self
+     */
+    public function setSar($sar)
+    {
+        if (is_null($sar)) {
+            throw new \InvalidArgumentException('non-nullable sar cannot be null');
+        }
+
+        if ((!preg_match("/^[0-9]+:[0-9]+$/", ObjectSerializer::toString($sar)))) {
+            throw new \InvalidArgumentException("invalid value for \$sar when calling UploadProbeMediaMetadata., must conform to the pattern /^[0-9]+:[0-9]+$/.");
+        }
+
+        $this->container['sar'] = $sar;
+
+        return $this;
+    }
+
+    /**
+     * Gets video_time_base
+     *
+     * @return string|null
+     */
+    public function getVideoTimeBase()
+    {
+        return $this->container['video_time_base'];
+    }
+
+    /**
+     * Sets video_time_base
+     *
+     * @param string|null $video_time_base ffprobe `time_base` of the video stream (`1/30000`).
+     *
+     * @return self
+     */
+    public function setVideoTimeBase($video_time_base)
+    {
+        if (is_null($video_time_base)) {
+            throw new \InvalidArgumentException('non-nullable video_time_base cannot be null');
+        }
+
+        if ((!preg_match("/^[0-9]+\/[0-9]+$/", ObjectSerializer::toString($video_time_base)))) {
+            throw new \InvalidArgumentException("invalid value for \$video_time_base when calling UploadProbeMediaMetadata., must conform to the pattern /^[0-9]+\/[0-9]+$/.");
+        }
+
+        $this->container['video_time_base'] = $video_time_base;
+
+        return $this;
+    }
+
+    /**
+     * Gets audio_time_base
+     *
+     * @return string|null
+     */
+    public function getAudioTimeBase()
+    {
+        return $this->container['audio_time_base'];
+    }
+
+    /**
+     * Sets audio_time_base
+     *
+     * @param string|null $audio_time_base ffprobe `time_base` of the audio stream (`1/48000`).
+     *
+     * @return self
+     */
+    public function setAudioTimeBase($audio_time_base)
+    {
+        if (is_null($audio_time_base)) {
+            throw new \InvalidArgumentException('non-nullable audio_time_base cannot be null');
+        }
+
+        if ((!preg_match("/^[0-9]+\/[0-9]+$/", ObjectSerializer::toString($audio_time_base)))) {
+            throw new \InvalidArgumentException("invalid value for \$audio_time_base when calling UploadProbeMediaMetadata., must conform to the pattern /^[0-9]+\/[0-9]+$/.");
+        }
+
+        $this->container['audio_time_base'] = $audio_time_base;
+
+        return $this;
+    }
+
+    /**
+     * Gets codec_tag
+     *
+     * @return string|null
+     */
+    public function getCodecTag()
+    {
+        return $this->container['codec_tag'];
+    }
+
+    /**
+     * Sets codec_tag
+     *
+     * @param string|null $codec_tag ffprobe `codec_tag_string` of the video stream (e.g. `avc1`).
+     *
+     * @return self
+     */
+    public function setCodecTag($codec_tag)
+    {
+        if (is_null($codec_tag)) {
+            throw new \InvalidArgumentException('non-nullable codec_tag cannot be null');
+        }
+        $this->container['codec_tag'] = $codec_tag;
+
+        return $this;
+    }
+
+    /**
+     * Gets profile
+     *
+     * @return string|null
+     */
+    public function getProfile()
+    {
+        return $this->container['profile'];
+    }
+
+    /**
+     * Sets profile
+     *
+     * @param string|null $profile ffprobe `profile` of the video stream (e.g. `High`).
+     *
+     * @return self
+     */
+    public function setProfile($profile)
+    {
+        if (is_null($profile)) {
+            throw new \InvalidArgumentException('non-nullable profile cannot be null');
+        }
+        $this->container['profile'] = $profile;
+
+        return $this;
+    }
+
+    /**
+     * Gets sample_fmt
+     *
+     * @return string|null
+     */
+    public function getSampleFmt()
+    {
+        return $this->container['sample_fmt'];
+    }
+
+    /**
+     * Sets sample_fmt
+     *
+     * @param string|null $sample_fmt ffprobe `sample_fmt` of the audio stream (e.g. `fltp`).
+     *
+     * @return self
+     */
+    public function setSampleFmt($sample_fmt)
+    {
+        if (is_null($sample_fmt)) {
+            throw new \InvalidArgumentException('non-nullable sample_fmt cannot be null');
+        }
+        $this->container['sample_fmt'] = $sample_fmt;
 
         return $this;
     }

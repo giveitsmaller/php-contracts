@@ -1530,7 +1530,7 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1 = smallest file, 100 = best quality). For animated GIF this is honoured but real-world size reduction is typically small.",
+              "description": "Compression quality (1 = smallest file, 100 = best quality). For animated GIF this is honoured but real-world size reduction is typically small. Ignored when a TIFF stays a TIFF: it is re-encoded losslessly, so this setting has no effect on a TIFF output. It does apply when a TIFF is converted to another format (for example WebP).",
               "honored_on": [
                 "same_format"
               ],
@@ -5311,6 +5311,40 @@
                 "max_total_duration": "PT24H",
                 "max_total_input_size_bytes": 5000000000
               },
+              "input_uniformity": {
+                "attributes": {
+                  "audio": [
+                    "codec",
+                    "sample_rate",
+                    "channels",
+                    "channel_layout",
+                    "sample_fmt",
+                    "timebase"
+                  ],
+                  "field_presence": [
+                    "input_metadata_inconsistent"
+                  ],
+                  "video": [
+                    "codec",
+                    "codec_tag",
+                    "framerate",
+                    "pix_fmt",
+                    "profile",
+                    "resolution",
+                    "sar",
+                    "timebase"
+                  ]
+                },
+                "refusal": "INPUTS_NOT_CONCAT_UNIFORM",
+                "structural": [
+                  "input_count_below_minimum",
+                  "input_topology_not_single_video",
+                  "input_topology_multi_audio",
+                  "input_topology_extra_streams",
+                  "input_stream_topology_mismatch",
+                  "input_stream_order_mismatch"
+                ]
+              },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_total_input_size_bytes": 120000000000
@@ -7381,7 +7415,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.211.0",
-  "sdk_spec_version": "2.5.1",
-  "source_hash": "sha256:12a6a12ccbc80d255074a471f30dcd73123563890c5da142057009fa97e63072"
+  "schema_version": "2.212.0",
+  "sdk_spec_version": "2.7.0",
+  "source_hash": "sha256:2b32ac138c97f2afe8857eb2252d7d92076d79655a4b43aa58585a216095e9a2"
 }
