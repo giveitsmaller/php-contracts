@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 224,
+  "capabilities_version": 227,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -519,6 +519,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -537,6 +543,10 @@
             },
             "short_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -682,6 +692,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -700,6 +716,10 @@
             },
             "short_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -730,6 +750,9 @@
       "max_inputs": 2,
       "mime_groups": {
         "audio": {
+          "ceiling_basis": {
+            "max_input_duration": "unproven"
+          },
           "max_input_duration": "PT2H",
           "mimes": [
             "audio/mpeg",
@@ -859,6 +882,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -877,6 +906,10 @@
             },
             "short_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -936,6 +969,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -954,6 +993,10 @@
             },
             "short_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -1041,6 +1084,9 @@
           }
         },
         "document_epub": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "proven"
+          },
           "max_input_size_bytes": 209715200,
           "mimes": [
             "application/epub+zip"
@@ -1066,6 +1112,9 @@
           }
         },
         "document_odf": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "proven"
+          },
           "max_input_size_bytes": 209715200,
           "mimes": [
             "application/vnd.oasis.opendocument.text",
@@ -1093,6 +1142,9 @@
           }
         },
         "document_office": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "proven"
+          },
           "max_input_size_bytes": 209715200,
           "mimes": [
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -1125,6 +1177,9 @@
           }
         },
         "image": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
           "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "mimes": [
@@ -1249,6 +1304,9 @@
           }
         },
         "image_avif": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
           "max_input_size_bytes": 20971520,
           "max_output_pixels": 16000000,
           "mimes": [
@@ -1420,6 +1478,9 @@
           }
         },
         "image_jpeg": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
           "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "mimes": [
@@ -1613,6 +1674,9 @@
           }
         },
         "image_png": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
           "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "mimes": [
@@ -1739,6 +1803,9 @@
           }
         },
         "image_svg": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
           "max_input_size_bytes": 524288000,
           "mimes": [
             "image/svg+xml"
@@ -1783,6 +1850,9 @@
           }
         },
         "image_webp": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
           "max_input_size_bytes": 524288000,
           "max_output_pixels": 16000000,
           "mimes": [
@@ -2129,6 +2199,12 @@
           "processing_class": {
             "long_form": {
               "availability": "stable",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -2147,6 +2223,10 @@
             },
             "short_form": {
               "availability": "stable",
+              "ceiling_basis": {
+                "max_input_duration": "proven",
+                "max_input_size_bytes": "proven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -2663,6 +2743,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -2681,10 +2767,39 @@
             },
             "short_form": {
               "availability": "stable",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
                 "max_output_size_bytes": 524288000
+              },
+              "resolution_bands": {
+                "gt_1080p": {
+                  "basis": "not_served"
+                },
+                "le_720p": {
+                  "basis": "proven",
+                  "constraints": {
+                    "max_input_duration": "PT2M25S"
+                  },
+                  "source": "9c5mOnq1-720p-145s"
+                },
+                "p1080": {
+                  "basis": "proven",
+                  "constraints": {
+                    "max_input_duration": "PT1M20S"
+                  },
+                  "source": "9c5mOnq1-1080p-80s"
+                },
+                "unknown": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT2M25S"
+                  }
+                }
               }
             }
           }
@@ -2740,6 +2855,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -2758,6 +2879,10 @@
             },
             "short_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -3442,8 +3567,8 @@
               ]
             },
             "normalize_audio": {
-              "default": true,
-              "description": "Normalize audio levels across all clips. NOT available on the long-form path, which forces loudness normalisation off \u2014 a defaulted value is dropped and reported there rather than silently ignored.",
+              "default": false,
+              "description": "Normalize audio levels across all clips. Off by default (the server applies the default when the option is omitted). Turning it on re-encodes every clip, which lowers the limit: about 120 seconds of combined 720p video was measured to fit, instead of 5 minutes. NOT available on the long-form path, which forces loudness normalisation off.",
               "per_class_availability": {
                 "long_form_re_encode": {
                   "availability": "planned"
@@ -3790,6 +3915,12 @@
           "processing_class": {
             "long_form_re_encode": {
               "availability": "stable",
+              "ceiling_basis": {
+                "max_total_duration": "unproven",
+                "max_total_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_total_input_size_bytes": "unproven",
+                "per_tier.max.max_total_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_total_duration": "PT24H",
                 "max_total_input_size_bytes": 5000000000
@@ -3839,9 +3970,13 @@
             },
             "short_form_concat": {
               "availability": "stable",
+              "ceiling_basis": {
+                "max_total_duration": "proven",
+                "max_total_input_size_bytes": "proven"
+              },
               "constraints": {
                 "max_total_duration": "PT5M",
-                "max_total_input_size_bytes": 1073741824
+                "max_total_input_size_bytes": 524288000
               }
             }
           }
@@ -4192,6 +4327,12 @@
           "processing_class": {
             "long_form": {
               "availability": "beta",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -4210,6 +4351,10 @@
             },
             "short_form": {
               "availability": "beta",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -4516,6 +4661,9 @@
       "input_model": "single",
       "mime_groups": {
         "document_epub": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "proven"
+          },
           "max_input_size_bytes": 104857600,
           "max_output_pixels": 16000000,
           "mimes": [
@@ -4578,6 +4726,9 @@
           }
         },
         "document_office": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "proven"
+          },
           "max_input_size_bytes": 157286400,
           "max_output_pixels": 16000000,
           "mimes": [
@@ -4857,6 +5008,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000
@@ -4872,9 +5029,13 @@
             },
             "short_form": {
               "availability": "stable",
+              "ceiling_basis": {
+                "max_input_duration": "proven",
+                "max_input_size_bytes": "proven"
+              },
               "constraints": {
-                "max_input_duration": "PT5M",
-                "max_input_size_bytes": 524288000
+                "max_input_duration": "PT30M",
+                "max_input_size_bytes": 950000000
               }
             }
           }
@@ -5004,6 +5165,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -5022,6 +5189,10 @@
             },
             "short_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -5135,6 +5306,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -5153,6 +5330,10 @@
             },
             "short_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -5260,6 +5441,12 @@
           "processing_class": {
             "long_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven",
+                "per_tier.max.max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT12H",
                 "max_input_size_bytes": 5000000000,
@@ -5278,6 +5465,10 @@
             },
             "short_form": {
               "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -5301,7 +5492,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.215.0",
+  "schema_version": "2.216.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

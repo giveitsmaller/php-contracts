@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.215.0
+ * The version of the OpenAPI document: 2.216.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -60,6 +60,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $openAPITypes = [
         'basis' => 'string',
         'constraints' => '\Gisl\Generated\OpenApi\Model\ResolutionBandCeilingConstraints',
+        'source' => 'string',
         'derivation' => '\Gisl\Generated\OpenApi\Model\ResolutionBandCeilingDerivation'
     ];
 
@@ -73,6 +74,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $openAPIFormats = [
         'basis' => null,
         'constraints' => null,
+        'source' => null,
         'derivation' => null
     ];
 
@@ -84,6 +86,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static array $openAPINullables = [
         'basis' => false,
         'constraints' => false,
+        'source' => false,
         'derivation' => false
     ];
 
@@ -175,6 +178,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $attributeMap = [
         'basis' => 'basis',
         'constraints' => 'constraints',
+        'source' => 'source',
         'derivation' => 'derivation'
     ];
 
@@ -186,6 +190,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $setters = [
         'basis' => 'setBasis',
         'constraints' => 'setConstraints',
+        'source' => 'setSource',
         'derivation' => 'setDerivation'
     ];
 
@@ -197,6 +202,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     protected static $getters = [
         'basis' => 'getBasis',
         'constraints' => 'getConstraints',
+        'source' => 'getSource',
         'derivation' => 'getDerivation'
     ];
 
@@ -242,6 +248,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     }
 
     public const BASIS_MEASURED = 'measured';
+    public const BASIS_PROVEN = 'proven';
     public const BASIS_RULED = 'ruled';
     public const BASIS_NOT_SERVED = 'not_served';
 
@@ -254,6 +261,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         return [
             self::BASIS_MEASURED,
+            self::BASIS_PROVEN,
             self::BASIS_RULED,
             self::BASIS_NOT_SERVED,
         ];
@@ -276,6 +284,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $this->setIfExists('basis', $data ?? [], null);
         $this->setIfExists('constraints', $data ?? [], null);
+        $this->setIfExists('source', $data ?? [], null);
         $this->setIfExists('derivation', $data ?? [], null);
     }
 
@@ -318,6 +327,10 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
             );
         }
 
+        if (!is_null($this->container['source']) && !preg_match("/\\S/", $this->container['source'])) {
+            $invalidProperties[] = "invalid value for 'source', must be conform to the pattern /\\S/.";
+        }
+
         return $invalidProperties;
     }
 
@@ -346,7 +359,7 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
     /**
      * Sets basis
      *
-     * @param string $basis - `measured`: the ceiling is derived from measured encode time;   `derivation` carries the line it was solved from. - `ruled`: a policy value, not a measurement (today: the   `unknown` band, which takes the `le_720p` ceiling). - `not_served`: this class does not serve inputs in this band.   No `constraints`; an input in this band exceeds the class   (for `short_form`: it escalates to `long_form`, or is refused   where `long_form` is not available).
+     * @param string $basis - `measured`: the ceiling is derived from measured encode time;   `derivation` carries the line it was solved from. - `proven`: the LONGEST MEASURED SUCCESS at this resolution, with   no fitted line; `source` names the record. Owner decision   607(d): advertise only limits that have been proven. - `ruled`: a policy value, not a measurement (today: the   `unknown` band, which takes the `le_720p` ceiling). - `not_served`: this class does not serve inputs in this band.   No `constraints`; an input in this band exceeds the class   (for `short_form`: it escalates to `long_form`, or is refused   where `long_form` is not available).
      *
      * @return self
      */
@@ -393,6 +406,38 @@ class ResolutionBandCeiling implements ModelInterface, ArrayAccess, \JsonSeriali
             throw new \InvalidArgumentException('non-nullable constraints cannot be null');
         }
         $this->container['constraints'] = $constraints;
+
+        return $this;
+    }
+
+    /**
+     * Gets source
+     *
+     * @return string|null
+     */
+    public function getSource()
+    {
+        return $this->container['source'];
+    }
+
+    /**
+     * Sets source
+     *
+     * @param string|null $source Present only when `basis` is `proven`: the `id` of the run in this repository's `availability/staging-corner-measurements.yaml` that passed at this band's value.
+     *
+     * @return self
+     */
+    public function setSource($source)
+    {
+        if (is_null($source)) {
+            throw new \InvalidArgumentException('non-nullable source cannot be null');
+        }
+
+        if ((!preg_match("/\\S/", ObjectSerializer::toString($source)))) {
+            throw new \InvalidArgumentException("invalid value for \$source when calling ResolutionBandCeiling., must conform to the pattern /\\S/.");
+        }
+
+        $this->container['source'] = $source;
 
         return $this;
     }

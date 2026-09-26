@@ -43,8 +43,8 @@ final class ThumbnailMetadata
                         'short_form' => new AvailabilityEntry(
                             availability: 'stable',
                             constraints: new ProcessingClassConstraints(
-                                max_input_duration: 'PT5M',
-                                max_input_size_bytes: 524288000,
+                                max_input_duration: 'PT30M',
+                                max_input_size_bytes: 950000000,
                             ),
                         ),
                         'long_form' => new AvailabilityEntry(

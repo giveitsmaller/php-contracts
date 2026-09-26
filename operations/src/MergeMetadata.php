@@ -134,7 +134,7 @@ final class MergeMetadata
                             availability: 'stable',
                             constraints: new ProcessingClassConstraints(
                                 max_total_duration: 'PT5M',
-                                max_total_input_size_bytes: 1073741824,
+                                max_total_input_size_bytes: 524288000,
                             ),
                         ),
                         'long_form_re_encode' => new AvailabilityEntry(

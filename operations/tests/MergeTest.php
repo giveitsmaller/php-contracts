@@ -771,7 +771,7 @@ final class MergeTest extends TestCase
         $obj = new MergeVideoOptions();
         $this->assertInstanceOf(MergeVideoOptions::class, $obj);
         $this->assertSame(MergeVideoTransition::None, $obj->transition);
-        $this->assertSame(true, $obj->normalize_audio);
+        $this->assertSame(false, $obj->normalize_audio);
         $this->assertSame(MergeVideoReEncodeMode::Auto, $obj->re_encode_mode);
         $this->assertNull($obj->output_type);
         $this->assertNull($obj->crossfade_duration);

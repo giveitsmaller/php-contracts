@@ -10,7 +10,7 @@ final class MergeVideoOptions
 {
     public function __construct(
         public readonly MergeVideoTransition $transition = MergeVideoTransition::None,
-        public readonly bool $normalize_audio = true,
+        public readonly bool $normalize_audio = false,
         public readonly MergeVideoReEncodeMode $re_encode_mode = MergeVideoReEncodeMode::Auto,
         public readonly ?MergeVideoOutputType $output_type = null,
         public readonly ?float $crossfade_duration = null,
