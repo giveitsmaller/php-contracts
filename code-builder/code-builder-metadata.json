@@ -1630,7 +1630,7 @@
         },
         "image_avif": {
           "ceiling_basis": {
-            "max_input_size_bytes": "unproven"
+            "max_input_size_bytes": "proven"
           },
           "max_input_size_bytes": 20971520,
           "max_output_pixels": 16000000,
@@ -1899,9 +1899,11 @@
         },
         "image_jpeg": {
           "ceiling_basis": {
-            "max_input_size_bytes": "unproven"
+            "max_input_pixels": "proven",
+            "max_input_size_bytes": "proven"
           },
-          "max_input_size_bytes": 524288000,
+          "max_input_pixels": 90000000,
+          "max_input_size_bytes": 370000000,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -2203,9 +2205,11 @@
         },
         "image_png": {
           "ceiling_basis": {
-            "max_input_size_bytes": "unproven"
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "proven"
           },
-          "max_input_size_bytes": 524288000,
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 360000000,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -2411,7 +2415,7 @@
           "ceiling_basis": {
             "max_input_size_bytes": "unproven"
           },
-          "max_input_size_bytes": 524288000,
+          "max_input_size_bytes": 1000000,
           "media_group": "image",
           "mimes": [
             "image/svg+xml"
@@ -2497,9 +2501,11 @@
         },
         "image_webp": {
           "ceiling_basis": {
-            "max_input_size_bytes": "unproven"
+            "max_input_pixels": "proven",
+            "max_input_size_bytes": "proven"
           },
-          "max_input_size_bytes": 524288000,
+          "max_input_pixels": 75000000,
+          "max_input_size_bytes": 270000000,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -4954,7 +4960,7 @@
             },
             "normalize_audio": {
               "default": false,
-              "description": "Normalize audio levels across all clips. Off by default (the server applies the default when the option is omitted). Turning it on re-encodes every clip, which lowers the limit: about 120 seconds of combined 720p video was measured to fit, instead of 5 minutes. NOT available on the long-form path, which forces loudness normalisation off.",
+              "description": "Normalize audio levels across all clips. Off by default (the server applies the default when the option is omitted). Known issue: at each join of video clips, audio may lead video by up to about 40 ms with the default (`false`); the offset is per join and does not add up across joins. With `true`, an offset of about 45 ms was measured at a single join; merges with more joins are not yet measured on that setting. Turning it on re-encodes every clip, which lowers the limit: about 120 seconds of combined 720p video was measured to fit, instead of 5 minutes. NOT available on the long-form path, which forces loudness normalisation off.",
               "origin": "contract",
               "per_class_availability": {
                 "long_form_re_encode": {
@@ -7637,7 +7643,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.216.0",
-  "sdk_spec_version": "2.9.0",
-  "source_hash": "sha256:4aacfbef49e0c457e3b823a799ce9f0fded05ecb26cc3086e7cfcef61e0dbffb"
+  "schema_version": "2.217.0",
+  "sdk_spec_version": "2.10.0",
+  "source_hash": "sha256:ceb884bc449ef43132183525188505bfcb6b5db4dfb49335a5118844444ddcad"
 }

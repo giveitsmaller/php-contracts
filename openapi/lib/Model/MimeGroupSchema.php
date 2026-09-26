@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.216.0
+ * The version of the OpenAPI document: 2.217.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -63,6 +63,7 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => '\Gisl\Generated\OpenApi\Model\UserTier',
         'per_mime_availability' => 'array<string,\Gisl\Generated\OpenApi\Model\PerValueAvailabilityEntry>',
         'ceiling_basis' => 'array<string,string>',
+        'max_input_pixels' => 'int',
         'max_input_size_bytes' => 'int',
         'max_output_pixels' => 'int',
         'input_size_bound' => 'string',
@@ -85,6 +86,7 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => null,
         'per_mime_availability' => null,
         'ceiling_basis' => null,
+        'max_input_pixels' => 'int64',
         'max_input_size_bytes' => 'int64',
         'max_output_pixels' => 'int64',
         'input_size_bound' => null,
@@ -105,6 +107,7 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => false,
         'per_mime_availability' => false,
         'ceiling_basis' => false,
+        'max_input_pixels' => false,
         'max_input_size_bytes' => false,
         'max_output_pixels' => false,
         'input_size_bound' => false,
@@ -205,6 +208,7 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => 'required_tier',
         'per_mime_availability' => 'per_mime_availability',
         'ceiling_basis' => 'ceiling_basis',
+        'max_input_pixels' => 'max_input_pixels',
         'max_input_size_bytes' => 'max_input_size_bytes',
         'max_output_pixels' => 'max_output_pixels',
         'input_size_bound' => 'input_size_bound',
@@ -225,6 +229,7 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => 'setRequiredTier',
         'per_mime_availability' => 'setPerMimeAvailability',
         'ceiling_basis' => 'setCeilingBasis',
+        'max_input_pixels' => 'setMaxInputPixels',
         'max_input_size_bytes' => 'setMaxInputSizeBytes',
         'max_output_pixels' => 'setMaxOutputPixels',
         'input_size_bound' => 'setInputSizeBound',
@@ -245,6 +250,7 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'required_tier' => 'getRequiredTier',
         'per_mime_availability' => 'getPerMimeAvailability',
         'ceiling_basis' => 'getCeilingBasis',
+        'max_input_pixels' => 'getMaxInputPixels',
         'max_input_size_bytes' => 'getMaxInputSizeBytes',
         'max_output_pixels' => 'getMaxOutputPixels',
         'input_size_bound' => 'getInputSizeBound',
@@ -344,6 +350,7 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('required_tier', $data ?? [], null);
         $this->setIfExists('per_mime_availability', $data ?? [], null);
         $this->setIfExists('ceiling_basis', $data ?? [], null);
+        $this->setIfExists('max_input_pixels', $data ?? [], null);
         $this->setIfExists('max_input_size_bytes', $data ?? [], null);
         $this->setIfExists('max_output_pixels', $data ?? [], null);
         $this->setIfExists('input_size_bound', $data ?? [], null);
@@ -383,6 +390,10 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['mimes'] === null) {
             $invalidProperties[] = "'mimes' can't be null";
         }
+        if (!is_null($this->container['max_input_pixels']) && ($this->container['max_input_pixels'] < 1)) {
+            $invalidProperties[] = "invalid value for 'max_input_pixels', must be bigger than or equal to 1.";
+        }
+
         if (!is_null($this->container['max_input_size_bytes']) && ($this->container['max_input_size_bytes'] < 1)) {
             $invalidProperties[] = "invalid value for 'max_input_size_bytes', must be bigger than or equal to 1.";
         }
@@ -558,6 +569,38 @@ class MimeGroupSchema implements ModelInterface, ArrayAccess, \JsonSerializable
             );
         }
         $this->container['ceiling_basis'] = $ceiling_basis;
+
+        return $this;
+    }
+
+    /**
+     * Gets max_input_pixels
+     *
+     * @return int|null
+     */
+    public function getMaxInputPixels()
+    {
+        return $this->container['max_input_pixels'];
+    }
+
+    /**
+     * Sets max_input_pixels
+     *
+     * @param int|null $max_input_pixels The largest INPUT image, in decoded pixels (width x height), that this group's worker is declared to process (owner decision 607(d), 2026-09-26: decode memory, not bytes, binds for raster images). Present only where it was measured.  WHICH PIXEL CEILING BINDS WHEN. There are three, at three stages: 1. UPLOAD, single-shot: `limits.max_upload_image_pixels`    (default 16 MP; API setting `UPLOAD_MAX_IMAGE_PIXELS`), 413    `IMAGE_DIMENSIONS_TOO_LARGE`. 2. UPLOAD, multipart: `limits.max_multipart_upload_image_pixels`    (default 50 MP; admits a 24 MP phone photo), same 413. 3. OPERATION: this field, the worker's declared decode ceiling. The    worker refuses above it (`input_too_large`, header-only, before    decoding); the API is to check it at workflow create too (api    card, co-land), after which it refuses before any job runs. An uploaded image passes its upload gate first, so it meets `min(upload ceiling, this field)`. Every value declared here is at least 75 MP, above both upload defaults, so today the UPLOAD ceiling binds for uploads, and this field binds for inputs that did not come through an upload gate (another job's output, an import), or if an upload ceiling is raised past it. A 24 MP photo passes all three.  THE VALUE IS AN UPPER BOUND, NOT A GUARANTEE FOR EVERY IMAGE. Where the worker's real limit is a decode-memory budget, images with more bytes per pixel (alpha, 16-bit channels) hit it at fewer pixels, and the worker refuses them with `input_too_large` (typed, not retryable, before any billed work) below this field. PNG is the measured case: 100 MP is the 8-bit RGBA value; 16-bit RGB reaches the budget near 67 MP and 16-bit RGBA near 50 MP. A pre-flight check against this field therefore cannot promise acceptance.
+     *
+     * @return self
+     */
+    public function setMaxInputPixels($max_input_pixels)
+    {
+        if (is_null($max_input_pixels)) {
+            throw new \InvalidArgumentException('non-nullable max_input_pixels cannot be null');
+        }
+
+        if (($max_input_pixels < 1)) {
+            throw new \InvalidArgumentException('invalid value for $max_input_pixels when calling MimeGroupSchema., must be bigger than or equal to 1.');
+        }
+
+        $this->container['max_input_pixels'] = $max_input_pixels;
 
         return $this;
     }
