@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.217.0
+ * The version of the OpenAPI document: 2.218.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -35,7 +35,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * AnonymousQuotaExhaustedResponse Class Doc Comment
  *
  * @category Class
- * @description 403 from &#x60;POST /api/workflows&#x60; when an ANONYMOUS caller (no credential) has used its per-IP workflow allowance for the rolling 24 hours. A register-wall, distinct from the generic &#x60;429&#x60;: the remedy is signing in, not waiting.  Mirrors &#x60;compression_api&#x60;&#39;s &#x60;WorkflowController&#x60; register-wall (&#x60;JobsErrorCode::AnonymousQuotaExhausted&#x60;). The allowance is only consumed by a workflow that is actually created, so a refused request does not use it up.
+ * @description 403 from &#x60;POST /api/workflows&#x60; when an ANONYMOUS caller (no credential) asks for a workflow that would cost more CREDITS than its per-IP allowance has left in the rolling 24 hours (&#x60;schemas/anonymous-policy.yaml&#x60; &#x60;allowance&#x60;, priced with the same operation weights as a signed-in caller). The request is refused whole; nothing runs. A register-wall, distinct from the generic &#x60;429&#x60;: the remedy is signing in.  The recovery figures are REQUIRED fields of this envelope, not localisation parameters (&#x60;ErrorEnvelope.message_params&#x60; excludes cost numbers): &#x60;allowance&#x60;, &#x60;remaining&#x60; and &#x60;cost&#x60;, in credits.  Two cases, told apart by &#x60;cost&#x60; against &#x60;allowance&#x60;: - &#x60;cost &lt;&#x3D; allowance&#x60;: waiting helps. The response carries   &#x60;Retry-After&#x60;, the seconds until enough of the window frees up. - &#x60;cost &gt; allowance&#x60;: the request can NEVER fit a guest window   (the body is not bounded to the allowance). No &#x60;Retry-After&#x60;;   only signing in, or a smaller request, helps.  Mirrors &#x60;compression_api&#x60;&#39;s &#x60;WorkflowController&#x60; register-wall (&#x60;JobsErrorCode::AnonymousQuotaExhausted&#x60;). Credits are charged only by a workflow that is actually created, and released on failure, so a refused request does not use any up.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -64,7 +64,10 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
         'message_key' => 'string',
         'locale' => 'string',
         'message_params' => 'array<string,mixed>',
-        'error_type' => 'string'
+        'error_type' => 'string',
+        'allowance' => 'int',
+        'remaining' => 'int',
+        'cost' => 'int'
     ];
 
     /**
@@ -81,7 +84,10 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
         'message_key' => null,
         'locale' => null,
         'message_params' => null,
-        'error_type' => null
+        'error_type' => null,
+        'allowance' => null,
+        'remaining' => null,
+        'cost' => null
     ];
 
     /**
@@ -96,7 +102,10 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
         'message_key' => false,
         'locale' => false,
         'message_params' => false,
-        'error_type' => false
+        'error_type' => false,
+        'allowance' => false,
+        'remaining' => false,
+        'cost' => false
     ];
 
     /**
@@ -191,7 +200,10 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
         'message_key' => 'message_key',
         'locale' => 'locale',
         'message_params' => 'message_params',
-        'error_type' => 'error_type'
+        'error_type' => 'error_type',
+        'allowance' => 'allowance',
+        'remaining' => 'remaining',
+        'cost' => 'cost'
     ];
 
     /**
@@ -206,7 +218,10 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
         'message_key' => 'setMessageKey',
         'locale' => 'setLocale',
         'message_params' => 'setMessageParams',
-        'error_type' => 'setErrorType'
+        'error_type' => 'setErrorType',
+        'allowance' => 'setAllowance',
+        'remaining' => 'setRemaining',
+        'cost' => 'setCost'
     ];
 
     /**
@@ -221,7 +236,10 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
         'message_key' => 'getMessageKey',
         'locale' => 'getLocale',
         'message_params' => 'getMessageParams',
-        'error_type' => 'getErrorType'
+        'error_type' => 'getErrorType',
+        'allowance' => 'getAllowance',
+        'remaining' => 'getRemaining',
+        'cost' => 'getCost'
     ];
 
     /**
@@ -314,6 +332,9 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
         $this->setIfExists('locale', $data ?? [], null);
         $this->setIfExists('message_params', $data ?? [], null);
         $this->setIfExists('error_type', $data ?? [], null);
+        $this->setIfExists('allowance', $data ?? [], null);
+        $this->setIfExists('remaining', $data ?? [], null);
+        $this->setIfExists('cost', $data ?? [], null);
     }
 
     /**
@@ -369,6 +390,27 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
                 $this->container['error_type'],
                 implode("', '", $allowedValues)
             );
+        }
+
+        if ($this->container['allowance'] === null) {
+            $invalidProperties[] = "'allowance' can't be null";
+        }
+        if (($this->container['allowance'] < 0)) {
+            $invalidProperties[] = "invalid value for 'allowance', must be bigger than or equal to 0.";
+        }
+
+        if ($this->container['remaining'] === null) {
+            $invalidProperties[] = "'remaining' can't be null";
+        }
+        if (($this->container['remaining'] < 0)) {
+            $invalidProperties[] = "invalid value for 'remaining', must be bigger than or equal to 0.";
+        }
+
+        if ($this->container['cost'] === null) {
+            $invalidProperties[] = "'cost' can't be null";
+        }
+        if (($this->container['cost'] < 1)) {
+            $invalidProperties[] = "invalid value for 'cost', must be bigger than or equal to 1.";
         }
 
         return $invalidProperties;
@@ -591,6 +633,102 @@ class AnonymousQuotaExhaustedResponse implements ModelInterface, ArrayAccess, \J
             );
         }
         $this->container['error_type'] = $error_type;
+
+        return $this;
+    }
+
+    /**
+     * Gets allowance
+     *
+     * @return int
+     */
+    public function getAllowance()
+    {
+        return $this->container['allowance'];
+    }
+
+    /**
+     * Sets allowance
+     *
+     * @param int $allowance Credits per rolling 24 h for this IP (the policy value).
+     *
+     * @return self
+     */
+    public function setAllowance($allowance)
+    {
+        if (is_null($allowance)) {
+            throw new \InvalidArgumentException('non-nullable allowance cannot be null');
+        }
+
+        if (($allowance < 0)) {
+            throw new \InvalidArgumentException('invalid value for $allowance when calling AnonymousQuotaExhaustedResponse., must be bigger than or equal to 0.');
+        }
+
+        $this->container['allowance'] = $allowance;
+
+        return $this;
+    }
+
+    /**
+     * Gets remaining
+     *
+     * @return int
+     */
+    public function getRemaining()
+    {
+        return $this->container['remaining'];
+    }
+
+    /**
+     * Sets remaining
+     *
+     * @param int $remaining Credits left in the window when the request was refused.
+     *
+     * @return self
+     */
+    public function setRemaining($remaining)
+    {
+        if (is_null($remaining)) {
+            throw new \InvalidArgumentException('non-nullable remaining cannot be null');
+        }
+
+        if (($remaining < 0)) {
+            throw new \InvalidArgumentException('invalid value for $remaining when calling AnonymousQuotaExhaustedResponse., must be bigger than or equal to 0.');
+        }
+
+        $this->container['remaining'] = $remaining;
+
+        return $this;
+    }
+
+    /**
+     * Gets cost
+     *
+     * @return int
+     */
+    public function getCost()
+    {
+        return $this->container['cost'];
+    }
+
+    /**
+     * Sets cost
+     *
+     * @param int $cost What this request would have charged. When it exceeds `allowance`, the request can never fit and `Retry-After` is absent.
+     *
+     * @return self
+     */
+    public function setCost($cost)
+    {
+        if (is_null($cost)) {
+            throw new \InvalidArgumentException('non-nullable cost cannot be null');
+        }
+
+        if (($cost < 1)) {
+            throw new \InvalidArgumentException('invalid value for $cost when calling AnonymousQuotaExhaustedResponse., must be bigger than or equal to 1.');
+        }
+
+        $this->container['cost'] = $cost;
 
         return $this;
     }

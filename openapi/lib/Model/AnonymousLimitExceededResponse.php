@@ -1,6 +1,6 @@
 <?php
 /**
- * CapabilityInputSpec
+ * AnonymousLimitExceededResponse
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * CapabilityInputSpec Class Doc Comment
+ * AnonymousLimitExceededResponse Class Doc Comment
  *
  * @category Class
- * @description Per-operation input cardinality — the &#x60;capabilities.&lt;op&gt;.input&#x60; block surfaced by the API (ticket &#x60;03Qg3Ms7&#x60; / PR #477), round-tripped verbatim from the operation-capability model. It mirrors the operation&#39;s &#x60;input_model&#x60; / &#x60;min_inputs&#x60; / &#x60;max_inputs&#x60; / &#x60;per_role_cardinality&#x60; (the &#x60;operations.*&#x60; map carries the same facts under those keys; this is the &#x60;capabilities&#x60; projection). &#x60;model&#x60; is always present; &#x60;min&#x60; / &#x60;max&#x60; accompany multi-input ops; &#x60;roles&#x60; is added only by role-based multis. A single-input op emits just &#x60;{ model: single }&#x60;; a role-less multi emits &#x60;{ model: multi, min, max }&#x60;; a role-based multi adds &#x60;roles&#x60;.
+ * @description 403 from &#x60;POST /api/workflows&#x60; when an ANONYMOUS caller&#39;s input exceeds a guest-only limit declared in &#x60;schemas/anonymous-policy.yaml&#x60;. Today the one such limit is the video duration cap (&#x60;video.max_duration_seconds&#x60;), measured on the upload probe&#39;s duration; the create waits for the probe first. A register-wall: signing in lifts the guest limit (the signed-in caller&#39;s ordinary class ceilings then apply). Not a processing-class refusal: no class or tier ceiling is involved.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializable
+class AnonymousLimitExceededResponse implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      *
      * @var string
      */
-    protected static $openAPIModelName = 'CapabilityInputSpec';
+    protected static $openAPIModelName = 'AnonymousLimitExceededResponse';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,10 +58,16 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $openAPITypes = [
-        'model' => 'string',
-        'min' => 'int',
-        'max' => 'int',
-        'roles' => 'string[]'
+        'success' => 'bool',
+        'error' => 'string',
+        'message' => 'string',
+        'message_key' => 'string',
+        'locale' => 'string',
+        'message_params' => 'array<string,mixed>',
+        'error_type' => 'string',
+        'limit' => 'string',
+        'actual' => 'int',
+        'maximum' => 'int'
     ];
 
     /**
@@ -72,10 +78,16 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'model' => null,
-        'min' => null,
-        'max' => null,
-        'roles' => null
+        'success' => null,
+        'error' => null,
+        'message' => null,
+        'message_key' => null,
+        'locale' => null,
+        'message_params' => null,
+        'error_type' => null,
+        'limit' => null,
+        'actual' => null,
+        'maximum' => null
     ];
 
     /**
@@ -84,10 +96,16 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'model' => false,
-        'min' => false,
-        'max' => false,
-        'roles' => false
+        'success' => false,
+        'error' => false,
+        'message' => false,
+        'message_key' => false,
+        'locale' => false,
+        'message_params' => false,
+        'error_type' => false,
+        'limit' => false,
+        'actual' => false,
+        'maximum' => false
     ];
 
     /**
@@ -176,10 +194,16 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $attributeMap = [
-        'model' => 'model',
-        'min' => 'min',
-        'max' => 'max',
-        'roles' => 'roles'
+        'success' => 'success',
+        'error' => 'error',
+        'message' => 'message',
+        'message_key' => 'message_key',
+        'locale' => 'locale',
+        'message_params' => 'message_params',
+        'error_type' => 'error_type',
+        'limit' => 'limit',
+        'actual' => 'actual',
+        'maximum' => 'maximum'
     ];
 
     /**
@@ -188,10 +212,16 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $setters = [
-        'model' => 'setModel',
-        'min' => 'setMin',
-        'max' => 'setMax',
-        'roles' => 'setRoles'
+        'success' => 'setSuccess',
+        'error' => 'setError',
+        'message' => 'setMessage',
+        'message_key' => 'setMessageKey',
+        'locale' => 'setLocale',
+        'message_params' => 'setMessageParams',
+        'error_type' => 'setErrorType',
+        'limit' => 'setLimit',
+        'actual' => 'setActual',
+        'maximum' => 'setMaximum'
     ];
 
     /**
@@ -200,10 +230,16 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      * @var string[]
      */
     protected static $getters = [
-        'model' => 'getModel',
-        'min' => 'getMin',
-        'max' => 'getMax',
-        'roles' => 'getRoles'
+        'success' => 'getSuccess',
+        'error' => 'getError',
+        'message' => 'getMessage',
+        'message_key' => 'getMessageKey',
+        'locale' => 'getLocale',
+        'message_params' => 'getMessageParams',
+        'error_type' => 'getErrorType',
+        'limit' => 'getLimit',
+        'actual' => 'getActual',
+        'maximum' => 'getMaximum'
     ];
 
     /**
@@ -247,22 +283,19 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
         return self::$openAPIModelName;
     }
 
-    public const MODEL_SINGLE = 'single';
-    public const MODEL_MULTI = 'multi';
-    public const ROLES_BASE = 'base';
-    public const ROLES_OVERLAY = 'overlay';
-    public const ROLES_TRANSITION_MASK = 'transition_mask';
+    public const ERROR_ANONYMOUS_LIMIT_EXCEEDED = 'ANONYMOUS_LIMIT_EXCEEDED';
+    public const ERROR_TYPE_ANONYMOUS_LIMIT_EXCEEDED = 'anonymous_limit_exceeded';
+    public const LIMIT_VIDEO_DURATION_SECONDS = 'video_duration_seconds';
 
     /**
      * Gets allowable values of the enum
      *
      * @return string[]
      */
-    public function getModelAllowableValues()
+    public function getErrorAllowableValues()
     {
         return [
-            self::MODEL_SINGLE,
-            self::MODEL_MULTI,
+            self::ERROR_ANONYMOUS_LIMIT_EXCEEDED,
         ];
     }
 
@@ -271,12 +304,22 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      *
      * @return string[]
      */
-    public function getRolesAllowableValues()
+    public function getErrorTypeAllowableValues()
     {
         return [
-            self::ROLES_BASE,
-            self::ROLES_OVERLAY,
-            self::ROLES_TRANSITION_MASK,
+            self::ERROR_TYPE_ANONYMOUS_LIMIT_EXCEEDED,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getLimitAllowableValues()
+    {
+        return [
+            self::LIMIT_VIDEO_DURATION_SECONDS,
         ];
     }
 
@@ -295,10 +338,16 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('model', $data ?? [], null);
-        $this->setIfExists('min', $data ?? [], null);
-        $this->setIfExists('max', $data ?? [], null);
-        $this->setIfExists('roles', $data ?? [], null);
+        $this->setIfExists('success', $data ?? [], null);
+        $this->setIfExists('error', $data ?? [], null);
+        $this->setIfExists('message', $data ?? [], null);
+        $this->setIfExists('message_key', $data ?? [], null);
+        $this->setIfExists('locale', $data ?? [], null);
+        $this->setIfExists('message_params', $data ?? [], null);
+        $this->setIfExists('error_type', $data ?? [], null);
+        $this->setIfExists('limit', $data ?? [], null);
+        $this->setIfExists('actual', $data ?? [], null);
+        $this->setIfExists('maximum', $data ?? [], null);
     }
 
     /**
@@ -328,16 +377,58 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
     {
         $invalidProperties = [];
 
-        if ($this->container['model'] === null) {
-            $invalidProperties[] = "'model' can't be null";
+        if ($this->container['success'] === null) {
+            $invalidProperties[] = "'success' can't be null";
         }
-        $allowedValues = $this->getModelAllowableValues();
-        if (!is_null($this->container['model']) && !in_array($this->container['model'], $allowedValues, true)) {
+
+        if ($this->container['error'] === null) {
+            $invalidProperties[] = "'error' can't be null";
+        }
+        $allowedValues = $this->getErrorAllowableValues();
+        if (!is_null($this->container['error']) && !in_array($this->container['error'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'model', must be one of '%s'",
-                $this->container['model'],
+                "invalid value '%s' for 'error', must be one of '%s'",
+                $this->container['error'],
                 implode("', '", $allowedValues)
             );
+        }
+
+        if ($this->container['error_type'] === null) {
+            $invalidProperties[] = "'error_type' can't be null";
+        }
+        $allowedValues = $this->getErrorTypeAllowableValues();
+        if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'error_type', must be one of '%s'",
+                $this->container['error_type'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['limit'] === null) {
+            $invalidProperties[] = "'limit' can't be null";
+        }
+        $allowedValues = $this->getLimitAllowableValues();
+        if (!is_null($this->container['limit']) && !in_array($this->container['limit'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'limit', must be one of '%s'",
+                $this->container['limit'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['actual'] === null) {
+            $invalidProperties[] = "'actual' can't be null";
+        }
+        if (($this->container['actual'] < 0)) {
+            $invalidProperties[] = "invalid value for 'actual', must be bigger than or equal to 0.";
+        }
+
+        if ($this->container['maximum'] === null) {
+            $invalidProperties[] = "'maximum' can't be null";
+        }
+        if (($this->container['maximum'] < 0)) {
+            $invalidProperties[] = "invalid value for 'maximum', must be bigger than or equal to 0.";
         }
 
         return $invalidProperties;
@@ -356,128 +447,311 @@ class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializa
 
 
     /**
-     * Gets model
+     * Gets success
+     *
+     * @return bool
+     */
+    public function getSuccess()
+    {
+        return $this->container['success'];
+    }
+
+    /**
+     * Sets success
+     *
+     * @param bool $success success
+     *
+     * @return self
+     */
+    public function setSuccess($success)
+    {
+        if (is_null($success)) {
+            throw new \InvalidArgumentException('non-nullable success cannot be null');
+        }
+        $this->container['success'] = $success;
+
+        return $this;
+    }
+
+    /**
+     * Gets error
      *
      * @return string
      */
-    public function getModel()
+    public function getError()
     {
-        return $this->container['model'];
+        return $this->container['error'];
     }
 
     /**
-     * Sets model
+     * Sets error
      *
-     * @param string $model `single` — one input. `multi` — multiple inputs (with `min` / `max`, and `roles` for role-based ops).
+     * @param string $error error
      *
      * @return self
      */
-    public function setModel($model)
+    public function setError($error)
     {
-        if (is_null($model)) {
-            throw new \InvalidArgumentException('non-nullable model cannot be null');
+        if (is_null($error)) {
+            throw new \InvalidArgumentException('non-nullable error cannot be null');
         }
-        $allowedValues = $this->getModelAllowableValues();
-        if (!in_array($model, $allowedValues, true)) {
+        $allowedValues = $this->getErrorAllowableValues();
+        if (!in_array($error, $allowedValues, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "Invalid value '%s' for 'model', must be one of '%s'",
-                    $model,
+                    "Invalid value '%s' for 'error', must be one of '%s'",
+                    $error,
                     implode("', '", $allowedValues)
                 )
             );
         }
-        $this->container['model'] = $model;
+        $this->container['error'] = $error;
 
         return $this;
     }
 
     /**
-     * Gets min
+     * Gets message
      *
-     * @return int|null
+     * @return string|null
      */
-    public function getMin()
+    public function getMessage()
     {
-        return $this->container['min'];
+        return $this->container['message'];
     }
 
     /**
-     * Sets min
+     * Sets message
      *
-     * @param int|null $min Minimum number of inputs (multi-input ops).
+     * @param string|null $message Human-readable error message, localised per the request's `Accept-Language` header (fallback locale `en-GB`). The response carries `Content-Language: <locale>` + `Vary: Accept-Language` headers. **Never parse this field for control flow** — it changes per locale.
      *
      * @return self
      */
-    public function setMin($min)
+    public function setMessage($message)
     {
-        if (is_null($min)) {
-            throw new \InvalidArgumentException('non-nullable min cannot be null');
+        if (is_null($message)) {
+            throw new \InvalidArgumentException('non-nullable message cannot be null');
         }
-        $this->container['min'] = $min;
+        $this->container['message'] = $message;
 
         return $this;
     }
 
     /**
-     * Gets max
+     * Gets message_key
      *
-     * @return int|null
+     * @return string|null
      */
-    public function getMax()
+    public function getMessageKey()
     {
-        return $this->container['max'];
+        return $this->container['message_key'];
     }
 
     /**
-     * Sets max
+     * Sets message_key
      *
-     * @param int|null $max Maximum number of inputs (multi-input ops).
+     * @param string|null $message_key Stable canonical lookup key for the message (e.g. `error.balance_exhausted.add_credits`, `error.upload_size_exceeds_tier`). Never localised. SDK + frontend translation layers gate on this for client-side i18n catalogs (per ticket X19, cross-repo SDK companion work). Stable across server message-prose updates.
      *
      * @return self
      */
-    public function setMax($max)
+    public function setMessageKey($message_key)
     {
-        if (is_null($max)) {
-            throw new \InvalidArgumentException('non-nullable max cannot be null');
+        if (is_null($message_key)) {
+            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
         }
-        $this->container['max'] = $max;
+        $this->container['message_key'] = $message_key;
 
         return $this;
     }
 
     /**
-     * Gets roles
+     * Gets locale
      *
-     * @return string[]|null
+     * @return string|null
      */
-    public function getRoles()
+    public function getLocale()
     {
-        return $this->container['roles'];
+        return $this->container['locale'];
     }
 
     /**
-     * Sets roles
+     * Sets locale
      *
-     * @param string[]|null $roles Declared input roles for role-based multi-input ops. Omitted entirely for role-less multi-input ops — NOT synthesised. Mirrors the `JobInputRole` vocabulary (the request `role` enum); keep in sync if that enum widens.
+     * @param string|null $locale BCP 47 locale tag echoing the resolved `Content-Language` response header value. Currently always `en-GB` (the only committed locale per `info.description` Localisation block + ticket [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)); additional values will appear here when their catalogs ship. Lets the SDK confirm which locale the server selected when the request used q-value negotiation across multiple `Accept-Language` values.
      *
      * @return self
      */
-    public function setRoles($roles)
+    public function setLocale($locale)
     {
-        if (is_null($roles)) {
-            throw new \InvalidArgumentException('non-nullable roles cannot be null');
+        if (is_null($locale)) {
+            throw new \InvalidArgumentException('non-nullable locale cannot be null');
         }
-        $allowedValues = $this->getRolesAllowableValues();
-        if (array_diff($roles, $allowedValues)) {
+        $this->container['locale'] = $locale;
+
+        return $this;
+    }
+
+    /**
+     * Gets message_params
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getMessageParams()
+    {
+        return $this->container['message_params'];
+    }
+
+    /**
+     * Sets message_params
+     *
+     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. Keys are stable parameter names referenced by the translation table (e.g. `{ \"filename\": \"photo.heic\", \"max_size_mb\": 100 }`). **Excludes cost / monetary numbers** per plan v5 §F11 round-13 narrowing — pricing-related localisation reads numeric state from `GET /api/v2/credits/balance`, not from this field. Values are JSON-native scalars (`string` / `integer` / `number` / `boolean` / `null`) — no nested objects, to keep translation-table integration simple.
+     *
+     * @return self
+     */
+    public function setMessageParams($message_params)
+    {
+        if (is_null($message_params)) {
+            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
+        }
+        $this->container['message_params'] = $message_params;
+
+        return $this;
+    }
+
+    /**
+     * Gets error_type
+     *
+     * @return string
+     */
+    public function getErrorType()
+    {
+        return $this->container['error_type'];
+    }
+
+    /**
+     * Sets error_type
+     *
+     * @param string $error_type Discriminator for the 403 oneOf. Always `anonymous_limit_exceeded` for this envelope.
+     *
+     * @return self
+     */
+    public function setErrorType($error_type)
+    {
+        if (is_null($error_type)) {
+            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
+        }
+        $allowedValues = $this->getErrorTypeAllowableValues();
+        if (!in_array($error_type, $allowedValues, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "Invalid value for 'roles', must be one of '%s'",
+                    "Invalid value '%s' for 'error_type', must be one of '%s'",
+                    $error_type,
                     implode("', '", $allowedValues)
                 )
             );
         }
-        $this->container['roles'] = $roles;
+        $this->container['error_type'] = $error_type;
+
+        return $this;
+    }
+
+    /**
+     * Gets limit
+     *
+     * @return string
+     */
+    public function getLimit()
+    {
+        return $this->container['limit'];
+    }
+
+    /**
+     * Sets limit
+     *
+     * @param string $limit Which guest limit was exceeded. OPEN: a consumer that does not know a value shows the envelope's localised message.
+     *
+     * @return self
+     */
+    public function setLimit($limit)
+    {
+        if (is_null($limit)) {
+            throw new \InvalidArgumentException('non-nullable limit cannot be null');
+        }
+        $allowedValues = $this->getLimitAllowableValues();
+        if (!in_array($limit, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'limit', must be one of '%s'",
+                    $limit,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['limit'] = $limit;
+
+        return $this;
+    }
+
+    /**
+     * Gets actual
+     *
+     * @return int
+     */
+    public function getActual()
+    {
+        return $this->container['actual'];
+    }
+
+    /**
+     * Sets actual
+     *
+     * @param int $actual The input's value, in the unit `limit` names (seconds, rounded up).
+     *
+     * @return self
+     */
+    public function setActual($actual)
+    {
+        if (is_null($actual)) {
+            throw new \InvalidArgumentException('non-nullable actual cannot be null');
+        }
+
+        if (($actual < 0)) {
+            throw new \InvalidArgumentException('invalid value for $actual when calling AnonymousLimitExceededResponse., must be bigger than or equal to 0.');
+        }
+
+        $this->container['actual'] = $actual;
+
+        return $this;
+    }
+
+    /**
+     * Gets maximum
+     *
+     * @return int
+     */
+    public function getMaximum()
+    {
+        return $this->container['maximum'];
+    }
+
+    /**
+     * Sets maximum
+     *
+     * @param int $maximum The guest limit, from `schemas/anonymous-policy.yaml`.
+     *
+     * @return self
+     */
+    public function setMaximum($maximum)
+    {
+        if (is_null($maximum)) {
+            throw new \InvalidArgumentException('non-nullable maximum cannot be null');
+        }
+
+        if (($maximum < 0)) {
+            throw new \InvalidArgumentException('invalid value for $maximum when calling AnonymousLimitExceededResponse., must be bigger than or equal to 0.');
+        }
+
+        $this->container['maximum'] = $maximum;
 
         return $this;
     }

@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.217.0
+ * The version of the OpenAPI document: 2.218.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -68,7 +68,13 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         'current_tier' => '\Gisl\Generated\OpenApi\Model\UserTier',
         'required_tier' => '\Gisl\Generated\OpenApi\Model\UserTier',
         'violations' => '\Gisl\Generated\OpenApi\Model\FeatureViolation[]',
-        'operation' => '\Gisl\Generated\OpenApi\Model\OperationType'
+        'operation' => '\Gisl\Generated\OpenApi\Model\OperationType',
+        'allowance' => 'int',
+        'remaining' => 'int',
+        'cost' => 'int',
+        'limit' => 'string',
+        'actual' => 'int',
+        'maximum' => 'int'
     ];
 
     /**
@@ -90,7 +96,13 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         'current_tier' => null,
         'required_tier' => null,
         'violations' => null,
-        'operation' => null
+        'operation' => null,
+        'allowance' => null,
+        'remaining' => null,
+        'cost' => null,
+        'limit' => null,
+        'actual' => null,
+        'maximum' => null
     ];
 
     /**
@@ -110,7 +122,13 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         'current_tier' => false,
         'required_tier' => false,
         'violations' => false,
-        'operation' => false
+        'operation' => false,
+        'allowance' => false,
+        'remaining' => false,
+        'cost' => false,
+        'limit' => false,
+        'actual' => false,
+        'maximum' => false
     ];
 
     /**
@@ -210,7 +228,13 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         'current_tier' => 'current_tier',
         'required_tier' => 'required_tier',
         'violations' => 'violations',
-        'operation' => 'operation'
+        'operation' => 'operation',
+        'allowance' => 'allowance',
+        'remaining' => 'remaining',
+        'cost' => 'cost',
+        'limit' => 'limit',
+        'actual' => 'actual',
+        'maximum' => 'maximum'
     ];
 
     /**
@@ -230,7 +254,13 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         'current_tier' => 'setCurrentTier',
         'required_tier' => 'setRequiredTier',
         'violations' => 'setViolations',
-        'operation' => 'setOperation'
+        'operation' => 'setOperation',
+        'allowance' => 'setAllowance',
+        'remaining' => 'setRemaining',
+        'cost' => 'setCost',
+        'limit' => 'setLimit',
+        'actual' => 'setActual',
+        'maximum' => 'setMaximum'
     ];
 
     /**
@@ -250,7 +280,13 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         'current_tier' => 'getCurrentTier',
         'required_tier' => 'getRequiredTier',
         'violations' => 'getViolations',
-        'operation' => 'getOperation'
+        'operation' => 'getOperation',
+        'allowance' => 'getAllowance',
+        'remaining' => 'getRemaining',
+        'cost' => 'getCost',
+        'limit' => 'getLimit',
+        'actual' => 'getActual',
+        'maximum' => 'getMaximum'
     ];
 
     /**
@@ -294,8 +330,9 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         return self::$openAPIModelName;
     }
 
-    public const ERROR_ANONYMOUS_QUOTA_EXHAUSTED = 'ANONYMOUS_QUOTA_EXHAUSTED';
-    public const ERROR_TYPE_ANONYMOUS_QUOTA_EXHAUSTED = 'anonymous_quota_exhausted';
+    public const ERROR_ANONYMOUS_LIMIT_EXCEEDED = 'ANONYMOUS_LIMIT_EXCEEDED';
+    public const ERROR_TYPE_ANONYMOUS_LIMIT_EXCEEDED = 'anonymous_limit_exceeded';
+    public const LIMIT_VIDEO_DURATION_SECONDS = 'video_duration_seconds';
 
     /**
      * Gets allowable values of the enum
@@ -305,7 +342,7 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
     public function getErrorAllowableValues()
     {
         return [
-            self::ERROR_ANONYMOUS_QUOTA_EXHAUSTED,
+            self::ERROR_ANONYMOUS_LIMIT_EXCEEDED,
         ];
     }
 
@@ -317,7 +354,19 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
     public function getErrorTypeAllowableValues()
     {
         return [
-            self::ERROR_TYPE_ANONYMOUS_QUOTA_EXHAUSTED,
+            self::ERROR_TYPE_ANONYMOUS_LIMIT_EXCEEDED,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getLimitAllowableValues()
+    {
+        return [
+            self::LIMIT_VIDEO_DURATION_SECONDS,
         ];
     }
 
@@ -348,6 +397,12 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         $this->setIfExists('required_tier', $data ?? [], null);
         $this->setIfExists('violations', $data ?? [], null);
         $this->setIfExists('operation', $data ?? [], null);
+        $this->setIfExists('allowance', $data ?? [], null);
+        $this->setIfExists('remaining', $data ?? [], null);
+        $this->setIfExists('cost', $data ?? [], null);
+        $this->setIfExists('limit', $data ?? [], null);
+        $this->setIfExists('actual', $data ?? [], null);
+        $this->setIfExists('maximum', $data ?? [], null);
 
         // Initialize discriminator property with the model name.
         $this->container['error_type'] = static::$openAPIModelName;
@@ -424,6 +479,53 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         if ($this->container['operation'] === null) {
             $invalidProperties[] = "'operation' can't be null";
         }
+        if ($this->container['allowance'] === null) {
+            $invalidProperties[] = "'allowance' can't be null";
+        }
+        if (($this->container['allowance'] < 0)) {
+            $invalidProperties[] = "invalid value for 'allowance', must be bigger than or equal to 0.";
+        }
+
+        if ($this->container['remaining'] === null) {
+            $invalidProperties[] = "'remaining' can't be null";
+        }
+        if (($this->container['remaining'] < 0)) {
+            $invalidProperties[] = "invalid value for 'remaining', must be bigger than or equal to 0.";
+        }
+
+        if ($this->container['cost'] === null) {
+            $invalidProperties[] = "'cost' can't be null";
+        }
+        if (($this->container['cost'] < 1)) {
+            $invalidProperties[] = "invalid value for 'cost', must be bigger than or equal to 1.";
+        }
+
+        if ($this->container['limit'] === null) {
+            $invalidProperties[] = "'limit' can't be null";
+        }
+        $allowedValues = $this->getLimitAllowableValues();
+        if (!is_null($this->container['limit']) && !in_array($this->container['limit'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'limit', must be one of '%s'",
+                $this->container['limit'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['actual'] === null) {
+            $invalidProperties[] = "'actual' can't be null";
+        }
+        if (($this->container['actual'] < 0)) {
+            $invalidProperties[] = "invalid value for 'actual', must be bigger than or equal to 0.";
+        }
+
+        if ($this->container['maximum'] === null) {
+            $invalidProperties[] = "'maximum' can't be null";
+        }
+        if (($this->container['maximum'] < 0)) {
+            $invalidProperties[] = "invalid value for 'maximum', must be bigger than or equal to 0.";
+        }
+
         return $invalidProperties;
     }
 
@@ -624,7 +726,7 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Sets error_type
      *
-     * @param string $error_type Discriminator for the 403 oneOf. Always `anonymous_quota_exhausted` for this envelope.
+     * @param string $error_type Discriminator for the 403 oneOf. Always `anonymous_limit_exceeded` for this envelope.
      *
      * @return self
      */
@@ -784,6 +886,203 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
             throw new \InvalidArgumentException('non-nullable operation cannot be null');
         }
         $this->container['operation'] = $operation;
+
+        return $this;
+    }
+
+    /**
+     * Gets allowance
+     *
+     * @return int
+     */
+    public function getAllowance()
+    {
+        return $this->container['allowance'];
+    }
+
+    /**
+     * Sets allowance
+     *
+     * @param int $allowance Credits per rolling 24 h for this IP (the policy value).
+     *
+     * @return self
+     */
+    public function setAllowance($allowance)
+    {
+        if (is_null($allowance)) {
+            throw new \InvalidArgumentException('non-nullable allowance cannot be null');
+        }
+
+        if (($allowance < 0)) {
+            throw new \InvalidArgumentException('invalid value for $allowance when calling CreateWorkflow403Response., must be bigger than or equal to 0.');
+        }
+
+        $this->container['allowance'] = $allowance;
+
+        return $this;
+    }
+
+    /**
+     * Gets remaining
+     *
+     * @return int
+     */
+    public function getRemaining()
+    {
+        return $this->container['remaining'];
+    }
+
+    /**
+     * Sets remaining
+     *
+     * @param int $remaining Credits left in the window when the request was refused.
+     *
+     * @return self
+     */
+    public function setRemaining($remaining)
+    {
+        if (is_null($remaining)) {
+            throw new \InvalidArgumentException('non-nullable remaining cannot be null');
+        }
+
+        if (($remaining < 0)) {
+            throw new \InvalidArgumentException('invalid value for $remaining when calling CreateWorkflow403Response., must be bigger than or equal to 0.');
+        }
+
+        $this->container['remaining'] = $remaining;
+
+        return $this;
+    }
+
+    /**
+     * Gets cost
+     *
+     * @return int
+     */
+    public function getCost()
+    {
+        return $this->container['cost'];
+    }
+
+    /**
+     * Sets cost
+     *
+     * @param int $cost What this request would have charged. When it exceeds `allowance`, the request can never fit and `Retry-After` is absent.
+     *
+     * @return self
+     */
+    public function setCost($cost)
+    {
+        if (is_null($cost)) {
+            throw new \InvalidArgumentException('non-nullable cost cannot be null');
+        }
+
+        if (($cost < 1)) {
+            throw new \InvalidArgumentException('invalid value for $cost when calling CreateWorkflow403Response., must be bigger than or equal to 1.');
+        }
+
+        $this->container['cost'] = $cost;
+
+        return $this;
+    }
+
+    /**
+     * Gets limit
+     *
+     * @return string
+     */
+    public function getLimit()
+    {
+        return $this->container['limit'];
+    }
+
+    /**
+     * Sets limit
+     *
+     * @param string $limit Which guest limit was exceeded. OPEN: a consumer that does not know a value shows the envelope's localised message.
+     *
+     * @return self
+     */
+    public function setLimit($limit)
+    {
+        if (is_null($limit)) {
+            throw new \InvalidArgumentException('non-nullable limit cannot be null');
+        }
+        $allowedValues = $this->getLimitAllowableValues();
+        if (!in_array($limit, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'limit', must be one of '%s'",
+                    $limit,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['limit'] = $limit;
+
+        return $this;
+    }
+
+    /**
+     * Gets actual
+     *
+     * @return int
+     */
+    public function getActual()
+    {
+        return $this->container['actual'];
+    }
+
+    /**
+     * Sets actual
+     *
+     * @param int $actual The input's value, in the unit `limit` names (seconds, rounded up).
+     *
+     * @return self
+     */
+    public function setActual($actual)
+    {
+        if (is_null($actual)) {
+            throw new \InvalidArgumentException('non-nullable actual cannot be null');
+        }
+
+        if (($actual < 0)) {
+            throw new \InvalidArgumentException('invalid value for $actual when calling CreateWorkflow403Response., must be bigger than or equal to 0.');
+        }
+
+        $this->container['actual'] = $actual;
+
+        return $this;
+    }
+
+    /**
+     * Gets maximum
+     *
+     * @return int
+     */
+    public function getMaximum()
+    {
+        return $this->container['maximum'];
+    }
+
+    /**
+     * Sets maximum
+     *
+     * @param int $maximum The guest limit, from `schemas/anonymous-policy.yaml`.
+     *
+     * @return self
+     */
+    public function setMaximum($maximum)
+    {
+        if (is_null($maximum)) {
+            throw new \InvalidArgumentException('non-nullable maximum cannot be null');
+        }
+
+        if (($maximum < 0)) {
+            throw new \InvalidArgumentException('invalid value for $maximum when calling CreateWorkflow403Response., must be bigger than or equal to 0.');
+        }
+
+        $this->container['maximum'] = $maximum;
 
         return $this;
     }
