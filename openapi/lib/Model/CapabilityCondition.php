@@ -324,30 +324,19 @@ class CapabilityCondition implements ModelInterface, ArrayAccess, \JsonSerializa
     {
         $invalidProperties = [];
 
-        if ($this->container['all'] === null) {
-            $invalidProperties[] = "'all' can't be null";
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([['all'], ['any'], ['not'], ['equals', 'field'], ['field', 'in'], ['field', 'is_set'], ['op_selected']] as $branchRequired) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []) {
+                $matchesABranch = true;
+                break;
+            }
         }
-        if ($this->container['any'] === null) {
-            $invalidProperties[] = "'any' can't be null";
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {all} or {any} or {not} or {equals, field} or {field, in} or {field, is_set} or {op_selected}";
         }
-        if ($this->container['not'] === null) {
-            $invalidProperties[] = "'not' can't be null";
-        }
-        if ($this->container['field'] === null) {
-            $invalidProperties[] = "'field' can't be null";
-        }
-        if ($this->container['equals'] === null && !$this->isNullableSetToNull('equals')) {
-            $invalidProperties[] = "'equals' can't be null";
-        }
-        if ($this->container['in'] === null) {
-            $invalidProperties[] = "'in' can't be null";
-        }
-        if ($this->container['is_set'] === null) {
-            $invalidProperties[] = "'is_set' can't be null";
-        }
-        if ($this->container['op_selected'] === null) {
-            $invalidProperties[] = "'op_selected' can't be null";
-        }
+
         return $invalidProperties;
     }
 

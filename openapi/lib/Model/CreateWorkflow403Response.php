@@ -463,46 +463,22 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
             );
         }
 
-        if ($this->container['restriction_kind'] === null) {
-            $invalidProperties[] = "'restriction_kind' can't be null";
-        }
-        if ($this->container['current_tier'] === null) {
-            $invalidProperties[] = "'current_tier' can't be null";
-        }
-        if ($this->container['violations'] === null) {
-            $invalidProperties[] = "'violations' can't be null";
-        }
-        if ((count($this->container['violations']) < 1)) {
+        if (!is_null($this->container['violations']) && ((count($this->container['violations']) < 1))) {
             $invalidProperties[] = "invalid value for 'violations', number of items must be greater than or equal to 1.";
         }
 
-        if ($this->container['operation'] === null) {
-            $invalidProperties[] = "'operation' can't be null";
-        }
-        if ($this->container['allowance'] === null) {
-            $invalidProperties[] = "'allowance' can't be null";
-        }
-        if (($this->container['allowance'] < 0)) {
+        if (!is_null($this->container['allowance']) && (($this->container['allowance'] < 0))) {
             $invalidProperties[] = "invalid value for 'allowance', must be bigger than or equal to 0.";
         }
 
-        if ($this->container['remaining'] === null) {
-            $invalidProperties[] = "'remaining' can't be null";
-        }
-        if (($this->container['remaining'] < 0)) {
+        if (!is_null($this->container['remaining']) && (($this->container['remaining'] < 0))) {
             $invalidProperties[] = "invalid value for 'remaining', must be bigger than or equal to 0.";
         }
 
-        if ($this->container['cost'] === null) {
-            $invalidProperties[] = "'cost' can't be null";
-        }
-        if (($this->container['cost'] < 1)) {
+        if (!is_null($this->container['cost']) && (($this->container['cost'] < 1))) {
             $invalidProperties[] = "invalid value for 'cost', must be bigger than or equal to 1.";
         }
 
-        if ($this->container['limit'] === null) {
-            $invalidProperties[] = "'limit' can't be null";
-        }
         $allowedValues = $this->getLimitAllowableValues();
         if (!is_null($this->container['limit']) && !in_array($this->container['limit'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
@@ -512,18 +488,26 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
             );
         }
 
-        if ($this->container['actual'] === null) {
-            $invalidProperties[] = "'actual' can't be null";
-        }
-        if (($this->container['actual'] < 0)) {
+        if (!is_null($this->container['actual']) && (($this->container['actual'] < 0))) {
             $invalidProperties[] = "invalid value for 'actual', must be bigger than or equal to 0.";
         }
 
-        if ($this->container['maximum'] === null) {
-            $invalidProperties[] = "'maximum' can't be null";
-        }
-        if (($this->container['maximum'] < 0)) {
+        if (!is_null($this->container['maximum']) && (($this->container['maximum'] < 0))) {
             $invalidProperties[] = "invalid value for 'maximum', must be bigger than or equal to 0.";
+        }
+
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([[['current_tier', 'error', 'error_type', 'restriction_kind', 'success'], ['error_type' => 'tier_restriction', 'success' => false]], [['error', 'error_type', 'success', 'violations'], ['error_type' => 'feature_tier_restricted', 'success' => false]], [['error', 'error_type', 'operation', 'success'], ['error' => 'ANONYMOUS_OPERATION_NOT_ALLOWED', 'error_type' => 'anonymous_operation_not_allowed', 'success' => false]], [['allowance', 'cost', 'error', 'error_type', 'remaining', 'success'], ['error' => 'ANONYMOUS_QUOTA_EXHAUSTED', 'error_type' => 'anonymous_quota_exhausted', 'success' => false]], [['actual', 'error', 'error_type', 'limit', 'maximum', 'success'], ['error' => 'ANONYMOUS_LIMIT_EXCEEDED', 'error_type' => 'anonymous_limit_exceeded', 'limit' => 'video_duration_seconds', 'success' => false]]] as [$branchRequired, $branchFixed]) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
+                && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
+                $matchesABranch = true;
+                break;
+            }
+        }
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {current_tier, error, error_type=tier_restriction, restriction_kind, success=False} or {error, error_type=feature_tier_restricted, success=False, violations} or {error=ANONYMOUS_OPERATION_NOT_ALLOWED, error_type=anonymous_operation_not_allowed, operation, success=False} or {allowance, cost, error=ANONYMOUS_QUOTA_EXHAUSTED, error_type=anonymous_quota_exhausted, remaining, success=False} or {actual, error=ANONYMOUS_LIMIT_EXCEEDED, error_type=anonymous_limit_exceeded, limit=video_duration_seconds, maximum, success=False}";
         }
 
         return $invalidProperties;

@@ -360,9 +360,20 @@ class RegisterUser422Response implements ModelInterface, ArrayAccess, \JsonSeria
         if ($this->container['error'] === null) {
             $invalidProperties[] = "'error' can't be null";
         }
-        if ($this->container['details'] === null) {
-            $invalidProperties[] = "'details' can't be null";
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([[['details', 'error', 'error_type', 'success'], ['error_type' => 'validation_error', 'success' => false]], [['error', 'error_type', 'success'], ['success' => false]]] as [$branchRequired, $branchFixed]) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
+                && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
+                $matchesABranch = true;
+                break;
+            }
         }
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {details, error, error_type=validation_error, success=False} or {error, error_type, success=False}";
+        }
+
         return $invalidProperties;
     }
 

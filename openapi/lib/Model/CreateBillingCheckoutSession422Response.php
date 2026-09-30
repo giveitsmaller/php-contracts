@@ -343,9 +343,6 @@ class CreateBillingCheckoutSession422Response implements ModelInterface, ArrayAc
         if ($this->container['error'] === null) {
             $invalidProperties[] = "'error' can't be null";
         }
-        if ($this->container['error_type'] === null) {
-            $invalidProperties[] = "'error_type' can't be null";
-        }
         $allowedValues = $this->getErrorTypeAllowableValues();
         if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
@@ -355,11 +352,22 @@ class CreateBillingCheckoutSession422Response implements ModelInterface, ArrayAc
             );
         }
 
-        if ($this->container['violations'] === null) {
-            $invalidProperties[] = "'violations' can't be null";
-        }
-        if ((count($this->container['violations']) < 1)) {
+        if (!is_null($this->container['violations']) && ((count($this->container['violations']) < 1))) {
             $invalidProperties[] = "invalid value for 'violations', number of items must be greater than or equal to 1.";
+        }
+
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([[['error', 'error_type', 'success', 'violations'], ['error_type' => 'feature_not_available', 'success' => false]], [['error', 'success'], ['success' => false]]] as [$branchRequired, $branchFixed]) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
+                && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
+                $matchesABranch = true;
+                break;
+            }
+        }
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {error, error_type=feature_not_available, success=False, violations} or {error, success=False}";
         }
 
         return $invalidProperties;

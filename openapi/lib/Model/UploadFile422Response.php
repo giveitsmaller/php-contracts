@@ -382,14 +382,22 @@ class UploadFile422Response implements ModelInterface, ArrayAccess, \JsonSeriali
         if ($this->container['current_tier'] === null) {
             $invalidProperties[] = "'current_tier' can't be null";
         }
-        if ($this->container['max_size_bytes'] === null) {
-            $invalidProperties[] = "'max_size_bytes' can't be null";
-        }
-        if ($this->container['max_duration_seconds'] === null) {
-            $invalidProperties[] = "'max_duration_seconds' can't be null";
-        }
-        if (($this->container['max_duration_seconds'] < 0)) {
+        if (!is_null($this->container['max_duration_seconds']) && (($this->container['max_duration_seconds'] < 0))) {
             $invalidProperties[] = "invalid value for 'max_duration_seconds', must be bigger than or equal to 0.";
+        }
+
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([[['current_tier', 'error', 'error_type', 'max_size_bytes', 'success'], ['error_type' => 'upload_size_exceeds_tier', 'success' => false]], [['current_tier', 'error', 'error_type', 'max_duration_seconds', 'success'], ['error_type' => 'upload_duration_exceeds_tier', 'success' => false]]] as [$branchRequired, $branchFixed]) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
+                && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
+                $matchesABranch = true;
+                break;
+            }
+        }
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {current_tier, error, error_type=upload_size_exceeds_tier, max_size_bytes, success=False} or {current_tier, error, error_type=upload_duration_exceeds_tier, max_duration_seconds, success=False}";
         }
 
         return $invalidProperties;

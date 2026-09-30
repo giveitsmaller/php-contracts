@@ -289,15 +289,19 @@ class CapabilityProduces implements ModelInterface, ArrayAccess, \JsonSerializab
     {
         $invalidProperties = [];
 
-        if ($this->container['same_as_input'] === null) {
-            $invalidProperties[] = "'same_as_input' can't be null";
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([['same_as_input'], ['from_option'], ['fixed']] as $branchRequired) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []) {
+                $matchesABranch = true;
+                break;
+            }
         }
-        if ($this->container['from_option'] === null) {
-            $invalidProperties[] = "'from_option' can't be null";
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {same_as_input} or {from_option} or {fixed}";
         }
-        if ($this->container['fixed'] === null) {
-            $invalidProperties[] = "'fixed' can't be null";
-        }
+
         return $invalidProperties;
     }
 

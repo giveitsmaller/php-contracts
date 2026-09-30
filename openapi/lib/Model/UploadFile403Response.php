@@ -379,17 +379,22 @@ class UploadFile403Response implements ModelInterface, ArrayAccess, \JsonSeriali
             );
         }
 
-        if ($this->container['restriction_kind'] === null) {
-            $invalidProperties[] = "'restriction_kind' can't be null";
-        }
-        if ($this->container['current_tier'] === null) {
-            $invalidProperties[] = "'current_tier' can't be null";
-        }
-        if ($this->container['violations'] === null) {
-            $invalidProperties[] = "'violations' can't be null";
-        }
-        if ((count($this->container['violations']) < 1)) {
+        if (!is_null($this->container['violations']) && ((count($this->container['violations']) < 1))) {
             $invalidProperties[] = "invalid value for 'violations', number of items must be greater than or equal to 1.";
+        }
+
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([[['current_tier', 'error', 'error_type', 'restriction_kind', 'success'], ['error_type' => 'tier_restriction', 'success' => false]], [['error', 'error_type', 'success', 'violations'], ['error_type' => 'feature_tier_restricted', 'success' => false]]] as [$branchRequired, $branchFixed]) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
+                && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
+                $matchesABranch = true;
+                break;
+            }
+        }
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {current_tier, error, error_type=tier_restriction, restriction_kind, success=False} or {error, error_type=feature_tier_restricted, success=False, violations}";
         }
 
         return $invalidProperties;

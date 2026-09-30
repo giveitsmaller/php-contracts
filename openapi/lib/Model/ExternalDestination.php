@@ -326,23 +326,28 @@ class ExternalDestination implements ModelInterface, ArrayAccess, \JsonSerializa
             );
         }
 
-        if ($this->container['external_source_id'] === null) {
-            $invalidProperties[] = "'external_source_id' can't be null";
-        }
-        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['external_source_id'])) {
+        if (!is_null($this->container['external_source_id']) && (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['external_source_id']))) {
             $invalidProperties[] = "invalid value for 'external_source_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
         }
 
-        if ($this->container['connection_id'] === null) {
-            $invalidProperties[] = "'connection_id' can't be null";
-        }
-        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['connection_id'])) {
+        if (!is_null($this->container['connection_id']) && (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['connection_id']))) {
             $invalidProperties[] = "invalid value for 'connection_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
         }
 
-        if ($this->container['path'] === null) {
-            $invalidProperties[] = "'path' can't be null";
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([[['external_source_id', 'type'], ['type' => 'external_import']], [['connection_id', 'path', 'type'], ['type' => 'connection']]] as [$branchRequired, $branchFixed]) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
+                && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
+                $matchesABranch = true;
+                break;
+            }
         }
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {external_source_id, type=external_import} or {connection_id, path, type=connection}";
+        }
+
         return $invalidProperties;
     }
 

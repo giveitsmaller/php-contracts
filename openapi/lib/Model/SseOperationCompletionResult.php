@@ -354,32 +354,34 @@ class SseOperationCompletionResult implements ModelInterface, ArrayAccess, \Json
             );
         }
 
-        if ($this->container['download_url'] === null) {
-            $invalidProperties[] = "'download_url' can't be null";
-        }
-        if ($this->container['size_bytes'] === null) {
-            $invalidProperties[] = "'size_bytes' can't be null";
-        }
         if (!is_null($this->container['mime_type']) && (mb_strlen($this->container['mime_type']) > 100)) {
             $invalidProperties[] = "invalid value for 'mime_type', the character length must be smaller than or equal to 100.";
         }
 
-        if ($this->container['outputs'] === null) {
-            $invalidProperties[] = "'outputs' can't be null";
-        }
-        if ((count($this->container['outputs']) > 200)) {
+        if (!is_null($this->container['outputs']) && ((count($this->container['outputs']) > 200))) {
             $invalidProperties[] = "invalid value for 'outputs', number of items must be less than or equal to 200.";
         }
 
-        if ((count($this->container['outputs']) < 1)) {
+        if (!is_null($this->container['outputs']) && ((count($this->container['outputs']) < 1))) {
             $invalidProperties[] = "invalid value for 'outputs', number of items must be greater than or equal to 1.";
         }
 
-        if ($this->container['total_output_size_bytes'] === null) {
-            $invalidProperties[] = "'total_output_size_bytes' can't be null";
-        }
-        if (($this->container['total_output_size_bytes'] < 0)) {
+        if (!is_null($this->container['total_output_size_bytes']) && (($this->container['total_output_size_bytes'] < 0))) {
             $invalidProperties[] = "invalid value for 'total_output_size_bytes', must be bigger than or equal to 0.";
+        }
+
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([[['download_url', 'result_kind', 'size_bytes'], ['result_kind' => 'single']], [['outputs', 'result_kind', 'total_output_size_bytes'], ['result_kind' => 'multi']]] as [$branchRequired, $branchFixed]) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
+                && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
+                $matchesABranch = true;
+                break;
+            }
+        }
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {download_url, result_kind=single, size_bytes} or {outputs, result_kind=multi, total_output_size_bytes}";
         }
 
         return $invalidProperties;
