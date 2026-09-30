@@ -253,7 +253,6 @@
               {
                 "field": "compress.codec",
                 "in": [
-                  "h264",
                   "h265"
                 ]
               }
@@ -860,5 +859,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.218.0"
+  "schema_version": "2.219.0"
 }

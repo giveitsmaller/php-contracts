@@ -2824,7 +2824,7 @@
             },
             "audio_codec": {
               "default": "copy",
-              "description": "Audio codec. copy = passthrough (keep the source stream as-is; re-encode only on explicit request) \u2014 aac/opus/vorbis re-encode. Default is `copy`: on the same-container path (`output_format` original/absent) the source stream is already container-compatible, so copy is safe. When `output_format` RE-TARGETS the container, an absent/default audio_codec resolves to a container-valid codec via the facade (e.g. webm -> opus), NOT a blind copy of an incompatible stream \u2014 a DEFAULT is never rejected (the exact per-container resolution, incl. ogg vorbis-vs-opus, is an output_format stable-flip prerequisite). A caller-EXPLICIT codec the resolved container cannot carry (e.g. aac on a webm target) is rejected.",
+              "description": "Audio codec. copy = passthrough (keep the source stream as-is; re-encode only on explicit request) \u2014 aac/opus/vorbis re-encode. Default is `copy`: on the same-container path (`output_format` original/absent) the source stream is already container-compatible, so copy is safe. When `output_format` RE-TARGETS the container, an absent/default audio_codec resolves to a container-valid codec via the facade (e.g. webm -> opus), NOT a blind copy of an incompatible stream \u2014 a DEFAULT is never rejected (the exact per-container resolution, incl. ogg vorbis-vs-opus, is an output_format stable-flip prerequisite). `copy` sent explicitly counts as the default: if the source audio cannot be copied into the target container it is re-encoded to the container default (webm -> opus) and reported in dropped_options. A NON-default codec the resolved container cannot carry (e.g. aac on a webm target) is rejected.",
               "enum_ref": "AudioCodec",
               "enum_translations": {
                 "aac": "Aac",
@@ -2851,7 +2851,7 @@
             },
             "codec": {
               "default": "h264",
-              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower. The default (h264) is the MP4/MOV standard and is CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input container): for a container that cannot carry it (e.g. WebM, which carries VP8/VP9/AV1) the server resolves a container-valid codec (WebM -> vp9). A DEFAULT value is never rejected \u2014 including an explicit `output_format: webm` left at the default `h264` (resolves to vp9, not rejected); only a caller-EXPLICIT incompatible codec is rejected.",
+              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower. The default (h264) is the MP4/MOV standard and is CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input container): for a container that cannot carry it (e.g. WebM, which carries VP8/VP9/AV1) the server resolves a container-valid codec (WebM -> vp9). A DEFAULT value is never rejected \u2014 including an explicit `output_format: webm` left at the default `h264` (resolves to vp9, not rejected). A value equal to the default counts as the default even when sent, and the substitution is reported in dropped_options. Only a NON-default codec the container cannot carry is rejected (e.g. h265 on WebM).",
               "enum_ref": "VideoCodec",
               "enum_translations": {
                 "av1": "Av1",
@@ -2907,7 +2907,7 @@
             },
             "faststart": {
               "default": true,
-              "description": "Move the MP4/MOV moov atom to the front so the file starts playing before it is fully downloaded (progressive web playback). MP4/MOV only. CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input): the default (true) is silently inapplicable for a container with no moov atom (e.g. WebM) \u2014 that is NOT a rejection. Only a caller-EXPLICIT faststart:true on such a container is rejected.",
+              "description": "Move the MP4/MOV moov atom to the front so the file starts playing before it is fully downloaded (progressive web playback). MP4/MOV only. CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input): on a container with no moov atom (e.g. WebM) the default (true), omitted or sent, is dropped and reported in dropped_options \u2014 never a rejection. false there asks for nothing and is accepted.",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "faststart",
@@ -2965,7 +2965,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output container. original = keep the input container (default, same-format compression). Other values change the container as part of the same job, keeping the size cap. When set, the RESOLVED target container determines the valid codec/audio_codec/faststart sets \u2014 an absent/default codec resolves to a container-valid one (e.g. webm -> vp9) and is never rejected; only a caller-EXPLICIT incompatible value is rejected.",
+              "description": "Output container. original = keep the input container (default, same-format compression). Other values change the container as part of the same job, keeping the size cap. When set, the RESOLVED target container determines the valid codec/audio_codec/faststart sets \u2014 an absent or default-equal value (sent equal to its default counts as the default) resolves to a container-valid one (e.g. webm -> vp9), is never rejected, and is reported in dropped_options; only a NON-default incompatible value is rejected.",
               "origin": "contract",
               "per_value_availability": {
                 "mp4": {
@@ -7643,7 +7643,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.218.0",
+  "schema_version": "2.219.0",
   "sdk_spec_version": "2.11.0",
-  "source_hash": "sha256:40f302d5663d71e4f374adb76d38db722d0390b45a3ac533690b5f84d497443b"
+  "source_hash": "sha256:62bdaf53d3871346d4e2914e9c9035bf7b0b7c6b03c030eaea12b7854244de14"
 }
