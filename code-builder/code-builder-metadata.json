@@ -478,8 +478,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -707,8 +707,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -952,8 +952,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -1067,8 +1067,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -3113,8 +3113,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -3868,8 +3868,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -4009,8 +4009,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -5983,8 +5983,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -7002,7 +7002,7 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000
@@ -7237,8 +7237,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -7438,8 +7438,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -7612,8 +7612,8 @@
               },
               "per_tier_constraints": {
                 "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
                 },
                 "max": {
                   "max_input_size_bytes": 50000000000,
@@ -7643,7 +7643,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.219.0",
+  "schema_version": "2.220.0",
   "sdk_spec_version": "2.11.0",
-  "source_hash": "sha256:62bdaf53d3871346d4e2914e9c9035bf7b0b7c6b03c030eaea12b7854244de14"
+  "source_hash": "sha256:b8844dbac0a820b4cf74552884e8df1dd5ea5849bf45665e96ec8eb4568737f9"
 }
