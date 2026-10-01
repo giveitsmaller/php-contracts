@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 235,
+  "capabilities_version": 239,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -294,7 +294,7 @@
     },
     "POST /api/uploads/{id}/probe": {
       "auth": "required",
-      "availability": "planned",
+      "availability": "beta",
       "identity_scoped": true,
       "operation_id": "probeUpload",
       "required_tier": null
@@ -308,7 +308,7 @@
     },
     "POST /api/workflows/{id}/archive": {
       "auth": "required",
-      "availability": "beta",
+      "availability": "stable",
       "identity_scoped": true,
       "operation_id": "archiveWorkflow",
       "required_tier": null
@@ -322,7 +322,7 @@
     },
     "POST /api/workflows/{id}/restore": {
       "auth": "required",
-      "availability": "beta",
+      "availability": "stable",
       "identity_scoped": true,
       "operation_id": "restoreWorkflow",
       "required_tier": null
@@ -536,8 +536,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -709,8 +709,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -899,8 +899,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -986,8 +986,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -2222,8 +2222,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -2766,8 +2766,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -2878,8 +2878,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -4350,8 +4350,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -5029,7 +5029,7 @@
                   "max_input_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200
                 }
               }
             },
@@ -5188,8 +5188,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -5329,8 +5329,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -5464,8 +5464,8 @@
                   "max_output_size_bytes": 107374182400
                 },
                 "max": {
-                  "max_input_size_bytes": 50000000000,
-                  "max_output_size_bytes": 50000000000
+                  "max_input_size_bytes": 53687091200,
+                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -5498,7 +5498,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.220.0",
+  "schema_version": "2.221.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

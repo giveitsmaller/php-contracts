@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.220.0
+ * The version of the OpenAPI document: 2.221.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -57,7 +57,8 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
      * @var string[]
      */
     protected static $openAPITypes = [
-        'op_selected' => 'string'
+        'field' => 'string',
+        'numeric_zero' => 'bool'
     ];
 
     /**
@@ -68,7 +69,8 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'op_selected' => null
+        'field' => null,
+        'numeric_zero' => null
     ];
 
     /**
@@ -77,7 +79,8 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'op_selected' => false
+        'field' => false,
+        'numeric_zero' => false
     ];
 
     /**
@@ -166,7 +169,8 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
      * @var string[]
      */
     protected static $attributeMap = [
-        'op_selected' => 'opSelected'
+        'field' => 'field',
+        'numeric_zero' => 'numericZero'
     ];
 
     /**
@@ -175,7 +179,8 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
      * @var string[]
      */
     protected static $setters = [
-        'op_selected' => 'setOpSelected'
+        'field' => 'setField',
+        'numeric_zero' => 'setNumericZero'
     ];
 
     /**
@@ -184,7 +189,8 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
      * @var string[]
      */
     protected static $getters = [
-        'op_selected' => 'getOpSelected'
+        'field' => 'getField',
+        'numeric_zero' => 'getNumericZero'
     ];
 
     /**
@@ -228,7 +234,6 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
         return self::$openAPIModelName;
     }
 
-
     /**
      * Associative array for storing property values
      *
@@ -244,7 +249,8 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('op_selected', $data ?? [], null);
+        $this->setIfExists('field', $data ?? [], null);
+        $this->setIfExists('numeric_zero', $data ?? [], null);
     }
 
     /**
@@ -274,9 +280,13 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
     {
         $invalidProperties = [];
 
-        if ($this->container['op_selected'] === null) {
-            $invalidProperties[] = "'op_selected' can't be null";
+        if ($this->container['field'] === null) {
+            $invalidProperties[] = "'field' can't be null";
         }
+        if ($this->container['numeric_zero'] === null) {
+            $invalidProperties[] = "'numeric_zero' can't be null";
+        }
+
         return $invalidProperties;
     }
 
@@ -293,28 +303,55 @@ class CapabilityConditionOneOf6 implements ModelInterface, ArrayAccess, \JsonSer
 
 
     /**
-     * Gets op_selected
+     * Gets field
      *
      * @return string
      */
-    public function getOpSelected()
+    public function getField()
     {
-        return $this->container['op_selected'];
+        return $this->container['field'];
     }
 
     /**
-     * Sets op_selected
+     * Sets field
      *
-     * @param string $op_selected Standalone leaf — true when a sibling operation of this type is selected in the same job (e.g. `compress`, `convert`).
+     * @param string $field Field token under test.
      *
      * @return self
      */
-    public function setOpSelected($op_selected)
+    public function setField($field)
     {
-        if (is_null($op_selected)) {
-            throw new \InvalidArgumentException('non-nullable op_selected cannot be null');
+        if (is_null($field)) {
+            throw new \InvalidArgumentException('non-nullable field cannot be null');
         }
-        $this->container['op_selected'] = $op_selected;
+        $this->container['field'] = $field;
+
+        return $this;
+    }
+
+    /**
+     * Gets numeric_zero
+     *
+     * @return bool
+     */
+    public function getNumericZero()
+    {
+        return $this->container['numeric_zero'];
+    }
+
+    /**
+     * Sets numeric_zero
+     *
+     * @param bool $numeric_zero Leaf test — `field` is an offset whose number is zero, whatever its spelling (`0px`, `00%`, `0.000px`). True iff the String-coerced value fully matches `x-matches`; any other value is false, including `-0`, `+0` and `.0`, which the offset pattern `^\\d+(\\.\\d+)?(px|%)$` refuses anyway. An unresolved field behaves as it does for `equals` / `in`. This regex is NORMATIVE. api's `float == 0` test agrees with it on every offset a float represents faithfully; it differs only where a cast underflows (hundreds of fractional zeros before a non-zero digit), which api reads as zero and this leaf does not. Like every operator here, its semantics live in this schema, not in `operation-capabilities.json`. Only the positive form is used; negate via a wrapping `not` node. Card `6jTnFnTh`: replaces lexical `in` lists of zero spellings.
+     *
+     * @return self
+     */
+    public function setNumericZero($numeric_zero)
+    {
+        if (is_null($numeric_zero)) {
+            throw new \InvalidArgumentException('non-nullable numeric_zero cannot be null');
+        }
+        $this->container['numeric_zero'] = $numeric_zero;
 
         return $this;
     }

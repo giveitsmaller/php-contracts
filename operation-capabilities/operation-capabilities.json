@@ -513,12 +513,7 @@
                       {
                         "not": {
                           "field": "image_watermark.margin_x",
-                          "in": [
-                            "0px",
-                            "0%",
-                            "0.0px",
-                            "0.0%"
-                          ]
+                          "numericZero": true
                         }
                       }
                     ]
@@ -532,12 +527,7 @@
                       {
                         "not": {
                           "field": "image_watermark.margin_y",
-                          "in": [
-                            "0px",
-                            "0%",
-                            "0.0px",
-                            "0.0%"
-                          ]
+                          "numericZero": true
                         }
                       }
                     ]
@@ -657,12 +647,7 @@
                       {
                         "not": {
                           "field": "text_watermark.margin_x",
-                          "in": [
-                            "0px",
-                            "0%",
-                            "0.0px",
-                            "0.0%"
-                          ]
+                          "numericZero": true
                         }
                       }
                     ]
@@ -676,12 +661,7 @@
                       {
                         "not": {
                           "field": "text_watermark.margin_y",
-                          "in": [
-                            "0px",
-                            "0%",
-                            "0.0px",
-                            "0.0%"
-                          ]
+                          "numericZero": true
                         }
                       }
                     ]
@@ -859,5 +839,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.220.0"
+  "schema_version": "2.221.0"
 }

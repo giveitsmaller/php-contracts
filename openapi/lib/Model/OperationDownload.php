@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.220.0
+ * The version of the OpenAPI document: 2.221.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -64,6 +64,8 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
         'size_bytes' => 'int',
         'chosen_quality' => 'int',
         'target_size_met' => 'bool',
+        'already_optimal' => 'bool',
+        'already_optimal_kind' => 'string',
         'measured_quality' => 'float',
         'quality_metric' => 'string',
         'download_url' => 'string',
@@ -87,6 +89,8 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
         'size_bytes' => 'int64',
         'chosen_quality' => null,
         'target_size_met' => null,
+        'already_optimal' => null,
+        'already_optimal_kind' => null,
         'measured_quality' => 'double',
         'quality_metric' => null,
         'download_url' => 'uri',
@@ -108,6 +112,8 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
         'size_bytes' => false,
         'chosen_quality' => false,
         'target_size_met' => false,
+        'already_optimal' => false,
+        'already_optimal_kind' => false,
         'measured_quality' => false,
         'quality_metric' => false,
         'download_url' => false,
@@ -209,6 +215,8 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
         'size_bytes' => 'size_bytes',
         'chosen_quality' => 'chosen_quality',
         'target_size_met' => 'target_size_met',
+        'already_optimal' => 'already_optimal',
+        'already_optimal_kind' => 'already_optimal_kind',
         'measured_quality' => 'measured_quality',
         'quality_metric' => 'quality_metric',
         'download_url' => 'download_url',
@@ -230,6 +238,8 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
         'size_bytes' => 'setSizeBytes',
         'chosen_quality' => 'setChosenQuality',
         'target_size_met' => 'setTargetSizeMet',
+        'already_optimal' => 'setAlreadyOptimal',
+        'already_optimal_kind' => 'setAlreadyOptimalKind',
         'measured_quality' => 'setMeasuredQuality',
         'quality_metric' => 'setQualityMetric',
         'download_url' => 'setDownloadUrl',
@@ -251,6 +261,8 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
         'size_bytes' => 'getSizeBytes',
         'chosen_quality' => 'getChosenQuality',
         'target_size_met' => 'getTargetSizeMet',
+        'already_optimal' => 'getAlreadyOptimal',
+        'already_optimal_kind' => 'getAlreadyOptimalKind',
         'measured_quality' => 'getMeasuredQuality',
         'quality_metric' => 'getQualityMetric',
         'download_url' => 'getDownloadUrl',
@@ -301,6 +313,19 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
         return self::$openAPIModelName;
     }
 
+    public const ALREADY_OPTIMAL_KIND_NOT_SMALLER = 'not_smaller';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getAlreadyOptimalKindAllowableValues()
+    {
+        return [
+            self::ALREADY_OPTIMAL_KIND_NOT_SMALLER,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -323,6 +348,8 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
         $this->setIfExists('size_bytes', $data ?? [], null);
         $this->setIfExists('chosen_quality', $data ?? [], null);
         $this->setIfExists('target_size_met', $data ?? [], null);
+        $this->setIfExists('already_optimal', $data ?? [], null);
+        $this->setIfExists('already_optimal_kind', $data ?? [], null);
         $this->setIfExists('measured_quality', $data ?? [], null);
         $this->setIfExists('quality_metric', $data ?? [], null);
         $this->setIfExists('download_url', $data ?? [], null);
@@ -381,6 +408,15 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
 
         if (!is_null($this->container['chosen_quality']) && ($this->container['chosen_quality'] < 1)) {
             $invalidProperties[] = "invalid value for 'chosen_quality', must be bigger than or equal to 1.";
+        }
+
+        $allowedValues = $this->getAlreadyOptimalKindAllowableValues();
+        if (!is_null($this->container['already_optimal_kind']) && !in_array($this->container['already_optimal_kind'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'already_optimal_kind', must be one of '%s'",
+                $this->container['already_optimal_kind'],
+                implode("', '", $allowedValues)
+            );
         }
 
         if (!is_null($this->container['measured_quality']) && ($this->container['measured_quality'] > 1)) {
@@ -596,6 +632,70 @@ class OperationDownload implements ModelInterface, ArrayAccess, \JsonSerializabl
             throw new \InvalidArgumentException('non-nullable target_size_met cannot be null');
         }
         $this->container['target_size_met'] = $target_size_met;
+
+        return $this;
+    }
+
+    /**
+     * Gets already_optimal
+     *
+     * @return bool|null
+     */
+    public function getAlreadyOptimal()
+    {
+        return $this->container['already_optimal'];
+    }
+
+    /**
+     * Sets already_optimal
+     *
+     * @param bool|null $already_optimal OPTIONAL. `true` when this file IS the original input, returned unchanged because compressing it would not have made it smaller (owner decision 645(4): a success; the no-charge rule and its current rollout — the API still charges until it ships, and only short-form compress returns this today — are stated once, on `OperationResultMetadata.already_optimal`). Same value as `OperationResultMetadata.already_optimal` on `/status`, projected here so a per-file result built from `/downloads` does not need a second read (sdks `bYOCX61m`). Absent or `false`: an ordinary output; treat the two the same. Mirrors `OperationMetrics.already_optimal`.
+     *
+     * @return self
+     */
+    public function setAlreadyOptimal($already_optimal)
+    {
+        if (is_null($already_optimal)) {
+            throw new \InvalidArgumentException('non-nullable already_optimal cannot be null');
+        }
+        $this->container['already_optimal'] = $already_optimal;
+
+        return $this;
+    }
+
+    /**
+     * Gets already_optimal_kind
+     *
+     * @return string|null
+     */
+    public function getAlreadyOptimalKind()
+    {
+        return $this->container['already_optimal_kind'];
+    }
+
+    /**
+     * Sets already_optimal_kind
+     *
+     * @param string|null $already_optimal_kind OPTIONAL, only with `already_optimal: true`. Same value and meaning as `OperationResultMetadata.already_optimal_kind`; absent or unknown: neutral \"already optimised\" copy.
+     *
+     * @return self
+     */
+    public function setAlreadyOptimalKind($already_optimal_kind)
+    {
+        if (is_null($already_optimal_kind)) {
+            throw new \InvalidArgumentException('non-nullable already_optimal_kind cannot be null');
+        }
+        $allowedValues = $this->getAlreadyOptimalKindAllowableValues();
+        if (!in_array($already_optimal_kind, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'already_optimal_kind', must be one of '%s'",
+                    $already_optimal_kind,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['already_optimal_kind'] = $already_optimal_kind;
 
         return $this;
     }
