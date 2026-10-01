@@ -323,7 +323,7 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         $this->setIfExists('job_ref', $data ?? [], null);
 
         // Initialize discriminator property with the model name.
-        $this->container['error_type'] = static::$openAPIModelName;
+        $this->container['error_type'] ??= static::$openAPIModelName;
     }
 
     /**

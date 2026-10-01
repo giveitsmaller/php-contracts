@@ -284,7 +284,7 @@ class ExternalSource implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('path', $data ?? [], null);
 
         // Initialize discriminator property with the model name.
-        $this->container['type'] = static::$openAPIModelName;
+        $this->container['type'] ??= static::$openAPIModelName;
     }
 
     /**

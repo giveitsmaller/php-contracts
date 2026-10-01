@@ -405,7 +405,7 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
         $this->setIfExists('maximum', $data ?? [], null);
 
         // Initialize discriminator property with the model name.
-        $this->container['error_type'] = static::$openAPIModelName;
+        $this->container['error_type'] ??= static::$openAPIModelName;
     }
 
     /**

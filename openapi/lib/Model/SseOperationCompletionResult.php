@@ -312,7 +312,7 @@ class SseOperationCompletionResult implements ModelInterface, ArrayAccess, \Json
         $this->setIfExists('total_output_size_bytes', $data ?? [], null);
 
         // Initialize discriminator property with the model name.
-        $this->container['result_kind'] = static::$openAPIModelName;
+        $this->container['result_kind'] ??= static::$openAPIModelName;
     }
 
     /**

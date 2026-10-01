@@ -284,7 +284,7 @@ class ExternalDestination implements ModelInterface, ArrayAccess, \JsonSerializa
         $this->setIfExists('path', $data ?? [], null);
 
         // Initialize discriminator property with the model name.
-        $this->container['type'] = static::$openAPIModelName;
+        $this->container['type'] ??= static::$openAPIModelName;
     }
 
     /**

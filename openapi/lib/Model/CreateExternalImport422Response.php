@@ -316,7 +316,7 @@ class CreateExternalImport422Response implements ModelInterface, ArrayAccess, \J
         $this->setIfExists('violations', $data ?? [], null);
 
         // Initialize discriminator property with the model name.
-        $this->container['error_type'] = static::$openAPIModelName;
+        $this->container['error_type'] ??= static::$openAPIModelName;
     }
 
     /**
