@@ -753,10 +753,6 @@
       "input_model": "multi",
       "media_groups": {
         "audio": {
-          "ceiling_basis": {
-            "max_input_duration": "unproven"
-          },
-          "max_input_duration": "PT2H",
           "media_group": "audio",
           "mimes": [
             "audio/mpeg",
@@ -837,6 +833,26 @@
                 "fhd_1080p",
                 "sd_480p"
               ]
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven"
+              },
+              "constraints": {
+                "max_input_duration": "PT2H"
+              }
+            },
+            "short_form": {
+              "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven"
+              },
+              "constraints": {
+                "max_input_duration": "PT11M35S"
+              }
             }
           }
         }
@@ -1597,7 +1613,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions. Not supported for an ANIMATED image whose output keeps the animation (an animated GIF or WebP converted to GIF or WebP). Where the server can tell the input is animated it refuses at create with 422 `feature_not_available`, feature `operation.image.resize.animated`; where it cannot tell, the job is accepted and fails with `invalid_options` \u2014 except a multi-frame GIF with no loop extension, which is currently treated as static: it is resized and comes out as its first frame only. Resize a static image, or choose a still output format.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -2743,7 +2759,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions. Not supported for an ANIMATED image whose output keeps the animation (an animated GIF or WebP converted to GIF or WebP). Where the server can tell the input is animated it refuses at create with 422 `feature_not_available`, feature `operation.image.resize.animated`; where it cannot tell, the job is accepted and fails with `invalid_options` \u2014 except a multi-frame GIF with no loop extension, which is currently treated as static: it is resized and comes out as its first frame only. Resize a static image, or choose a still output format.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -3433,7 +3449,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image before encoding (one transformed output). NOT honored for SVG input. Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image before encoding (one transformed output). NOT honored for SVG input. Optional; omit to keep the source dimensions. Not supported for an ANIMATED image whose output keeps the animation (an animated GIF or WebP converted to GIF or WebP). Where the server can tell the input is animated it refuses at create with 422 `feature_not_available`, feature `operation.image.resize.animated`; where it cannot tell, the job is accepted and fails with `invalid_options` \u2014 except a multi-frame GIF with no loop extension, which is currently treated as static: it is resized and comes out as its first frame only. Resize a static image, or choose a still output format.",
               "honored_on": [
                 "format_change"
               ],
@@ -3568,7 +3584,7 @@
               "type": "integer"
             },
             "output_format": {
-              "description": "Target format. The still-image targets (jpeg/png/webp/avif/gif/tiff) take the first frame / rasterise. `mp4` / `webm` are the GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264, plays everywhere; `webm` = VP9, smaller), typically far smaller than the original GIF. GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file.",
+              "description": "Target format. `jpeg` / `png` / `avif` / `tiff` take the first frame. `gif` and `webp` keep an animated GIF's animation (a static GIF stays a single frame). `mp4` / `webm` are the GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264, plays everywhere; `webm` = VP9, smaller), typically far smaller than the original GIF. GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file.",
               "origin": "contract",
               "positional": 0,
               "required": true,
@@ -3627,7 +3643,7 @@
                   "tiff"
                 ]
               },
-              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Scoped to the STILL-IMAGE targets only \u2014 resizing while transcoding to the mp4/webm video targets is not yet supported, so width/height are not accepted for the video targets.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Scoped to the STILL-IMAGE targets only \u2014 resizing while transcoding to the mp4/webm video targets is not yet supported, so width/height are not accepted for the video targets. Not supported for an ANIMATED image whose output keeps the animation (an animated GIF or WebP converted to GIF or WebP). Where the server can tell the input is animated it refuses at create with 422 `feature_not_available`, feature `operation.image.resize.animated`; where it cannot tell, the job is accepted and fails with `invalid_options` \u2014 except a multi-frame GIF with no loop extension, which is currently treated as static: it is resized and comes out as its first frame only. Resize a static image, or choose a still output format.",
               "honored_on": [
                 "format_change"
               ],
@@ -5789,7 +5805,11 @@
           }
         },
         "document_pdf": {
-          "availability": "planned",
+          "availability": "beta",
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 2147483648,
           "media_group": "document",
           "mimes": [
             "application/pdf"
@@ -5800,12 +5820,12 @@
               "description": "PDF split strategy:\n- `page_range`: select pages via a range expression.\n- `page_groups`: group N pages per output.\n",
               "origin": "contract",
               "positional": 0,
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "mode",
               "type": "enum",
               "value_exposure": {
-                "page_groups": "coming_soon",
-                "page_range": "coming_soon"
+                "page_groups": "expose",
+                "page_range": "expose"
               },
               "values": [
                 "page_range",
@@ -5821,7 +5841,7 @@
               "min": 2,
               "origin": "contract",
               "required": true,
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "pageGroups",
               "type": "integer"
             },
@@ -5833,7 +5853,7 @@
               "origin": "contract",
               "pattern": "^\\d+(-\\d+)?(,\\d+(-\\d+)?)*$",
               "required": true,
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "pageRange",
               "type": "string"
             }
@@ -7465,29 +7485,29 @@
                 "le_720p": {
                   "basis": "measured",
                   "constraints": {
-                    "max_input_duration": "PT4M35S"
+                    "max_input_duration": "PT3M15S"
                   },
                   "derivation": {
-                    "cap_s": 600,
-                    "intercept_s": 3.0,
-                    "slope_s_per_s": 2.167
+                    "cap_s": 504,
+                    "intercept_s": 4.8,
+                    "slope_s_per_s": 2.551
                   }
                 },
                 "p1080": {
                   "basis": "measured",
                   "constraints": {
-                    "max_input_duration": "PT2M3S"
+                    "max_input_duration": "PT1M28S"
                   },
                   "derivation": {
-                    "cap_s": 600,
-                    "intercept_s": -3.0,
-                    "slope_s_per_s": 4.867
+                    "cap_s": 504,
+                    "intercept_s": -1.9,
+                    "slope_s_per_s": 5.748
                   }
                 },
                 "unknown": {
                   "basis": "ruled",
                   "constraints": {
-                    "max_input_duration": "PT4M35S"
+                    "max_input_duration": "PT3M15S"
                   }
                 }
               }
@@ -7631,6 +7651,39 @@
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
                 "max_output_size_bytes": 524288000
+              },
+              "resolution_bands": {
+                "gt_1080p": {
+                  "basis": "not_served"
+                },
+                "le_720p": {
+                  "basis": "measured",
+                  "constraints": {
+                    "max_input_duration": "PT3M36S"
+                  },
+                  "derivation": {
+                    "cap_s": 504,
+                    "intercept_s": -0.9,
+                    "slope_s_per_s": 2.336
+                  }
+                },
+                "p1080": {
+                  "basis": "measured",
+                  "constraints": {
+                    "max_input_duration": "PT1M35S"
+                  },
+                  "derivation": {
+                    "cap_s": 504,
+                    "intercept_s": 1.2,
+                    "slope_s_per_s": 5.262
+                  }
+                },
+                "unknown": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT3M36S"
+                  }
+                }
               }
             }
           }
@@ -7643,7 +7696,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.221.0",
+  "schema_version": "2.223.0",
   "sdk_spec_version": "2.13.0",
-  "source_hash": "sha256:51e0454b5ade15d40be4e70d57a9dc4b9626d519587a5f11d7e17499d5fedd81"
+  "source_hash": "sha256:9cb0c5da11526fe33426f4ad5dd14e55e4b5f991619ff9a74c10f1b1003af7e7"
 }

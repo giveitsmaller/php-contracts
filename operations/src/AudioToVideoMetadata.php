@@ -16,7 +16,20 @@ final class AudioToVideoMetadata
             features: [],
             mime_groups: [
                 'audio' => new MimeGroupMetadata(
-                    processing_class: [],
+                    processing_class: [
+                        'short_form' => new AvailabilityEntry(
+                            availability: 'planned',
+                            constraints: new ProcessingClassConstraints(
+                                max_input_duration: 'PT11M35S',
+                            ),
+                        ),
+                        'long_form' => new AvailabilityEntry(
+                            availability: 'planned',
+                            constraints: new ProcessingClassConstraints(
+                                max_input_duration: 'PT2H',
+                            ),
+                        ),
+                    ],
                     per_mime_availability: [],
                     options: [
                         'output_resolution' => new OptionMetadata(

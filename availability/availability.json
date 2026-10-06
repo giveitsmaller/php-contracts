@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 239,
+  "capabilities_version": 244,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -745,15 +745,11 @@
     "audio_to_video": {
       "availability": "planned",
       "default": false,
-      "description": "Produce a video from an audio input plus an OPTIONAL still image\noverlay. Use cases: podcast \u2192 YouTube uploads, audio-only tracks\nthat need a video container for platforms requiring it, branded\naudio releases with a static cover image.\n\n**Role asymmetry.** First role-based operation on the contract\nwith an OPTIONAL role \u2014 REQUIRED `base` (audio source) +\nOPTIONAL `overlay` (still image, 0..1). When `overlay` is\nomitted, the video uses a solid `background_color`. The\nmachine-readable cardinality lives in `per_role_cardinality`\non this schema.\n\n**Input vs output asymmetry.** The single `mime_groups.audio`\nblock keys the INPUT MIME family (the `base` role input is\naudio). The OUTPUT is always video \u2014 `output_format` controls\nthe container; `mime_groups` is NOT the output type. Mirrors\nthe `audio_overlay.video` group pattern (input-keyed).\n\nRe-encode required (audio \u2192 video composition always re-encodes).\nA lower framerate plus still-image tuning keeps file size tiny\nwhen the overlay is a still image (the common case).\n\n`availability: planned` \u2014 withdrawn 2026-09-15. The measured encode cost\n(a per-second rate PLUS A FIXED COST) puts the advertised PT2H at more than\ntwice the 900 s Lambda platform maximum. \u26a0\ufe0f The fixed cost is not a rounding\ndetail: dropping it moves the in-flight boundary by tens of seconds. The\nfigures are in the CHANGELOG entry for 2.203.0, derived and tested from the\ndivergence register (6gdvD3yZ). Workflow-create returns `feature_not_available` (422).\n\n\u26a0\ufe0f An already-accepted workflow is NOT cancelled \u2014 availability is checked at\ncreate \u2014 and it is NOT thereby doomed. \u26d4 DO NOT READ THIS AS \"in-flight work\nfails\": the 60 s and 120 s cells behind this withdrawal both COMPLETED WITH\nOUTPUT, which is precisely why the evidence is arithmetic rather than a kill.\nWhat fails is an accepted workflow whose OUTPUT DURATION exceeds the derived ceiling (`evidence.derived.ceiling_s` in the register)\n\u26a0\ufe0f ON THE INPUT THE RATE WAS MEASURED WITH \u2014 a real photographic 1080p STILL\nplus looped real audio \u2014 the point at which the measured rate plus the fixed\ncost reaches the 600 s cap. \u26d4 THE DRIVER IS THE STILL'S RESOLUTION, NOT THE\nDURATION ALONE: a 4K still is roughly 4x the rate (recorded as UNMEASURED),\nwhich would put the boundary near a quarter of that figure, and this schema\nplaces NO constraint on the overlay's resolution. Other still resolutions and\nother output settings are likewise unmeasured, and the contract does not\nclaim which direction they move \u2014\nand what the caller then sees is NOT SETTLED \u2014 see the CHANGELOG entry for\n2.203.0; this contract does not pin a worker's error classification. Measured figures and the conditions for re-listing are in the\nCHANGELOG entry for 2.203.0 \u2014 the only one of the two records that is\nPUBLISHED (`schemas/manifest-divergence-register.yaml` is working material\nfor the drift gate and is not in the npm tarball).\n",
+      "description": "Produce a video from an audio input plus an OPTIONAL still image\noverlay. Use cases: podcast \u2192 YouTube uploads, audio-only tracks\nthat need a video container for platforms requiring it, branded\naudio releases with a static cover image.\n\n**Role asymmetry.** First role-based operation on the contract\nwith an OPTIONAL role \u2014 REQUIRED `base` (audio source) +\nOPTIONAL `overlay` (still image, 0..1). When `overlay` is\nomitted, the video uses a solid `background_color`. The\nmachine-readable cardinality lives in `per_role_cardinality`\non this schema.\n\n**Input vs output asymmetry.** The single `mime_groups.audio`\nblock keys the INPUT MIME family (the `base` role input is\naudio). The OUTPUT is always video \u2014 `output_format` controls\nthe container; `mime_groups` is NOT the output type. Mirrors\nthe `audio_overlay.video` group pattern (input-keyed).\n\nRe-encode required (audio \u2192 video composition always re-encodes).\nA lower framerate plus still-image tuning keeps file size tiny\nwhen the overlay is a still image (the common case).\n\n`availability: planned` \u2014 withdrawn 2026-09-15. The measured encode cost\n(a per-second rate PLUS A FIXED COST) puts the advertised PT2H at more than\ntwice the 900 s Lambda platform maximum. \u26a0\ufe0f The fixed cost is not a rounding\ndetail: dropping it moves the in-flight boundary by tens of seconds. The\nfigures are in the CHANGELOG entry for 2.203.0, derived and tested from the\ndivergence register (6gdvD3yZ). Workflow-create returns `feature_not_available` (422).\n\n\u26a0\ufe0f An already-accepted workflow is NOT cancelled \u2014 availability is checked at\ncreate \u2014 and it is NOT thereby doomed. \u26d4 DO NOT READ THIS AS \"in-flight work\nfails\": the 60 s and 120 s cells behind this withdrawal both COMPLETED WITH\nOUTPUT, which is precisely why the evidence is arithmetic rather than a kill.\nWhat fails is an accepted workflow whose OUTPUT DURATION exceeds the derived ceiling (`evidence.derived.ceiling_s` in the register)\n\u26a0\ufe0f ON THE INPUT THE RATE WAS MEASURED WITH \u2014 a real photographic 1080p STILL\nplus looped real audio \u2014 the point at which the measured rate plus the fixed\ncost reaches the SERVED cap (the worker's 600 s times the register's\n`headroom`, kikOfB6G), not the raw cap. \u26d4 THE DRIVER IS THE STILL'S RESOLUTION, NOT THE\nDURATION ALONE: a 4K still is MEASURED materially slower (2026-10-02), and the\nshort_form ceiling below is set from that worst case; this schema places NO\nconstraint on the overlay's resolution. Stills above 4K are unmeasured \u2014\nand what the caller then sees is NOT SETTLED \u2014 see the CHANGELOG entry for\n2.203.0; this contract does not pin a worker's error classification. Measured figures and the conditions for re-listing are in the\nCHANGELOG entry for 2.203.0 \u2014 the only one of the two records that is\nPUBLISHED (`schemas/manifest-divergence-register.yaml` is working material\nfor the drift gate and is not in the npm tarball).\n",
       "input_model": "multi",
       "max_inputs": 2,
       "mime_groups": {
         "audio": {
-          "ceiling_basis": {
-            "max_input_duration": "unproven"
-          },
-          "max_input_duration": "PT2H",
           "mimes": [
             "audio/mpeg",
             "audio/aac",
@@ -805,6 +801,26 @@
                 "fhd_1080p",
                 "sd_480p"
               ]
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven"
+              },
+              "constraints": {
+                "max_input_duration": "PT2H"
+              }
+            },
+            "short_form": {
+              "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven"
+              },
+              "constraints": {
+                "max_input_duration": "PT11M35S"
+              }
             }
           }
         }
@@ -1292,7 +1308,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions. Not supported for an ANIMATED image whose output keeps the animation (an animated GIF or WebP converted to GIF or WebP). Where the server can tell the input is animated it refuses at create with 422 `feature_not_available`, feature `operation.image.resize.animated`; where it cannot tell, the job is accepted and fails with `invalid_options` \u2014 except a multi-frame GIF with no loop extension, which is currently treated as static: it is resized and comes out as its first frame only. Resize a static image, or choose a still output format.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -2020,7 +2036,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions. Not supported for an ANIMATED image whose output keeps the animation (an animated GIF or WebP converted to GIF or WebP). Where the server can tell the input is animated it refuses at create with 422 `feature_not_available`, feature `operation.image.resize.animated`; where it cannot tell, the job is accepted and fails with `invalid_options` \u2014 except a multi-frame GIF with no loop extension, which is currently treated as static: it is resized and comes out as its first frame only. Resize a static image, or choose a still output format.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -2439,7 +2455,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image before encoding (one transformed output). NOT honored for SVG input. Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image before encoding (one transformed output). NOT honored for SVG input. Optional; omit to keep the source dimensions. Not supported for an ANIMATED image whose output keeps the animation (an animated GIF or WebP converted to GIF or WebP). Where the server can tell the input is animated it refuses at create with 422 `feature_not_available`, feature `operation.image.resize.animated`; where it cannot tell, the job is accepted and fails with `invalid_options` \u2014 except a multi-frame GIF with no loop extension, which is currently treated as static: it is resized and comes out as its first frame only. Resize a static image, or choose a still output format.",
               "honored_on": [
                 "format_change"
               ],
@@ -2545,7 +2561,7 @@
               "type": "integer"
             },
             "output_format": {
-              "description": "Target format. The still-image targets (jpeg/png/webp/avif/gif/tiff) take the first frame / rasterise. `mp4` / `webm` are the GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264, plays everywhere; `webm` = VP9, smaller), typically far smaller than the original GIF. GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file.",
+              "description": "Target format. `jpeg` / `png` / `avif` / `tiff` take the first frame. `gif` and `webp` keep an animated GIF's animation (a static GIF stays a single frame). `mp4` / `webm` are the GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264, plays everywhere; `webm` = VP9, smaller), typically far smaller than the original GIF. GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file.",
               "required": true,
               "type": "enum",
               "values": [
@@ -2587,7 +2603,7 @@
                   "tiff"
                 ]
               },
-              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Scoped to the STILL-IMAGE targets only \u2014 resizing while transcoding to the mp4/webm video targets is not yet supported, so width/height are not accepted for the video targets.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Scoped to the STILL-IMAGE targets only \u2014 resizing while transcoding to the mp4/webm video targets is not yet supported, so width/height are not accepted for the video targets. Not supported for an ANIMATED image whose output keeps the animation (an animated GIF or WebP converted to GIF or WebP). Where the server can tell the input is animated it refuses at create with 422 `feature_not_available`, feature `operation.image.resize.animated`; where it cannot tell, the job is accepted and fails with `invalid_options` \u2014 except a multi-frame GIF with no loop extension, which is currently treated as static: it is resized and comes out as its first frame only. Resize a static image, or choose a still output format.",
               "honored_on": [
                 "format_change"
               ],
@@ -4088,7 +4104,7 @@
     "split": {
       "availability": "beta",
       "default": false,
-      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming (S3 object key)**: the object-key leaf is 3-digit\nzero-padded \u2014 `output-001` .. `output-200` (ADR-0014 \u00a7D9). This binds the\n**S3 object key**, NOT the user-facing download filename \u2014 the API\nsynthesises that separately (see `OperationDownload.filename` in\n`openapi/api.yaml`). Only the **3-digit zero-padding** follows the convert\nPDF\u2192N precedent \u2014 convert keys are `page-NNN.ext`, split keys are\n`output-NNN.ext`.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based literal source page number).\n  With **`mode: page_range`** each output is one page, so `page_index` is\n  that page. With **`mode: page_groups`** each output is a group of\n  consecutive pages and `page_index` is the group's FIRST source page;\n  the group covers `page_index` .. `page_index + page_groups - 1`, and\n  the last group ends at the document's last page (so it may be\n  shorter). Verified in the worker, not assumed: `compression_lambdas`\n  `crates/split/src/processor.rs` passes each range's START page as the\n  index, over ranges from `resolve_page_groups` (`pdf_range.rs`, tests\n  `page_groups_remainder` / `page_groups_size_larger_than_total`).\n  Specified 2026-09-25 (card `jGTLrpzK`); the group stays `planned`\n  until a production record exists.\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts (`planned` \u2014 the API refuses it at create until the\nre-encode path is priced). Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `image_gif` and `document_pdf` mime_groups stay\n`availability: planned` until their cross-repo backend support ships;\ndispatch returns `feature_not_available` (422) for the still-planned\ngroups/classes until then.\n",
+      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming (S3 object key)**: the object-key leaf is 3-digit\nzero-padded \u2014 `output-001` .. `output-200` (ADR-0014 \u00a7D9). This binds the\n**S3 object key**, NOT the user-facing download filename \u2014 the API\nsynthesises that separately (see `OperationDownload.filename` in\n`openapi/api.yaml`). Only the **3-digit zero-padding** follows the convert\nPDF\u2192N precedent \u2014 convert keys are `page-NNN.ext`, split keys are\n`output-NNN.ext`.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based literal source page number).\n  With **`mode: page_range`** each output is one page, so `page_index` is\n  that page. With **`mode: page_groups`** each output is a group of\n  consecutive pages and `page_index` is the group's FIRST source page;\n  the group covers `page_index` .. `page_index + page_groups - 1`, and\n  the last group ends at the document's last page (so it may be\n  shorter). Verified in the worker, not assumed: `compression_lambdas`\n  `crates/split/src/processor.rs` passes each range's START page as the\n  index, over ranges from `resolve_page_groups` (`pdf_range.rs`, tests\n  `page_groups_remainder` / `page_groups_size_larger_than_total`).\n  Specified 2026-09-25 and `beta` since 2026-10-01 (card `jGTLrpzK`), on\n  a staging run of both modes; `stable` needs a production record.\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts (`planned` \u2014 the API refuses it at create until the\nre-encode path is priced). Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `document_pdf` mime_group is `beta` too (2026-10-01), and\n`image_gif` is `stable` (GIF to frames, 2026-06-21). A value or class\nstill tagged `planned` (e.g. `precision: exact`) is refused with\n`feature_not_available` (422).\n",
       "features": {
         "silence_mode_audio": {
           "availability": "beta",
@@ -4205,7 +4221,11 @@
           }
         },
         "document_pdf": {
-          "availability": "planned",
+          "availability": "beta",
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 2147483648,
           "mimes": [
             "application/pdf"
           ],
@@ -5352,29 +5372,29 @@
                 "le_720p": {
                   "basis": "measured",
                   "constraints": {
-                    "max_input_duration": "PT4M35S"
+                    "max_input_duration": "PT3M15S"
                   },
                   "derivation": {
-                    "cap_s": 600,
-                    "intercept_s": 3.0,
-                    "slope_s_per_s": 2.167
+                    "cap_s": 504,
+                    "intercept_s": 4.8,
+                    "slope_s_per_s": 2.551
                   }
                 },
                 "p1080": {
                   "basis": "measured",
                   "constraints": {
-                    "max_input_duration": "PT2M3S"
+                    "max_input_duration": "PT1M28S"
                   },
                   "derivation": {
-                    "cap_s": 600,
-                    "intercept_s": -3.0,
-                    "slope_s_per_s": 4.867
+                    "cap_s": 504,
+                    "intercept_s": -1.9,
+                    "slope_s_per_s": 5.748
                   }
                 },
                 "unknown": {
                   "basis": "ruled",
                   "constraints": {
-                    "max_input_duration": "PT4M35S"
+                    "max_input_duration": "PT3M15S"
                   }
                 }
               }
@@ -5479,6 +5499,39 @@
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
                 "max_output_size_bytes": 524288000
+              },
+              "resolution_bands": {
+                "gt_1080p": {
+                  "basis": "not_served"
+                },
+                "le_720p": {
+                  "basis": "measured",
+                  "constraints": {
+                    "max_input_duration": "PT3M36S"
+                  },
+                  "derivation": {
+                    "cap_s": 504,
+                    "intercept_s": -0.9,
+                    "slope_s_per_s": 2.336
+                  }
+                },
+                "p1080": {
+                  "basis": "measured",
+                  "constraints": {
+                    "max_input_duration": "PT1M35S"
+                  },
+                  "derivation": {
+                    "cap_s": 504,
+                    "intercept_s": 1.2,
+                    "slope_s_per_s": 5.262
+                  }
+                },
+                "unknown": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT3M36S"
+                  }
+                }
               }
             }
           }
@@ -5498,7 +5551,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.221.0",
+  "schema_version": "2.223.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
