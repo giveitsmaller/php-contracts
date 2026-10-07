@@ -691,16 +691,26 @@
           "constraint_id": "thumbnail.requires_chain_predecessor",
           "message": "thumbnail must follow a compress or convert operation.",
           "when": {
-            "not": {
-              "any": [
-                {
-                  "opSelected": "compress"
-                },
-                {
-                  "opSelected": "convert"
+            "all": [
+              {
+                "not": {
+                  "any": [
+                    {
+                      "opSelected": "compress"
+                    },
+                    {
+                      "opSelected": "convert"
+                    }
+                  ]
                 }
-              ]
-            }
+              },
+              {
+                "not": {
+                  "equals": "document",
+                  "field": "input_mime_group"
+                }
+              }
+            ]
           },
           "wire_code": "INVALID_OPERATION_ORDER"
         }
@@ -839,5 +849,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.223.0"
+  "schema_version": "2.224.0"
 }

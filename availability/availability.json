@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 244,
+  "capabilities_version": 249,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -231,7 +231,7 @@
     },
     "POST /api/billing/checkout": {
       "auth": "required",
-      "availability": "planned",
+      "availability": "beta",
       "identity_scoped": true,
       "operation_id": "createBillingCheckoutSession",
       "required_tier": null
@@ -1065,7 +1065,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output audio format. original = keep input format (default, same-format compression). Other values change the format as part of the same job.",
+              "description": "Output audio format. original = keep input format (default, same-format compression), except WAV: a WAV is compressed losslessly to FLAC, because uncompressed WAV cannot get smaller as WAV. Other values change the format as part of the same job.",
               "type": "enum",
               "values": [
                 "original",
@@ -3233,7 +3233,7 @@
               "type": "boolean"
             },
             "output_type": {
-              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio'. Optional \u2014 API injects this default post-validation so callers may omit it.",
+              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio': the merged file is always AAC audio in an MP4 container (.m4a, audio/mp4), whatever the input formats. Optional \u2014 API injects this default post-validation so callers may omit it.",
               "required": false,
               "type": "enum",
               "values": [
@@ -3999,6 +3999,13 @@
               "constraints": {
                 "max_total_duration": "PT5M",
                 "max_total_input_size_bytes": 524288000
+              },
+              "input_uniformity": {
+                "attributes": {},
+                "refusal": "INPUTS_NOT_CONCAT_UNIFORM",
+                "structural": [
+                  "input_audio_topology_mixed"
+                ]
               }
             }
           }
@@ -4683,7 +4690,7 @@
     },
     "thumbnail": {
       "default": false,
-      "description": "Resize an image to specific dimensions, or extract a preview frame/page from a video or document. For images this is a full resizer (1-16384px), not just small previews.",
+      "description": "Resize an image to specific dimensions, or extract a preview frame/page from a video or document. For images this is a full resizer (1-16384px), not just small previews. An image or video thumbnail must follow a compress or convert in the same job; a document thumbnail may stand alone. Image types that compress does not accept (BMP, HEIC) therefore need a convert first.",
       "input_model": "single",
       "mime_groups": {
         "document_epub": {
@@ -5061,7 +5068,7 @@
               },
               "constraints": {
                 "max_input_duration": "PT30M",
-                "max_input_size_bytes": 950000000
+                "max_input_size_bytes": 2000000000
               }
             }
           }
@@ -5551,7 +5558,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.223.0",
+  "schema_version": "2.224.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

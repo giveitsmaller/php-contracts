@@ -1189,7 +1189,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output audio format. original = keep input format (default, same-format compression). Other values change the format as part of the same job.",
+              "description": "Output audio format. original = keep input format (default, same-format compression), except WAV: a WAV is compressed losslessly to FLAC, because uncompressed WAV cannot get smaller as WAV. Other values change the format as part of the same job.",
               "origin": "contract",
               "sdk_exposure": "expose",
               "surface_key": "outputFormat",
@@ -4491,7 +4491,7 @@
               "type": "boolean"
             },
             "output_type": {
-              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio'. Optional \u2014 API injects this default post-validation so callers may omit it.",
+              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio': the merged file is always AAC audio in an MP4 container (.m4a, audio/mp4), whatever the input formats. Optional \u2014 API injects this default post-validation so callers may omit it.",
               "origin": "contract",
               "positional": 0,
               "required": false,
@@ -5514,6 +5514,13 @@
               "constraints": {
                 "max_total_duration": "PT5M",
                 "max_total_input_size_bytes": 524288000
+              },
+              "input_uniformity": {
+                "attributes": {},
+                "refusal": "INPUTS_NOT_CONCAT_UNIFORM",
+                "structural": [
+                  "input_audio_topology_mixed"
+                ]
               }
             }
           }
@@ -7037,7 +7044,7 @@
               },
               "constraints": {
                 "max_input_duration": "PT30M",
-                "max_input_size_bytes": 950000000
+                "max_input_size_bytes": 2000000000
               }
             }
           }
@@ -7696,7 +7703,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.223.0",
+  "schema_version": "2.224.0",
   "sdk_spec_version": "2.13.0",
-  "source_hash": "sha256:9cb0c5da11526fe33426f4ad5dd14e55e4b5f991619ff9a74c10f1b1003af7e7"
+  "source_hash": "sha256:3ed5ce67bdb7b427c1a13290b0eec900f186a55bb490993233f9bfca9413c504"
 }
