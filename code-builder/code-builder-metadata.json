@@ -851,7 +851,7 @@
                 "max_input_duration": "unproven"
               },
               "constraints": {
-                "max_input_duration": "PT11M35S"
+                "max_input_duration": "PT29M43S"
               }
             }
           }
@@ -1138,7 +1138,7 @@
           "options": {
             "bitrate": {
               "default": 128,
-              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels/sample_rate/normalize) apply to all formats.\n",
+              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels, sample_rate, normalize, trim) apply only with `output_format` absent or `original`: with any explicit `output_format` they are refused with `feature_not_available` (constraint compress.audio.format_facade.knob).\n",
               "enum_ref": "AudioBitrate",
               "enum_translations": {
                 "128": "_128",
@@ -3216,7 +3216,7 @@
               ]
             },
             "output_format": {
-              "description": "Target format",
+              "description": "Target format. WAV is uncompressed, so its length is limited by size: about 18 minutes at 48 kHz stereo 16-bit, longer for mono or lower sample rates, shorter for more channels or higher rates. Past that the job fails.",
               "origin": "contract",
               "positional": 0,
               "required": true,
@@ -3776,7 +3776,7 @@
               ]
             },
             "fps": {
-              "default": 15,
+              "default": 12,
               "depends_on": {
                 "output_format": "gif"
               },
@@ -3855,7 +3855,7 @@
               "type": "float"
             },
             "width": {
-              "default": 640,
+              "default": 480,
               "depends_on": {
                 "output_format": "gif"
               },
@@ -7703,7 +7703,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.224.0",
+  "schema_version": "2.225.0",
   "sdk_spec_version": "2.13.0",
-  "source_hash": "sha256:3ed5ce67bdb7b427c1a13290b0eec900f186a55bb490993233f9bfca9413c504"
+  "source_hash": "sha256:4221dd8b60f0af17b8b8171e8d67d2b89f0227d0d374e6ad0b5e962478437ad6"
 }

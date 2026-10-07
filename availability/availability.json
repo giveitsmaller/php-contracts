@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 249,
+  "capabilities_version": 253,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -745,7 +745,7 @@
     "audio_to_video": {
       "availability": "planned",
       "default": false,
-      "description": "Produce a video from an audio input plus an OPTIONAL still image\noverlay. Use cases: podcast \u2192 YouTube uploads, audio-only tracks\nthat need a video container for platforms requiring it, branded\naudio releases with a static cover image.\n\n**Role asymmetry.** First role-based operation on the contract\nwith an OPTIONAL role \u2014 REQUIRED `base` (audio source) +\nOPTIONAL `overlay` (still image, 0..1). When `overlay` is\nomitted, the video uses a solid `background_color`. The\nmachine-readable cardinality lives in `per_role_cardinality`\non this schema.\n\n**Input vs output asymmetry.** The single `mime_groups.audio`\nblock keys the INPUT MIME family (the `base` role input is\naudio). The OUTPUT is always video \u2014 `output_format` controls\nthe container; `mime_groups` is NOT the output type. Mirrors\nthe `audio_overlay.video` group pattern (input-keyed).\n\nRe-encode required (audio \u2192 video composition always re-encodes).\nA lower framerate plus still-image tuning keeps file size tiny\nwhen the overlay is a still image (the common case).\n\n`availability: planned` \u2014 withdrawn 2026-09-15. The measured encode cost\n(a per-second rate PLUS A FIXED COST) puts the advertised PT2H at more than\ntwice the 900 s Lambda platform maximum. \u26a0\ufe0f The fixed cost is not a rounding\ndetail: dropping it moves the in-flight boundary by tens of seconds. The\nfigures are in the CHANGELOG entry for 2.203.0, derived and tested from the\ndivergence register (6gdvD3yZ). Workflow-create returns `feature_not_available` (422).\n\n\u26a0\ufe0f An already-accepted workflow is NOT cancelled \u2014 availability is checked at\ncreate \u2014 and it is NOT thereby doomed. \u26d4 DO NOT READ THIS AS \"in-flight work\nfails\": the 60 s and 120 s cells behind this withdrawal both COMPLETED WITH\nOUTPUT, which is precisely why the evidence is arithmetic rather than a kill.\nWhat fails is an accepted workflow whose OUTPUT DURATION exceeds the derived ceiling (`evidence.derived.ceiling_s` in the register)\n\u26a0\ufe0f ON THE INPUT THE RATE WAS MEASURED WITH \u2014 a real photographic 1080p STILL\nplus looped real audio \u2014 the point at which the measured rate plus the fixed\ncost reaches the SERVED cap (the worker's 600 s times the register's\n`headroom`, kikOfB6G), not the raw cap. \u26d4 THE DRIVER IS THE STILL'S RESOLUTION, NOT THE\nDURATION ALONE: a 4K still is MEASURED materially slower (2026-10-02), and the\nshort_form ceiling below is set from that worst case; this schema places NO\nconstraint on the overlay's resolution. Stills above 4K are unmeasured \u2014\nand what the caller then sees is NOT SETTLED \u2014 see the CHANGELOG entry for\n2.203.0; this contract does not pin a worker's error classification. Measured figures and the conditions for re-listing are in the\nCHANGELOG entry for 2.203.0 \u2014 the only one of the two records that is\nPUBLISHED (`schemas/manifest-divergence-register.yaml` is working material\nfor the drift gate and is not in the npm tarball).\n",
+      "description": "Produce a video from an audio input plus an OPTIONAL still image\noverlay. Use cases: podcast \u2192 YouTube uploads, audio-only tracks\nthat need a video container for platforms requiring it, branded\naudio releases with a static cover image.\n\n**Role asymmetry.** First role-based operation on the contract\nwith an OPTIONAL role \u2014 REQUIRED `base` (audio source) +\nOPTIONAL `overlay` (still image, 0..1). When `overlay` is\nomitted, the video uses a solid `background_color`. The\nmachine-readable cardinality lives in `per_role_cardinality`\non this schema.\n\n**Input vs output asymmetry.** The single `mime_groups.audio`\nblock keys the INPUT MIME family (the `base` role input is\naudio). The OUTPUT is always video \u2014 `output_format` controls\nthe container; `mime_groups` is NOT the output type. Mirrors\nthe `audio_overlay.video` group pattern (input-keyed).\n\nRe-encode required (audio \u2192 video composition always re-encodes).\nA lower framerate plus still-image tuning keeps file size tiny\nwhen the overlay is a still image (the common case).\n\n`availability: planned` \u2014 withdrawn 2026-09-15. The measured encode cost\n(a per-second rate PLUS A FIXED COST) puts the advertised PT2H at more than\ntwice the 900 s Lambda platform maximum. \u26a0\ufe0f The fixed cost is not a rounding\ndetail: dropping it moves the in-flight boundary by tens of seconds. The\nfigures are in the CHANGELOG entry for 2.203.0, derived and tested from the\ndivergence register (6gdvD3yZ). Workflow-create returns `feature_not_available` (422).\n\n\u26a0\ufe0f An already-accepted workflow is NOT cancelled \u2014 availability is checked at\ncreate \u2014 and it is NOT thereby doomed. \u26d4 DO NOT READ THIS AS \"in-flight work\nfails\": the 60 s and 120 s cells behind this withdrawal both COMPLETED WITH\nOUTPUT, which is precisely why the evidence is arithmetic rather than a kill.\nWhat fails is an accepted workflow whose OUTPUT DURATION exceeds the derived ceiling (`evidence.derived.ceiling_s` in the register)\n\u26a0\ufe0f ON THE INPUT THE RATE WAS MEASURED WITH \u2014 a real photographic 1080p STILL\nplus looped real audio \u2014 the point at which the measured rate plus the fixed\ncost reaches the SERVED cap (the worker's 600 s times the register's\n`headroom`, kikOfB6G), not the raw cap. The still's resolution no longer drives\nthe time: since the worker fits the still ONCE (lambdas 5pWDD20e, 2026-10-06), a\n4K still measures within 2% of a 1080p one, so the short_form ceiling below is\nset by the slowest OUTPUT resolution measured. Measured figures and the conditions for re-listing are in the\nCHANGELOG entry for 2.203.0 \u2014 the only one of the two records that is\nPUBLISHED (`schemas/manifest-divergence-register.yaml` is working material\nfor the drift gate and is not in the npm tarball).\n",
       "input_model": "multi",
       "max_inputs": 2,
       "mime_groups": {
@@ -819,7 +819,7 @@
                 "max_input_duration": "unproven"
               },
               "constraints": {
-                "max_input_duration": "PT11M35S"
+                "max_input_duration": "PT29M43S"
               }
             }
           }
@@ -1040,7 +1040,7 @@
           "options": {
             "bitrate": {
               "default": 128,
-              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels/sample_rate/normalize) apply to all formats.\n",
+              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels, sample_rate, normalize, trim) apply only with `output_format` absent or `original`: with any explicit `output_format` they are refused with `feature_not_available` (constraint compress.audio.format_facade.knob).\n",
               "type": "enum",
               "value_type": "integer",
               "values": [
@@ -2297,7 +2297,7 @@
               ]
             },
             "output_format": {
-              "description": "Target format",
+              "description": "Target format. WAV is uncompressed, so its length is limited by size: about 18 minutes at 48 kHz stereo 16-bit, longer for mono or lower sample rates, shorter for more channels or higher rates. Past that the job fails.",
               "required": true,
               "type": "enum",
               "values": [
@@ -2700,7 +2700,7 @@
               ]
             },
             "fps": {
-              "default": 15,
+              "default": 12,
               "depends_on": {
                 "output_format": "gif"
               },
@@ -2752,7 +2752,7 @@
               "type": "float"
             },
             "width": {
-              "default": 640,
+              "default": 480,
               "depends_on": {
                 "output_format": "gif"
               },
@@ -5558,7 +5558,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.224.0",
+  "schema_version": "2.225.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

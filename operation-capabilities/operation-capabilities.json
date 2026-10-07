@@ -103,6 +103,55 @@
       "excludes": [
         {
           "availability": "stable",
+          "constraint_id": "compress.audio.format_facade.knob",
+          "message": "channels, sample_rate, normalize and trim are not available when compress changes the audio format. Use output_format original, or a convert operation.",
+          "when": {
+            "all": [
+              {
+                "equals": "audio",
+                "field": "input_mime_group"
+              },
+              {
+                "field": "output_format",
+                "in": [
+                  "mp3",
+                  "aac",
+                  "ogg",
+                  "opus",
+                  "flac",
+                  "wav"
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "field": "compress.channels",
+                    "isSet": true
+                  },
+                  {
+                    "field": "compress.sample_rate",
+                    "isSet": true
+                  },
+                  {
+                    "field": "compress.normalize",
+                    "isSet": true
+                  },
+                  {
+                    "field": "compress.trim_start",
+                    "isSet": true
+                  },
+                  {
+                    "field": "compress.trim_end",
+                    "isSet": true
+                  }
+                ]
+              }
+            ]
+          },
+          "wire_code": "feature_not_available"
+        },
+        {
+          "availability": "stable",
           "constraint_id": "compress.video.target_size.container",
           "message": "target_size encoding is mp4/MOV-only; not yet available for {output_container} output. Use crf.",
           "when": {
@@ -849,5 +898,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.224.0"
+  "schema_version": "2.225.0"
 }

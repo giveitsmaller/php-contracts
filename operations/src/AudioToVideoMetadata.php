@@ -20,7 +20,7 @@ final class AudioToVideoMetadata
                         'short_form' => new AvailabilityEntry(
                             availability: 'planned',
                             constraints: new ProcessingClassConstraints(
-                                max_input_duration: 'PT11M35S',
+                                max_input_duration: 'PT29M43S',
                             ),
                         ),
                         'long_form' => new AvailabilityEntry(
