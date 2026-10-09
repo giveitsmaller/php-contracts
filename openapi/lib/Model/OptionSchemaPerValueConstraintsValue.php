@@ -1,6 +1,6 @@
 <?php
 /**
- * ReadinessResponse
+ * OptionSchemaPerValueConstraintsValue
  *
  * PHP version 8.1
  *
@@ -32,7 +32,7 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * ReadinessResponse Class Doc Comment
+ * OptionSchemaPerValueConstraintsValue Class Doc Comment
  *
  * @category Class
  * @package  Gisl\Generated\OpenApi
@@ -40,7 +40,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializable
+class OptionSchemaPerValueConstraintsValue implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      *
      * @var string
      */
-    protected static $openAPIModelName = 'ReadinessResponse';
+    protected static $openAPIModelName = 'OptionSchema_per_value_constraints_value';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +57,7 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $openAPITypes = [
-        'database' => 'bool',
-        'cache' => 'bool'
+        'max_kept_duration' => 'string'
     ];
 
     /**
@@ -69,8 +68,7 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'database' => null,
-        'cache' => null
+        'max_kept_duration' => 'duration'
     ];
 
     /**
@@ -79,8 +77,7 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'database' => false,
-        'cache' => false
+        'max_kept_duration' => false
     ];
 
     /**
@@ -169,8 +166,7 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $attributeMap = [
-        'database' => 'database',
-        'cache' => 'cache'
+        'max_kept_duration' => 'max_kept_duration'
     ];
 
     /**
@@ -179,8 +175,7 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $setters = [
-        'database' => 'setDatabase',
-        'cache' => 'setCache'
+        'max_kept_duration' => 'setMaxKeptDuration'
     ];
 
     /**
@@ -189,8 +184,7 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $getters = [
-        'database' => 'getDatabase',
-        'cache' => 'getCache'
+        'max_kept_duration' => 'getMaxKeptDuration'
     ];
 
     /**
@@ -250,8 +244,7 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('database', $data ?? [], null);
-        $this->setIfExists('cache', $data ?? [], null);
+        $this->setIfExists('max_kept_duration', $data ?? [], null);
     }
 
     /**
@@ -297,55 +290,28 @@ class ReadinessResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
 
 
     /**
-     * Gets database
+     * Gets max_kept_duration
      *
-     * @return bool|null
+     * @return string|null
      */
-    public function getDatabase()
+    public function getMaxKeptDuration()
     {
-        return $this->container['database'];
+        return $this->container['max_kept_duration'];
     }
 
     /**
-     * Sets database
+     * Sets max_kept_duration
      *
-     * @param bool|null $database Database connection is healthy
+     * @param string|null $max_kept_duration max_kept_duration
      *
      * @return self
      */
-    public function setDatabase($database)
+    public function setMaxKeptDuration($max_kept_duration)
     {
-        if (is_null($database)) {
-            throw new \InvalidArgumentException('non-nullable database cannot be null');
+        if (is_null($max_kept_duration)) {
+            throw new \InvalidArgumentException('non-nullable max_kept_duration cannot be null');
         }
-        $this->container['database'] = $database;
-
-        return $this;
-    }
-
-    /**
-     * Gets cache
-     *
-     * @return bool|null
-     */
-    public function getCache()
-    {
-        return $this->container['cache'];
-    }
-
-    /**
-     * Sets cache
-     *
-     * @param bool|null $cache Cache connection is healthy
-     *
-     * @return self
-     */
-    public function setCache($cache)
-    {
-        if (is_null($cache)) {
-            throw new \InvalidArgumentException('non-nullable cache cannot be null');
-        }
-        $this->container['cache'] = $cache;
+        $this->container['max_kept_duration'] = $max_kept_duration;
 
         return $this;
     }

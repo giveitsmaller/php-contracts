@@ -407,6 +407,20 @@ final class CompressMetadata
                     ],
                     per_input_options: [],
                 ),
+                'document_pdf' => new MimeGroupMetadata(
+                    availability: 'planned',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'max_image_dimension' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
                 'document_office' => new MimeGroupMetadata(
                     processing_class: [],
                     per_mime_availability: [],

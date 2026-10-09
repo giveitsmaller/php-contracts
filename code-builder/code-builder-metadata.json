@@ -1443,6 +1443,39 @@
             }
           }
         },
+        "document_pdf": {
+          "availability": "planned",
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 209715200,
+          "media_group": "document",
+          "mimes": [
+            "application/pdf"
+          ],
+          "options": {
+            "max_image_dimension": {
+              "default": 1600,
+              "description": "Largest width or height, in pixels, for each image inside the PDF; larger images are scaled down, keeping their shape. Smaller images are left as they are.",
+              "max": 10000,
+              "min": 64,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "maxImageDimension",
+              "type": "integer"
+            },
+            "quality": {
+              "default": 70,
+              "description": "JPEG quality for the images inside the PDF (1 = smallest, 100 = best). Text and vector content are not re-encoded.",
+              "max": 100,
+              "min": 1,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "quality",
+              "type": "integer"
+            }
+          }
+        },
         "image": {
           "ceiling_basis": {
             "max_input_size_bytes": "unproven"
@@ -3816,6 +3849,11 @@
             "output_format": {
               "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette, mov->H.264, mkv->H.264) \u2014 not caller-selectable.",
               "origin": "contract",
+              "per_value_constraints": {
+                "gif": {
+                  "max_kept_duration": "PT10S"
+                }
+              },
               "positional": 0,
               "required": true,
               "sdk_exposure": "expose",
@@ -5653,7 +5691,7 @@
         "image",
         "video"
       ],
-      "availability": "beta",
+      "availability": "stable",
       "features": {
         "silence_mode_audio": {
           "availability": "beta",
@@ -5812,7 +5850,7 @@
           }
         },
         "document_pdf": {
-          "availability": "beta",
+          "availability": "stable",
           "ceiling_basis": {
             "max_input_size_bytes": "unproven"
           },
@@ -6829,6 +6867,12 @@
           }
         },
         "image": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 90000000,
+          "max_input_size_bytes": 370000000,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -7703,7 +7747,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.225.0",
-  "sdk_spec_version": "2.13.0",
-  "source_hash": "sha256:4221dd8b60f0af17b8b8171e8d67d2b89f0227d0d374e6ad0b5e962478437ad6"
+  "schema_version": "2.227.0",
+  "sdk_spec_version": "2.14.0",
+  "source_hash": "sha256:ee4c34bc71fe6eab5922e7dc1a486c23e56f910db9e76877cb897b3df91cda4a"
 }

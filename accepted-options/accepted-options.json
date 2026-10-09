@@ -194,6 +194,15 @@
         },
         "output_format_option": null
       },
+      "document_pdf": {
+        "accepted_options": {
+          "*": [
+            "max_image_dimension",
+            "quality"
+          ]
+        },
+        "output_format_option": null
+      },
       "image": {
         "accepted_options": {
           "auto": [
@@ -1214,5 +1223,5 @@
       }
     }
   },
-  "schema_version": "2.225.0"
+  "schema_version": "2.227.0"
 }

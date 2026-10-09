@@ -643,7 +643,7 @@
         "image",
         "video"
       ],
-      "availability": "beta",
+      "availability": "stable",
       "input": {
         "model": "single"
       },
@@ -734,36 +734,6 @@
         "video"
       ],
       "availability": "stable",
-      "excludes": [
-        {
-          "availability": "stable",
-          "constraint_id": "thumbnail.requires_chain_predecessor",
-          "message": "thumbnail must follow a compress or convert operation.",
-          "when": {
-            "all": [
-              {
-                "not": {
-                  "any": [
-                    {
-                      "opSelected": "compress"
-                    },
-                    {
-                      "opSelected": "convert"
-                    }
-                  ]
-                }
-              },
-              {
-                "not": {
-                  "equals": "document",
-                  "field": "input_mime_group"
-                }
-              }
-            ]
-          },
-          "wire_code": "INVALID_OPERATION_ORDER"
-        }
-      ],
       "input": {
         "model": "single"
       },
@@ -898,5 +868,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.225.0"
+  "schema_version": "2.227.0"
 }

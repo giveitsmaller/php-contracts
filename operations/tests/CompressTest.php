@@ -14,6 +14,7 @@ use Gisl\Generated\Operations\CompressAudioSampleRate;
 use Gisl\Generated\Operations\CompressDocumentEpubOptions;
 use Gisl\Generated\Operations\CompressDocumentOdfOptions;
 use Gisl\Generated\Operations\CompressDocumentOfficeOptions;
+use Gisl\Generated\Operations\CompressDocumentPdfOptions;
 use Gisl\Generated\Operations\CompressImageAvifColorProfile;
 use Gisl\Generated\Operations\CompressImageAvifEncodingMode;
 use Gisl\Generated\Operations\CompressImageAvifFit;
@@ -1518,6 +1519,23 @@ final class CompressTest extends TestCase
             speed: 0.25,
         );
         $this->assertInstanceOf(CompressVideoOptions::class, $obj);
+    }
+
+    public function testCompressDocumentPdfOptionsDefaultConstruction(): void
+    {
+        $obj = new CompressDocumentPdfOptions();
+        $this->assertInstanceOf(CompressDocumentPdfOptions::class, $obj);
+        $this->assertSame(70, $obj->quality);
+        $this->assertSame(1600, $obj->max_image_dimension);
+    }
+
+    public function testCompressDocumentPdfOptionsFullConstruction(): void
+    {
+        $obj = new CompressDocumentPdfOptions(
+            quality: 1,
+            max_image_dimension: 64,
+        );
+        $this->assertInstanceOf(CompressDocumentPdfOptions::class, $obj);
     }
 
     public function testCompressDocumentOfficeOptionsDefaultConstruction(): void

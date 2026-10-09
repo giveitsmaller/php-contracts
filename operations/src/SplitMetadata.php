@@ -11,7 +11,7 @@ final class SplitMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
-            availability: 'beta',
+            availability: 'stable',
             sole_op: true,
             features: [
                 'silence_mode_audio' => new FeatureEntry(
@@ -34,7 +34,7 @@ final class SplitMetadata
                     per_input_options: [],
                 ),
                 'document_pdf' => new MimeGroupMetadata(
-                    availability: 'beta',
+                    availability: 'stable',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [

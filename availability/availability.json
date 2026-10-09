@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 253,
+  "capabilities_version": 258,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -1189,6 +1189,32 @@
               "availability": "planned",
               "description": "Remove embedded fonts not referenced in the document. Risk: may affect rendering on systems without the font installed. `planned` \u2014 not yet supported.",
               "type": "boolean"
+            }
+          }
+        },
+        "document_pdf": {
+          "availability": "planned",
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 209715200,
+          "mimes": [
+            "application/pdf"
+          ],
+          "options": {
+            "max_image_dimension": {
+              "default": 1600,
+              "description": "Largest width or height, in pixels, for each image inside the PDF; larger images are scaled down, keeping their shape. Smaller images are left as they are.",
+              "max": 10000,
+              "min": 64,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 70,
+              "description": "JPEG quality for the images inside the PDF (1 = smallest, 100 = best). Text and vector content are not re-encoded.",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
             }
           }
         },
@@ -2730,6 +2756,11 @@
             },
             "output_format": {
               "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette, mov->H.264, mkv->H.264) \u2014 not caller-selectable.",
+              "per_value_constraints": {
+                "gif": {
+                  "max_kept_duration": "PT10S"
+                }
+              },
               "required": true,
               "type": "enum",
               "values": [
@@ -4109,9 +4140,9 @@
       }
     },
     "split": {
-      "availability": "beta",
+      "availability": "stable",
       "default": false,
-      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming (S3 object key)**: the object-key leaf is 3-digit\nzero-padded \u2014 `output-001` .. `output-200` (ADR-0014 \u00a7D9). This binds the\n**S3 object key**, NOT the user-facing download filename \u2014 the API\nsynthesises that separately (see `OperationDownload.filename` in\n`openapi/api.yaml`). Only the **3-digit zero-padding** follows the convert\nPDF\u2192N precedent \u2014 convert keys are `page-NNN.ext`, split keys are\n`output-NNN.ext`.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based literal source page number).\n  With **`mode: page_range`** each output is one page, so `page_index` is\n  that page. With **`mode: page_groups`** each output is a group of\n  consecutive pages and `page_index` is the group's FIRST source page;\n  the group covers `page_index` .. `page_index + page_groups - 1`, and\n  the last group ends at the document's last page (so it may be\n  shorter). Verified in the worker, not assumed: `compression_lambdas`\n  `crates/split/src/processor.rs` passes each range's START page as the\n  index, over ranges from `resolve_page_groups` (`pdf_range.rs`, tests\n  `page_groups_remainder` / `page_groups_size_larger_than_total`).\n  Specified 2026-09-25 and `beta` since 2026-10-01 (card `jGTLrpzK`), on\n  a staging run of both modes; `stable` needs a production record.\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts (`planned` \u2014 the API refuses it at create until the\nre-encode path is priced). Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `document_pdf` mime_group is `beta` too (2026-10-01), and\n`image_gif` is `stable` (GIF to frames, 2026-06-21). A value or class\nstill tagged `planned` (e.g. `precision: exact`) is refused with\n`feature_not_available` (422).\n",
+      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming (S3 object key)**: the object-key leaf is 3-digit\nzero-padded \u2014 `output-001` .. `output-200` (ADR-0014 \u00a7D9). This binds the\n**S3 object key**, NOT the user-facing download filename \u2014 the API\nsynthesises that separately (see `OperationDownload.filename` in\n`openapi/api.yaml`). Only the **3-digit zero-padding** follows the convert\nPDF\u2192N precedent \u2014 convert keys are `page-NNN.ext`, split keys are\n`output-NNN.ext`.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based literal source page number).\n  With **`mode: page_range`** each output is one page, so `page_index` is\n  that page. With **`mode: page_groups`** each output is a group of\n  consecutive pages and `page_index` is the group's FIRST source page;\n  the group covers `page_index` .. `page_index + page_groups - 1`, and\n  the last group ends at the document's last page (so it may be\n  shorter). Verified in the worker, not assumed: `compression_lambdas`\n  `crates/split/src/processor.rs` passes each range's START page as the\n  index, over ranges from `resolve_page_groups` (`pdf_range.rs`, tests\n  `page_groups_remainder` / `page_groups_size_larger_than_total`).\n  Specified 2026-09-25 and `beta` since 2026-10-01 (card `jGTLrpzK`), on\n  a staging run of both modes; `stable` needs a production record.\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts (`planned` \u2014 the API refuses it at create until the\nre-encode path is priced). Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `document_pdf` mime_group is `stable` (owner decision 729,\nprod-proven 2026-10-08), and `image_gif` is `stable` (GIF to frames,\nprod-proven 2026-10-08). A value or class\nstill tagged `planned` (e.g. `precision: exact`) is refused with\n`feature_not_available` (422).\n",
       "features": {
         "silence_mode_audio": {
           "availability": "beta",
@@ -4228,7 +4259,7 @@
           }
         },
         "document_pdf": {
-          "availability": "beta",
+          "availability": "stable",
           "ceiling_basis": {
             "max_input_size_bytes": "unproven"
           },
@@ -4690,7 +4721,7 @@
     },
     "thumbnail": {
       "default": false,
-      "description": "Resize an image to specific dimensions, or extract a preview frame/page from a video or document. For images this is a full resizer (1-16384px), not just small previews. An image or video thumbnail must follow a compress or convert in the same job; a document thumbnail may stand alone. Image types that compress does not accept (BMP, HEIC) therefore need a convert first.",
+      "description": "Resize an image to specific dimensions, or extract a preview frame/page from a video or document. For images this is a full resizer (1-16384px), not just small previews. A thumbnail can be the only operation on an image, video or document upload. In a job with other operations it is made from the ORIGINAL file by default, alongside them; set `base: processed_base` to make it from the processed result instead.",
       "input_model": "single",
       "mime_groups": {
         "document_epub": {
@@ -4911,6 +4942,12 @@
           }
         },
         "image": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 90000000,
+          "max_input_size_bytes": 370000000,
           "max_output_pixels": 16000000,
           "mimes": [
             "image/jpeg",
@@ -5558,7 +5595,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.225.0",
+  "schema_version": "2.227.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
