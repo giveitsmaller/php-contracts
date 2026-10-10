@@ -1444,7 +1444,7 @@
           }
         },
         "document_pdf": {
-          "availability": "planned",
+          "availability": "beta",
           "ceiling_basis": {
             "max_input_size_bytes": "unproven"
           },
@@ -1460,7 +1460,7 @@
               "max": 10000,
               "min": 64,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "maxImageDimension",
               "type": "integer"
             },
@@ -1470,7 +1470,7 @@
               "max": 100,
               "min": 1,
               "origin": "contract",
-              "sdk_exposure": "coming_soon",
+              "sdk_exposure": "expose",
               "surface_key": "quality",
               "type": "integer"
             }
@@ -7747,7 +7747,7 @@
     }
   },
   "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.227.0",
-  "sdk_spec_version": "2.14.0",
-  "source_hash": "sha256:ee4c34bc71fe6eab5922e7dc1a486c23e56f910db9e76877cb897b3df91cda4a"
+  "schema_version": "2.229.0",
+  "sdk_spec_version": "2.15.0",
+  "source_hash": "sha256:17a43147b77664d7cb322a51a8f54aaa32a38b8c3237dfb8bb54eeda3161ce17"
 }

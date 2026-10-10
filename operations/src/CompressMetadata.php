@@ -408,7 +408,7 @@ final class CompressMetadata
                     per_input_options: [],
                 ),
                 'document_pdf' => new MimeGroupMetadata(
-                    availability: 'planned',
+                    availability: 'beta',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [

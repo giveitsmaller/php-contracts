@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 258,
+  "capabilities_version": 260,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -1193,7 +1193,7 @@
           }
         },
         "document_pdf": {
-          "availability": "planned",
+          "availability": "beta",
           "ceiling_basis": {
             "max_input_size_bytes": "unproven"
           },
@@ -5595,7 +5595,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.227.0",
+  "schema_version": "2.229.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
