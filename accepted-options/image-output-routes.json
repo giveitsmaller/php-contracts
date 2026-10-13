@@ -36,6 +36,20 @@
           "planned_options": [
             "metadata"
           ],
+          "refused_when_input_animated": [
+            {
+              "constraint_id": "convert.image.resize.animated",
+              "input_mimes": [
+                "image/gif",
+                "image/webp"
+              ],
+              "options": [
+                "height",
+                "width"
+              ],
+              "when": "input_is_animated == true"
+            }
+          ],
           "source_op": "convert"
         },
         "jpeg": {
@@ -103,6 +117,20 @@
           "planned_options": [
             "metadata"
           ],
+          "refused_when_input_animated": [
+            {
+              "constraint_id": "convert.image.resize.animated",
+              "input_mimes": [
+                "image/gif",
+                "image/webp"
+              ],
+              "options": [
+                "height",
+                "width"
+              ],
+              "when": "input_is_animated == true"
+            }
+          ],
           "source_op": "convert"
         }
       },
@@ -153,6 +181,20 @@
           "input_mime": "image/gif",
           "max_output_pixels": 16000000,
           "planned_options": [],
+          "refused_when_input_animated": [
+            {
+              "constraint_id": "compress.image.resize.animated",
+              "input_mimes": [
+                "image/gif",
+                "image/webp"
+              ],
+              "options": [
+                "height",
+                "width"
+              ],
+              "when": "input_is_animated == true"
+            }
+          ],
           "source_op": "compress"
         },
         "jpeg": {
@@ -243,6 +285,20 @@
           "input_mime": "image/webp",
           "max_output_pixels": 16000000,
           "planned_options": [],
+          "refused_when_input_animated": [
+            {
+              "constraint_id": "compress.image.resize.animated",
+              "input_mimes": [
+                "image/gif",
+                "image/webp"
+              ],
+              "options": [
+                "height",
+                "width"
+              ],
+              "when": "input_is_animated == true"
+            }
+          ],
           "source_op": "compress"
         }
       }
@@ -260,5 +316,5 @@
       "source_op": "compress"
     }
   },
-  "schema_version": "2.229.0"
+  "schema_version": "2.230.0"
 }

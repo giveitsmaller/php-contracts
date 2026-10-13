@@ -1474,6 +1474,20 @@
               "surface_key": "quality",
               "type": "integer"
             }
+          },
+          "presets": {
+            "Balanced": {
+              "max_image_dimension": 1600,
+              "quality": 70
+            },
+            "Quality": {
+              "max_image_dimension": 2400,
+              "quality": 85
+            },
+            "Size": {
+              "max_image_dimension": 1200,
+              "quality": 50
+            }
           }
         },
         "image": {
@@ -7746,8 +7760,8 @@
       "sole_op": true
     }
   },
-  "preset_config_hash": "sha256:354814f7906f85be6a6ca5ede6c0722c83cdc058fd658a9bb2b0996520466c6d",
-  "schema_version": "2.229.0",
-  "sdk_spec_version": "2.15.0",
-  "source_hash": "sha256:17a43147b77664d7cb322a51a8f54aaa32a38b8c3237dfb8bb54eeda3161ce17"
+  "preset_config_hash": "sha256:57b6960c90a61cf1c31bf0362456cfb9bc174b6f45d3b4b0e6496890cfcea223",
+  "schema_version": "2.230.0",
+  "sdk_spec_version": "2.16.0",
+  "source_hash": "sha256:f05320a46b05dccc5f5db1b69f82321397bf3e7ee29b5278f82f8e7ce7132a46"
 }

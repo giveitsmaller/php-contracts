@@ -103,6 +103,59 @@
       "excludes": [
         {
           "availability": "stable",
+          "constraint_id": "compress.image.resize.animated",
+          "eval_scope": "api",
+          "message": "Resizing an animated GIF or WebP that stays animated is not available yet. Resize a still image, or convert to a still format.",
+          "when": {
+            "all": [
+              {
+                "field": "input_mime",
+                "in": [
+                  "image/gif",
+                  "image/webp"
+                ]
+              },
+              {
+                "equals": true,
+                "field": "input_is_animated"
+              },
+              {
+                "not": {
+                  "all": [
+                    {
+                      "field": "convert.output_format",
+                      "isSet": true
+                    },
+                    {
+                      "not": {
+                        "field": "convert.output_format",
+                        "in": [
+                          "gif",
+                          "webp"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "any": [
+                  {
+                    "field": "compress.width",
+                    "isSet": true
+                  },
+                  {
+                    "field": "compress.height",
+                    "isSet": true
+                  }
+                ]
+              }
+            ]
+          },
+          "wire_code": "feature_not_available"
+        },
+        {
+          "availability": "stable",
           "constraint_id": "compress.audio.format_facade.knob",
           "message": "channels, sample_rate, normalize and trim are not available when compress changes the audio format. Use output_format original, or a convert operation.",
           "when": {
@@ -441,6 +494,61 @@
         "video"
       ],
       "availability": "stable",
+      "excludes": [
+        {
+          "availability": "stable",
+          "constraint_id": "convert.image.resize.animated",
+          "eval_scope": "api",
+          "message": "Resizing an animated GIF or WebP that stays animated is not available yet. Resize a still image, or convert to a still format.",
+          "when": {
+            "all": [
+              {
+                "field": "input_mime",
+                "in": [
+                  "image/gif",
+                  "image/webp"
+                ]
+              },
+              {
+                "equals": true,
+                "field": "input_is_animated"
+              },
+              {
+                "not": {
+                  "all": [
+                    {
+                      "field": "convert.output_format",
+                      "isSet": true
+                    },
+                    {
+                      "not": {
+                        "field": "convert.output_format",
+                        "in": [
+                          "gif",
+                          "webp"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "any": [
+                  {
+                    "field": "convert.width",
+                    "isSet": true
+                  },
+                  {
+                    "field": "convert.height",
+                    "isSet": true
+                  }
+                ]
+              }
+            ]
+          },
+          "wire_code": "feature_not_available"
+        }
+      ],
       "input": {
         "model": "single"
       },
@@ -868,5 +976,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.229.0"
+  "schema_version": "2.230.0"
 }
