@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.231.0
+ * The version of the OpenAPI document: 2.233.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -61,6 +61,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'id' => 'string',
         'type' => '\Gisl\Generated\OpenApi\Model\OperationType',
         'status' => '\Gisl\Generated\OpenApi\Model\OperationStatus',
+        'queued_at' => '\DateTime',
+        'started_at' => '\DateTime',
+        'completed_at' => '\DateTime',
         'progress' => 'int',
         'result' => '\Gisl\Generated\OpenApi\Model\OperationResult',
         'result_metadata' => '\Gisl\Generated\OpenApi\Model\OperationResultMetadata',
@@ -81,6 +84,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'id' => 'uuid',
         'type' => null,
         'status' => null,
+        'queued_at' => 'date-time',
+        'started_at' => 'date-time',
+        'completed_at' => 'date-time',
         'progress' => null,
         'result' => null,
         'result_metadata' => null,
@@ -99,6 +105,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'id' => false,
         'type' => false,
         'status' => false,
+        'queued_at' => false,
+        'started_at' => false,
+        'completed_at' => false,
         'progress' => false,
         'result' => false,
         'result_metadata' => false,
@@ -197,6 +206,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'id' => 'id',
         'type' => 'type',
         'status' => 'status',
+        'queued_at' => 'queued_at',
+        'started_at' => 'started_at',
+        'completed_at' => 'completed_at',
         'progress' => 'progress',
         'result' => 'result',
         'result_metadata' => 'result_metadata',
@@ -215,6 +227,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'id' => 'setId',
         'type' => 'setType',
         'status' => 'setStatus',
+        'queued_at' => 'setQueuedAt',
+        'started_at' => 'setStartedAt',
+        'completed_at' => 'setCompletedAt',
         'progress' => 'setProgress',
         'result' => 'setResult',
         'result_metadata' => 'setResultMetadata',
@@ -233,6 +248,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         'id' => 'getId',
         'type' => 'getType',
         'status' => 'getStatus',
+        'queued_at' => 'getQueuedAt',
+        'started_at' => 'getStartedAt',
+        'completed_at' => 'getCompletedAt',
         'progress' => 'getProgress',
         'result' => 'getResult',
         'result_metadata' => 'getResultMetadata',
@@ -302,6 +320,9 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
         $this->setIfExists('id', $data ?? [], null);
         $this->setIfExists('type', $data ?? [], null);
         $this->setIfExists('status', $data ?? [], null);
+        $this->setIfExists('queued_at', $data ?? [], null);
+        $this->setIfExists('started_at', $data ?? [], null);
+        $this->setIfExists('completed_at', $data ?? [], null);
         $this->setIfExists('progress', $data ?? [], null);
         $this->setIfExists('result', $data ?? [], null);
         $this->setIfExists('result_metadata', $data ?? [], null);
@@ -460,6 +481,87 @@ class OperationResponse implements ModelInterface, ArrayAccess, \JsonSerializabl
             throw new \InvalidArgumentException('non-nullable status cannot be null');
         }
         $this->container['status'] = $status;
+
+        return $this;
+    }
+
+    /**
+     * Gets queued_at
+     *
+     * @return \DateTime|null
+     */
+    public function getQueuedAt()
+    {
+        return $this->container['queued_at'];
+    }
+
+    /**
+     * Sets queued_at
+     *
+     * @param \DateTime|null $queued_at OPTIONAL. When the operation was published to its worker queue, on the server clock (card [`da4IzsTO`](https://trello.com/c/da4IzsTO)). Absent while the operation waits on an upstream one, and until the API records it; treat absence as \"not recorded\".
+     *
+     * @return self
+     */
+    public function setQueuedAt($queued_at)
+    {
+        if (is_null($queued_at)) {
+            throw new \InvalidArgumentException('non-nullable queued_at cannot be null');
+        }
+        $this->container['queued_at'] = $queued_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets started_at
+     *
+     * @return \DateTime|null
+     */
+    public function getStartedAt()
+    {
+        return $this->container['started_at'];
+    }
+
+    /**
+     * Sets started_at
+     *
+     * @param \DateTime|null $started_at OPTIONAL. When the operation's worker first reported processing, on the server clock. `started_at - queued_at` is queue wait. Absent until it starts, and until the API records it.
+     *
+     * @return self
+     */
+    public function setStartedAt($started_at)
+    {
+        if (is_null($started_at)) {
+            throw new \InvalidArgumentException('non-nullable started_at cannot be null');
+        }
+        $this->container['started_at'] = $started_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets completed_at
+     *
+     * @return \DateTime|null
+     */
+    public function getCompletedAt()
+    {
+        return $this->container['completed_at'];
+    }
+
+    /**
+     * Sets completed_at
+     *
+     * @param \DateTime|null $completed_at OPTIONAL. When the operation reached a terminal status, on the server clock. `completed_at - started_at` is the operation's execution span. Two operations of one workflow ran IN PARALLEL when their `[started_at, completed_at]` intervals overlap, which is how a dashboard proves a `[compress, thumbnail]` chain's steps ran side by side. Absent until terminal, and until the API records it. Contract-first: the API populates all three in a follow-up (`da4IzsTO`); the job-level `started_at` / `completed_at` are unchanged.
+     *
+     * @return self
+     */
+    public function setCompletedAt($completed_at)
+    {
+        if (is_null($completed_at)) {
+            throw new \InvalidArgumentException('non-nullable completed_at cannot be null');
+        }
+        $this->container['completed_at'] = $completed_at;
 
         return $this;
     }
