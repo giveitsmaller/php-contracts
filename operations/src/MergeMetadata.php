@@ -141,7 +141,7 @@ final class MergeMetadata
                             availability: 'stable',
                             constraints: new ProcessingClassConstraints(
                                 max_total_duration: 'PT24H',
-                                max_total_input_size_bytes: 5000000000,
+                                max_total_input_size_bytes: 5368709120,
                             ),
                         ),
                     ],

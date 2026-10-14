@@ -1,9 +1,9 @@
 {
     "name": "giveitsmaller/contracts",
-    "description": "Generated contract types for GISL (Give It Smaller). Generated from compression_contracts spec v2.233.0.",
-    "version": "0.94.0",
+    "description": "Generated contract types for GISL (Give It Smaller). Generated from compression_contracts spec v2.235.0.",
+    "version": "0.95.0",
     "extra": {
-        "gisl-contracts-spec": "v2.233.0"
+        "gisl-contracts-spec": "v2.235.0"
     },
     "type": "library",
     "license": "Apache-2.0",

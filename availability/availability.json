@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 262,
+  "capabilities_version": 267,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -527,8 +527,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -700,8 +700,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -906,8 +906,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -993,8 +993,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -2255,9 +2255,10 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
+              "long_form_size_floor_bytes": 268435456,
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
@@ -2756,6 +2757,16 @@
             },
             "output_format": {
               "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette, mov->H.264, mkv->H.264) \u2014 not caller-selectable.",
+              "per_value_availability": {
+                "gif": {
+                  "availability": "stable",
+                  "per_class_availability": {
+                    "long_form": {
+                      "availability": "planned"
+                    }
+                  }
+                }
+              },
               "per_value_constraints": {
                 "gif": {
                   "max_kept_duration": "PT10S"
@@ -2804,9 +2815,10 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
+              "long_form_size_floor_bytes": 268435456,
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
@@ -2916,8 +2928,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -3976,7 +3988,7 @@
               },
               "constraints": {
                 "max_total_duration": "PT24H",
-                "max_total_input_size_bytes": 5000000000
+                "max_total_input_size_bytes": 5368709120
               },
               "input_uniformity": {
                 "attributes": {
@@ -4399,8 +4411,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -5086,7 +5098,7 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -5243,8 +5255,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -5384,8 +5396,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -5519,8 +5531,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -5595,7 +5607,66 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.233.0",
+  "probe_wait": {
+    "bound": {
+      "key": "video.probe_wait_bound_seconds",
+      "source": "schemas/anonymous-policy.yaml"
+    },
+    "gates": [
+      {
+        "callers": "guest",
+        "decision": "owner decisions 638(a) / 648 (guest video gate)",
+        "id": "guest_video",
+        "job_ref": "own",
+        "media": "video",
+        "operation": "*",
+        "status": "live"
+      },
+      {
+        "callers": "all",
+        "decision": "owner decision 734",
+        "id": "video_to_gif_convert",
+        "job_ref": "own",
+        "media": "video",
+        "operation": "convert",
+        "output_format": [
+          "gif"
+        ],
+        "status": "live"
+      },
+      {
+        "callers": "all",
+        "decision": "hub ruling 2026-10-14, lambdas card 3iogIQYD (contracts #721); the API switch is gated on frontend POJjo3dV being on prod",
+        "id": "video_convert_any_output",
+        "job_ref": "own",
+        "media": "video",
+        "operation": "convert",
+        "status": "declared"
+      },
+      {
+        "callers": "all",
+        "decision": "owner decision 755; job_ref names the FEEDER job (api #880, decision 798). Scope: a video- output merge (a gif merge does not wait). It waits on the directly uploaded VIDEO inputs only: an all-image slideshow merge has nothing to wait for (images are never probed), and in a mixed merge (images plus at least one uploaded video clip) only the video input(s) are waited on, job_ref naming that video's feeder (api msg b9bad570)",
+        "id": "video_merge",
+        "job_ref": "feeder",
+        "media": "video",
+        "operation": "merge",
+        "output_type": [
+          "video"
+        ],
+        "status": "live"
+      },
+      {
+        "callers": "all",
+        "decision": "owner decision 774 (api 5CYwb4Fj)",
+        "id": "pdf_any_operation",
+        "job_ref": "own",
+        "media": "application/pdf",
+        "operation": "*",
+        "status": "live"
+      }
+    ]
+  },
+  "schema_version": "2.235.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

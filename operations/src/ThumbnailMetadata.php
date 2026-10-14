@@ -51,7 +51,7 @@ final class ThumbnailMetadata
                             availability: 'planned',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
-                                max_input_size_bytes: 5000000000,
+                                max_input_size_bytes: 5368709120,
                             ),
                         ),
                     ],

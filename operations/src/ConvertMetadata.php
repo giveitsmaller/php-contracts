@@ -109,15 +109,19 @@ final class ConvertMetadata
                             availability: 'planned',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
-                                max_input_size_bytes: 5000000000,
-                                max_output_size_bytes: 5000000000,
+                                max_input_size_bytes: 5368709120,
+                                max_output_size_bytes: 5368709120,
                             ),
                         ),
                     ],
                     per_mime_availability: [],
                     options: [
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'gif' => new AvailabilityEntry(
+                                    availability: 'stable',
+                                ),
+                            ],
                         ),
                         'crf' => new OptionMetadata(
                             per_value_availability: [],

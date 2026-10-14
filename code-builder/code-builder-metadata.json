@@ -473,8 +473,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -702,8 +702,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -963,8 +963,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -1078,8 +1078,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -3171,9 +3171,10 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
+              "long_form_size_floor_bytes": 268435456,
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
@@ -3506,6 +3507,17 @@
               "sdk_exposure": "expose",
               "surface_key": "width",
               "type": "integer"
+            }
+          },
+          "presets": {
+            "Balanced": {
+              "quality": 80
+            },
+            "Quality": {
+              "quality": 92
+            },
+            "Size": {
+              "quality": 65
             }
           }
         },
@@ -3863,6 +3875,16 @@
             "output_format": {
               "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette, mov->H.264, mkv->H.264) \u2014 not caller-selectable.",
               "origin": "contract",
+              "per_value_availability": {
+                "gif": {
+                  "availability": "stable",
+                  "per_class_availability": {
+                    "long_form": {
+                      "availability": "planned"
+                    }
+                  }
+                }
+              },
               "per_value_constraints": {
                 "gif": {
                   "max_kept_duration": "PT10S"
@@ -3920,6 +3942,17 @@
               "type": "integer"
             }
           },
+          "presets": {
+            "Balanced": {
+              "crf": 23
+            },
+            "Quality": {
+              "crf": 18
+            },
+            "Size": {
+              "crf": 30
+            }
+          },
           "processing_class": {
             "long_form": {
               "availability": "planned",
@@ -3931,9 +3964,10 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
+              "long_form_size_floor_bytes": 268435456,
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
@@ -4072,8 +4106,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -5512,7 +5546,7 @@
               },
               "constraints": {
                 "max_total_duration": "PT24H",
-                "max_total_input_size_bytes": 5000000000
+                "max_total_input_size_bytes": 5368709120
               },
               "input_uniformity": {
                 "attributes": {
@@ -6057,8 +6091,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -6654,6 +6688,20 @@
               "surface_key": "width",
               "type": "integer"
             }
+          },
+          "presets": {
+            "Balanced": {
+              "quality": 85,
+              "width": 320
+            },
+            "Quality": {
+              "quality": 92,
+              "width": 640
+            },
+            "Size": {
+              "quality": 70,
+              "width": 160
+            }
           }
         },
         "document_office": {
@@ -6770,6 +6818,20 @@
               "surface_key": "width",
               "type": "integer"
             }
+          },
+          "presets": {
+            "Balanced": {
+              "quality": 85,
+              "width": 320
+            },
+            "Quality": {
+              "quality": 92,
+              "width": 640
+            },
+            "Size": {
+              "quality": 70,
+              "width": 160
+            }
           }
         },
         "document_pdf": {
@@ -6878,6 +6940,20 @@
               "surface_key": "width",
               "type": "integer"
             }
+          },
+          "presets": {
+            "Balanced": {
+              "quality": 85,
+              "width": 320
+            },
+            "Quality": {
+              "quality": 92,
+              "width": 640
+            },
+            "Size": {
+              "quality": 70,
+              "width": 160
+            }
           }
         },
         "image": {
@@ -6982,6 +7058,20 @@
               "surface_key": "width",
               "type": "integer"
             }
+          },
+          "presets": {
+            "Balanced": {
+              "quality": 85,
+              "width": 320
+            },
+            "Quality": {
+              "quality": 92,
+              "width": 640
+            },
+            "Size": {
+              "quality": 70,
+              "width": 160
+            }
           }
         },
         "video": {
@@ -7072,6 +7162,20 @@
               "type": "integer"
             }
           },
+          "presets": {
+            "Balanced": {
+              "quality": 85,
+              "width": 320
+            },
+            "Quality": {
+              "quality": 92,
+              "width": 640
+            },
+            "Size": {
+              "quality": 70,
+              "width": 160
+            }
+          },
           "processing_class": {
             "long_form": {
               "availability": "planned",
@@ -7083,7 +7187,7 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -7317,8 +7421,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -7518,8 +7622,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -7692,8 +7796,8 @@
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
+                "max_input_size_bytes": 5368709120,
+                "max_output_size_bytes": 5368709120
               },
               "per_tier_constraints": {
                 "enterprise": {
@@ -7760,8 +7864,8 @@
       "sole_op": true
     }
   },
-  "preset_config_hash": "sha256:57b6960c90a61cf1c31bf0362456cfb9bc174b6f45d3b4b0e6496890cfcea223",
-  "schema_version": "2.233.0",
-  "sdk_spec_version": "2.17.0",
-  "source_hash": "sha256:60d0c95b062a589d61e197522d3dca868b8f34710ca317a26d1840fee79dc4ce"
+  "preset_config_hash": "sha256:605a1c44be4b67f9a50467897598b6d6b10bad16ad76c1572d13b5191a2c5a2d",
+  "schema_version": "2.235.0",
+  "sdk_spec_version": "2.18.0",
+  "source_hash": "sha256:5f5c2b4ac4269a9075ee56048883659df3c88da5956f53de8a1f488054f2fd63"
 }
