@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 267,
+  "capabilities_version": 271,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -32,7 +32,7 @@
     },
     "GET /api/billing/checkout/{sessionId}/status": {
       "auth": "required",
-      "availability": "beta",
+      "availability": "stable",
       "identity_scoped": true,
       "operation_id": "getCheckoutSessionStatus",
       "required_tier": null
@@ -231,7 +231,7 @@
     },
     "POST /api/billing/checkout": {
       "auth": "required",
-      "availability": "beta",
+      "availability": "stable",
       "identity_scoped": true,
       "operation_id": "createBillingCheckoutSession",
       "required_tier": null
@@ -4029,7 +4029,7 @@
                   "max_total_input_size_bytes": 120000000000
                 },
                 "max": {
-                  "max_total_input_size_bytes": 50000000000
+                  "max_total_input_size_bytes": 53687091200
                 }
               }
             },
@@ -5666,7 +5666,7 @@
       }
     ]
   },
-  "schema_version": "2.235.0",
+  "schema_version": "2.236.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
