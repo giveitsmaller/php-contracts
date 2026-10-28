@@ -29,8 +29,8 @@ final class AudioWatermarkMetadata
                             availability: 'planned',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
-                                max_input_size_bytes: 5368709120,
-                                max_output_size_bytes: 5368709120,
+                                max_input_size_bytes: 53687091200,
+                                max_output_size_bytes: 53687091200,
                             ),
                         ),
                     ],
@@ -70,8 +70,8 @@ final class AudioWatermarkMetadata
                             availability: 'planned',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',
-                                max_input_size_bytes: 5368709120,
-                                max_output_size_bytes: 5368709120,
+                                max_input_size_bytes: 53687091200,
+                                max_output_size_bytes: 53687091200,
                             ),
                         ),
                     ],

@@ -468,22 +468,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -697,22 +692,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -958,22 +948,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -1073,22 +1058,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -3166,23 +3146,18 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "long_form_size_floor_bytes": 268435456,
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -3959,23 +3934,18 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "long_form_size_floor_bytes": 268435456,
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -4101,22 +4071,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -5541,12 +5506,11 @@
               "ceiling_basis": {
                 "max_total_duration": "unproven",
                 "max_total_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_total_input_size_bytes": "unproven",
-                "per_tier.max.max_total_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_total_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_total_duration": "PT24H",
-                "max_total_input_size_bytes": 5368709120
+                "max_total_input_size_bytes": 53687091200
               },
               "input_uniformity": {
                 "attributes": {
@@ -5585,9 +5549,6 @@
               "per_tier_constraints": {
                 "enterprise": {
                   "max_total_input_size_bytes": 120000000000
-                },
-                "max": {
-                  "max_total_input_size_bytes": 53687091200
                 }
               }
             },
@@ -6086,22 +6047,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -7182,19 +7138,15 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200
                 }
               }
             },
@@ -7416,22 +7368,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -7617,22 +7564,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -7791,22 +7733,17 @@
               "ceiling_basis": {
                 "max_input_duration": "unproven",
                 "max_input_size_bytes": "unproven",
-                "per_tier.enterprise.max_input_size_bytes": "unproven",
-                "per_tier.max.max_input_size_bytes": "unproven"
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
               },
               "constraints": {
                 "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5368709120,
-                "max_output_size_bytes": 5368709120
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
               },
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 107374182400,
                   "max_output_size_bytes": 107374182400
-                },
-                "max": {
-                  "max_input_size_bytes": 53687091200,
-                  "max_output_size_bytes": 53687091200
                 }
               }
             },
@@ -7865,7 +7802,7 @@
     }
   },
   "preset_config_hash": "sha256:605a1c44be4b67f9a50467897598b6d6b10bad16ad76c1572d13b5191a2c5a2d",
-  "schema_version": "2.237.0",
-  "sdk_spec_version": "2.20.0",
-  "source_hash": "sha256:771e8d35364c890dd24c714114edd63fd536fce3f20013bcb0968b1c5770180c"
+  "schema_version": "2.238.0",
+  "sdk_spec_version": "2.23.0",
+  "source_hash": "sha256:8d36e40c82178bc1472890a60131fd4b31e7d8d822a136f5db0010d15e95aade"
 }
