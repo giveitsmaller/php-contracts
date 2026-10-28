@@ -355,8 +355,8 @@ class CreditQuoteLine implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['line_id'] === null) {
             $invalidProperties[] = "'line_id' can't be null";
         }
-        if (!preg_match("/^[A-Za-z][A-Za-z0-9_-]*_\/(0|[1-9][0-9]*)$/", $this->container['line_id'])) {
-            $invalidProperties[] = "invalid value for 'line_id', must be conform to the pattern /^[A-Za-z][A-Za-z0-9_-]*_\/(0|[1-9][0-9]*)$/.";
+        if (!preg_match("/^[A-Za-z][A-Za-z0-9_-]*\/(0|[1-9][0-9]*)$/", $this->container['line_id'])) {
+            $invalidProperties[] = "invalid value for 'line_id', must be conform to the pattern /^[A-Za-z][A-Za-z0-9_-]*\/(0|[1-9][0-9]*)$/.";
         }
 
         if ($this->container['job_ref'] === null) {
@@ -446,8 +446,8 @@ class CreditQuoteLine implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable line_id cannot be null');
         }
 
-        if ((!preg_match("/^[A-Za-z][A-Za-z0-9_-]*_\/(0|[1-9][0-9]*)$/", ObjectSerializer::toString($line_id)))) {
-            throw new \InvalidArgumentException("invalid value for \$line_id when calling CreditQuoteLine., must conform to the pattern /^[A-Za-z][A-Za-z0-9_-]*_\/(0|[1-9][0-9]*)$/.");
+        if ((!preg_match("/^[A-Za-z][A-Za-z0-9_-]*\/(0|[1-9][0-9]*)$/", ObjectSerializer::toString($line_id)))) {
+            throw new \InvalidArgumentException("invalid value for \$line_id when calling CreditQuoteLine., must conform to the pattern /^[A-Za-z][A-Za-z0-9_-]*\/(0|[1-9][0-9]*)$/.");
         }
 
         $this->container['line_id'] = $line_id;
