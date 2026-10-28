@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.236.0
+ * The version of the OpenAPI document: 2.237.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -77,7 +77,10 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         'state_changed_at' => '\DateTime',
         'operation_summary' => 'string',
         'operation_count' => 'int',
-        'primary_filename' => 'string'
+        'primary_filename' => 'string',
+        'quote_id' => 'string',
+        'quote_version' => 'int',
+        'line_ids' => 'string[]'
     ];
 
     /**
@@ -107,7 +110,10 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         'state_changed_at' => 'date-time',
         'operation_summary' => null,
         'operation_count' => null,
-        'primary_filename' => null
+        'primary_filename' => null,
+        'quote_id' => 'uuid',
+        'quote_version' => null,
+        'line_ids' => null
     ];
 
     /**
@@ -135,7 +141,10 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         'state_changed_at' => true,
         'operation_summary' => true,
         'operation_count' => true,
-        'primary_filename' => true
+        'primary_filename' => true,
+        'quote_id' => false,
+        'quote_version' => false,
+        'line_ids' => false
     ];
 
     /**
@@ -243,7 +252,10 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         'state_changed_at' => 'state_changed_at',
         'operation_summary' => 'operation_summary',
         'operation_count' => 'operation_count',
-        'primary_filename' => 'primary_filename'
+        'primary_filename' => 'primary_filename',
+        'quote_id' => 'quote_id',
+        'quote_version' => 'quote_version',
+        'line_ids' => 'line_ids'
     ];
 
     /**
@@ -271,7 +283,10 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         'state_changed_at' => 'setStateChangedAt',
         'operation_summary' => 'setOperationSummary',
         'operation_count' => 'setOperationCount',
-        'primary_filename' => 'setPrimaryFilename'
+        'primary_filename' => 'setPrimaryFilename',
+        'quote_id' => 'setQuoteId',
+        'quote_version' => 'setQuoteVersion',
+        'line_ids' => 'setLineIds'
     ];
 
     /**
@@ -299,7 +314,10 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         'state_changed_at' => 'getStateChangedAt',
         'operation_summary' => 'getOperationSummary',
         'operation_count' => 'getOperationCount',
-        'primary_filename' => 'getPrimaryFilename'
+        'primary_filename' => 'getPrimaryFilename',
+        'quote_id' => 'getQuoteId',
+        'quote_version' => 'getQuoteVersion',
+        'line_ids' => 'getLineIds'
     ];
 
     /**
@@ -379,6 +397,9 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         $this->setIfExists('operation_summary', $data ?? [], null);
         $this->setIfExists('operation_count', $data ?? [], null);
         $this->setIfExists('primary_filename', $data ?? [], null);
+        $this->setIfExists('quote_id', $data ?? [], null);
+        $this->setIfExists('quote_version', $data ?? [], null);
+        $this->setIfExists('line_ids', $data ?? [], null);
     }
 
     /**
@@ -475,6 +496,10 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         }
         if (!is_null($this->container['operation_count']) && ($this->container['operation_count'] < 0)) {
             $invalidProperties[] = "invalid value for 'operation_count', must be bigger than or equal to 0.";
+        }
+
+        if (!is_null($this->container['quote_version']) && ($this->container['quote_version'] < 1)) {
+            $invalidProperties[] = "invalid value for 'quote_version', must be bigger than or equal to 1.";
         }
 
         return $invalidProperties;
@@ -1107,6 +1132,92 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
             }
         }
         $this->container['primary_filename'] = $primary_filename;
+
+        return $this;
+    }
+
+    /**
+     * Gets quote_id
+     *
+     * @return string|null
+     */
+    public function getQuoteId()
+    {
+        return $this->container['quote_id'];
+    }
+
+    /**
+     * Sets quote_id
+     *
+     * @param string|null $quote_id OPTIONAL. The `CreditQuote.quote_id` of the workflow this row reserves or releases credits for. Carried only by rows whose `reference_type` is `workflow_reservation` or `workflow_reservation_release` for a workflow that HAS a quote (see `GET /api/workflows/{id}/quote`); absent on every other row, and on rows of workflows without a quote (legacy reservations and workflows under whole-workflow refund). Lets a consumer join a ledger row to the quote lines it moved.
+     *
+     * @return self
+     */
+    public function setQuoteId($quote_id)
+    {
+        if (is_null($quote_id)) {
+            throw new \InvalidArgumentException('non-nullable quote_id cannot be null');
+        }
+        $this->container['quote_id'] = $quote_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets quote_version
+     *
+     * @return int|null
+     */
+    public function getQuoteVersion()
+    {
+        return $this->container['quote_version'];
+    }
+
+    /**
+     * Sets quote_version
+     *
+     * @param int|null $quote_version OPTIONAL. The `CreditQuote.quote_version` that was CURRENT when this row was written. Present exactly when `quote_id` is.
+     *
+     * @return self
+     */
+    public function setQuoteVersion($quote_version)
+    {
+        if (is_null($quote_version)) {
+            throw new \InvalidArgumentException('non-nullable quote_version cannot be null');
+        }
+
+        if (($quote_version < 1)) {
+            throw new \InvalidArgumentException('invalid value for $quote_version when calling CreditTransaction., must be bigger than or equal to 1.');
+        }
+
+        $this->container['quote_version'] = $quote_version;
+
+        return $this;
+    }
+
+    /**
+     * Gets line_ids
+     *
+     * @return string[]|null
+     */
+    public function getLineIds()
+    {
+        return $this->container['line_ids'];
+    }
+
+    /**
+     * Sets line_ids
+     *
+     * @param string[]|null $line_ids OPTIONAL. The `CreditQuoteLine.line_id` values this row's amount belongs to. Present exactly when `quote_id` is.
+     *
+     * @return self
+     */
+    public function setLineIds($line_ids)
+    {
+        if (is_null($line_ids)) {
+            throw new \InvalidArgumentException('non-nullable line_ids cannot be null');
+        }
+        $this->container['line_ids'] = $line_ids;
 
         return $this;
     }

@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Free-text string fields: `x-string-vocabulary` (ticket [`Q79yjcFF`](https://trello.com/c/Q79yjcFF)).** A `type: string` field with no `enum` that names example values says, as data, what a client may do with them (the same marker is used in the AsyncAPI document): - `open` — a vocabulary that grows. Each published value keeps its   meaning, the SET is not closed: switch on the values you know and   handle an unknown one as the generic case (e.g. `ErrorEnvelope.error`). - `advisory` — explanatory text. Display or log it; **never switch on   it** (e.g. `SseWorkflowTerminalData.reason`). - `none` — not a vocabulary at all (an expression or an identifier,   e.g. `OptionSchema.pattern`). A field whose description hedges with \"common values\" or \"free-form\" must carry the marker; a test enforces it.  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.236.0
+ * The version of the OpenAPI document: 2.237.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -66,7 +66,10 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         'message_params' => 'array<string,mixed>',
         'details' => '\Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[]',
         'violations' => '\Gisl\Generated\OpenApi\Model\ProcessingClassBandViolation[]',
-        'job_ref' => 'string'
+        'job_ref' => 'string',
+        'operation_type' => '\Gisl\Generated\OpenApi\Model\OperationType',
+        'error_code' => 'string',
+        'expires_at' => '\DateTime'
     ];
 
     /**
@@ -86,7 +89,10 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         'message_params' => null,
         'details' => null,
         'violations' => null,
-        'job_ref' => null
+        'job_ref' => null,
+        'operation_type' => null,
+        'error_code' => null,
+        'expires_at' => 'date-time'
     ];
 
     /**
@@ -104,7 +110,10 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         'message_params' => false,
         'details' => false,
         'violations' => false,
-        'job_ref' => false
+        'job_ref' => false,
+        'operation_type' => false,
+        'error_code' => false,
+        'expires_at' => false
     ];
 
     /**
@@ -202,7 +211,10 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         'message_params' => 'message_params',
         'details' => 'details',
         'violations' => 'violations',
-        'job_ref' => 'job_ref'
+        'job_ref' => 'job_ref',
+        'operation_type' => 'operation_type',
+        'error_code' => 'error_code',
+        'expires_at' => 'expires_at'
     ];
 
     /**
@@ -220,7 +232,10 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         'message_params' => 'setMessageParams',
         'details' => 'setDetails',
         'violations' => 'setViolations',
-        'job_ref' => 'setJobRef'
+        'job_ref' => 'setJobRef',
+        'operation_type' => 'setOperationType',
+        'error_code' => 'setErrorCode',
+        'expires_at' => 'setExpiresAt'
     ];
 
     /**
@@ -238,7 +253,10 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         'message_params' => 'getMessageParams',
         'details' => 'getDetails',
         'violations' => 'getViolations',
-        'job_ref' => 'getJobRef'
+        'job_ref' => 'getJobRef',
+        'operation_type' => 'getOperationType',
+        'error_code' => 'getErrorCode',
+        'expires_at' => 'getExpiresAt'
     ];
 
     /**
@@ -282,7 +300,7 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         return self::$openAPIModelName;
     }
 
-    public const ERROR_TYPE_PROBE_PENDING = 'probe_pending';
+    public const ERROR_TYPE_KNOWN_BAD_INPUT = 'known_bad_input';
 
     /**
      * Gets allowable values of the enum
@@ -292,7 +310,7 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
     public function getErrorTypeAllowableValues()
     {
         return [
-            self::ERROR_TYPE_PROBE_PENDING,
+            self::ERROR_TYPE_KNOWN_BAD_INPUT,
         ];
     }
 
@@ -321,6 +339,9 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         $this->setIfExists('details', $data ?? [], null);
         $this->setIfExists('violations', $data ?? [], null);
         $this->setIfExists('job_ref', $data ?? [], null);
+        $this->setIfExists('operation_type', $data ?? [], null);
+        $this->setIfExists('error_code', $data ?? [], null);
+        $this->setIfExists('expires_at', $data ?? [], null);
 
         // Initialize discriminator property with the model name.
         $this->container['error_type'] ??= static::$openAPIModelName;
@@ -379,7 +400,7 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         // oneOf (HMvRivg8): the value must complete at least one branch -
         // all its required fields, and its fixed (discriminator) values.
         $matchesABranch = false;
-        foreach ([[['details', 'error', 'error_type', 'success'], ['error_type' => 'validation_error', 'success' => false]], [['error', 'error_type', 'success', 'violations'], ['error_type' => 'feature_not_available', 'success' => false]], [['error', 'error_type', 'success', 'violations'], ['error_type' => 'processing_class_exceeds_band', 'success' => false]], [['error', 'error_type', 'job_ref', 'success'], ['error_type' => 'probe_pending', 'success' => false]]] as [$branchRequired, $branchFixed]) {
+        foreach ([[['details', 'error', 'error_type', 'success'], ['error_type' => 'validation_error', 'success' => false]], [['error', 'error_type', 'success', 'violations'], ['error_type' => 'feature_not_available', 'success' => false]], [['error', 'error_type', 'success', 'violations'], ['error_type' => 'processing_class_exceeds_band', 'success' => false]], [['error', 'error_type', 'job_ref', 'success'], ['error_type' => 'probe_pending', 'success' => false]], [['error', 'error_code', 'error_type', 'expires_at', 'operation_type', 'success'], ['error_type' => 'known_bad_input', 'success' => false]]] as [$branchRequired, $branchFixed]) {
             if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
                 && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
                 $matchesABranch = true;
@@ -387,7 +408,7 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
             }
         }
         if (!$matchesABranch) {
-            $invalidProperties[] = "matches no oneOf branch: needs all of {details, error, error_type=validation_error, success=False} or {error, error_type=feature_not_available, success=False, violations} or {error, error_type=processing_class_exceeds_band, success=False, violations} or {error, error_type=probe_pending, job_ref, success=False}";
+            $invalidProperties[] = "matches no oneOf branch: needs all of {details, error, error_type=validation_error, success=False} or {error, error_type=feature_not_available, success=False, violations} or {error, error_type=processing_class_exceeds_band, success=False, violations} or {error, error_type=probe_pending, job_ref, success=False} or {error, error_code, error_type=known_bad_input, expires_at, operation_type, success=False}";
         }
 
         return $invalidProperties;
@@ -445,7 +466,7 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Sets error_type
      *
-     * @param string $error_type Discriminator for the 422 oneOf. Always `probe_pending`. The envelope's `error` is the machine code `PROBE_PENDING` (what an SDK surfaces as the error code and what a client branches on); `message` is prose and must not be keyed on.
+     * @param string $error_type Discriminator for the workflow-create 422 oneOf. Always `known_bad_input`.
      *
      * @return self
      */
@@ -686,6 +707,87 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
             throw new \InvalidArgumentException('non-nullable job_ref cannot be null');
         }
         $this->container['job_ref'] = $job_ref;
+
+        return $this;
+    }
+
+    /**
+     * Gets operation_type
+     *
+     * @return \Gisl\Generated\OpenApi\Model\OperationType
+     */
+    public function getOperationType()
+    {
+        return $this->container['operation_type'];
+    }
+
+    /**
+     * Sets operation_type
+     *
+     * @param \Gisl\Generated\OpenApi\Model\OperationType $operation_type operation_type
+     *
+     * @return self
+     */
+    public function setOperationType($operation_type)
+    {
+        if (is_null($operation_type)) {
+            throw new \InvalidArgumentException('non-nullable operation_type cannot be null');
+        }
+        $this->container['operation_type'] = $operation_type;
+
+        return $this;
+    }
+
+    /**
+     * Gets error_code
+     *
+     * @return string
+     */
+    public function getErrorCode()
+    {
+        return $this->container['error_code'];
+    }
+
+    /**
+     * Sets error_code
+     *
+     * @param string $error_code The `error_code` of the original deterministic failure (an `OperationResponse.error_code` value, e.g. `decode_failed`), so a client can show the same reason it showed then.
+     *
+     * @return self
+     */
+    public function setErrorCode($error_code)
+    {
+        if (is_null($error_code)) {
+            throw new \InvalidArgumentException('non-nullable error_code cannot be null');
+        }
+        $this->container['error_code'] = $error_code;
+
+        return $this;
+    }
+
+    /**
+     * Gets expires_at
+     *
+     * @return \DateTime
+     */
+    public function getExpiresAt()
+    {
+        return $this->container['expires_at'];
+    }
+
+    /**
+     * Sets expires_at
+     *
+     * @param \DateTime $expires_at When the block lapses; the same input may be submitted again from then.
+     *
+     * @return self
+     */
+    public function setExpiresAt($expires_at)
+    {
+        if (is_null($expires_at)) {
+            throw new \InvalidArgumentException('non-nullable expires_at cannot be null');
+        }
+        $this->container['expires_at'] = $expires_at;
 
         return $this;
     }

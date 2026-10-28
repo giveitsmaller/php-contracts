@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 271,
+  "capabilities_version": 273,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -116,6 +116,13 @@
           "url": "https://stream.staging.giveitsmaller.com"
         }
       ]
+    },
+    "GET /api/workflows/{id}/quote": {
+      "auth": "required",
+      "availability": "planned",
+      "identity_scoped": true,
+      "operation_id": "getWorkflowQuote",
+      "required_tier": null
     },
     "GET /api/workflows/{id}/status": {
       "auth": "optional",
@@ -5666,7 +5673,7 @@
       }
     ]
   },
-  "schema_version": "2.236.0",
+  "schema_version": "2.237.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
