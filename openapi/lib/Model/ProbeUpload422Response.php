@@ -351,6 +351,20 @@ class ProbeUpload422Response implements ModelInterface, ArrayAccess, \JsonSerial
             );
         }
 
+        // oneOf (HMvRivg8): the value must complete at least one branch -
+        // all its required fields, and its fixed (discriminator) values.
+        $matchesABranch = false;
+        foreach ([[['error', 'error_type', 'success'], ['error_type' => 'probe_not_ready', 'success' => false]], [['error', 'error_type', 'success'], ['error_type' => 'probe_not_applicable', 'success' => false]]] as [$branchRequired, $branchFixed]) {
+            if (array_filter($branchRequired, fn (string $key): bool => $this->container[$key] === null && !$this->isNullableSetToNull($key)) === []
+                && array_filter($branchFixed, fn ($value, string $key): bool => $this->container[$key] !== $value, ARRAY_FILTER_USE_BOTH) === []) {
+                $matchesABranch = true;
+                break;
+            }
+        }
+        if (!$matchesABranch) {
+            $invalidProperties[] = "matches no oneOf branch: needs all of {error, error_type=probe_not_ready, success=False} or {error, error_type=probe_not_applicable, success=False}";
+        }
+
         return $invalidProperties;
     }
 
