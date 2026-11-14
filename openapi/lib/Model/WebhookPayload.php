@@ -374,7 +374,7 @@ class WebhookPayload implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets delivery_id
      *
-     * @param string $delivery_id UUID v7 format identifier (time-ordered)
+     * @param string $delivery_id Unique identifier for this event. Stable across retry attempts — the same delivery_id is sent if the API retries a failed delivery. Consumers should use this for idempotency to avoid processing the same event twice.
      *
      * @return self
      */
