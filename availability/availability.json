@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 277,
+  "capabilities_version": 281,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -21,6 +21,13 @@
       "availability": "stable",
       "identity_scoped": true,
       "operation_id": "exportAccountData",
+      "required_tier": null
+    },
+    "GET /api/auth/api-keys": {
+      "auth": "required",
+      "availability": "experimental",
+      "identity_scoped": true,
+      "operation_id": "listApiKeys",
       "required_tier": null
     },
     "GET /api/auth/profile": {
@@ -1023,6 +1030,12 @@
       "input_model": "single",
       "mime_groups": {
         "audio": {
+          "ceiling_basis": {
+            "max_input_duration": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_duration": "PT1H36M36S",
+          "max_input_size_bytes": 319202167,
           "mimes": [
             "audio/mpeg",
             "audio/aac",
@@ -2281,6 +2294,12 @@
       "input_model": "single",
       "mime_groups": {
         "audio": {
+          "ceiling_basis": {
+            "max_input_duration": "unproven",
+            "max_input_size_bytes": "proven"
+          },
+          "max_input_duration": "PT1H36M36S",
+          "max_input_size_bytes": 1938571264,
           "mimes": [
             "audio/mpeg",
             "audio/aac",
@@ -2328,6 +2347,10 @@
           }
         },
         "document_pdf": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 2114732032,
           "mimes": [
             "application/pdf"
           ],
@@ -2356,6 +2379,12 @@
           }
         },
         "image": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 2148286464,
           "max_output_pixels": 16000000,
           "mimes": [
             "image/jpeg",
@@ -2482,6 +2511,12 @@
           }
         },
         "image_gif": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 1623998464,
           "max_output_pixels": 16000000,
           "mimes": [
             "image/gif"
@@ -2630,6 +2665,10 @@
           }
         },
         "image_svg": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 2148286464,
           "mimes": [
             "image/svg+xml"
           ],
@@ -2962,6 +3001,12 @@
       "max_inputs": 9,
       "mime_groups": {
         "image": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 840187392,
           "mimes": [
             "image/jpeg",
             "image/png",
@@ -3062,6 +3107,12 @@
           }
         },
         "image_bmp": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 840187392,
           "mimes": [
             "image/bmp"
           ],
@@ -3157,6 +3208,12 @@
           }
         },
         "image_tiff": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 840187392,
           "mimes": [
             "image/tiff"
           ],
@@ -3309,6 +3366,10 @@
           }
         },
         "image": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 20971520,
           "mimes": [
             "image/jpeg",
             "image/png",
@@ -4286,6 +4347,12 @@
           }
         },
         "image_gif": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 2147483648,
           "mimes": [
             "image/gif"
           ],
@@ -4418,6 +4485,12 @@
       "input_model": "single",
       "mime_groups": {
         "image": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 1680374784,
           "mimes": [
             "image/jpeg",
             "image/png",
@@ -4513,6 +4586,12 @@
           }
         },
         "image_bmp": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 1680374784,
           "mimes": [
             "image/bmp"
           ],
@@ -4606,6 +4685,12 @@
           }
         },
         "image_tiff": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 1680374784,
           "mimes": [
             "image/tiff"
           ],
@@ -4852,7 +4937,10 @@
           }
         },
         "document_pdf": {
-          "input_size_bound": "processing_time",
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 484442112,
           "max_output_pixels": 16000000,
           "mimes": [
             "application/pdf"
@@ -5614,6 +5702,33 @@
         "media": "application/pdf",
         "operation": "*",
         "status": "live"
+      },
+      {
+        "callers": "all",
+        "decision": "api card 1y9SkeYY (contracts card xgLtUf10, hub decision 709 step D). The audio compress duration ceiling (compress.audio max_input_duration, #759) is judged at create from the probed duration, so an unprobed upload must be waited on; the API switch is NOT on yet",
+        "id": "audio_compress",
+        "job_ref": "own",
+        "media": "audio",
+        "operation": "compress",
+        "status": "declared"
+      },
+      {
+        "callers": "all",
+        "decision": "api card 1y9SkeYY (contracts card xgLtUf10, hub decision 709 step D). The audio convert duration ceiling (convert.audio max_input_duration, #759) is judged at create from the probed duration, so an unprobed upload must be waited on; the API switch is NOT on yet",
+        "id": "audio_convert",
+        "job_ref": "own",
+        "media": "audio",
+        "operation": "convert",
+        "status": "declared"
+      },
+      {
+        "callers": "all",
+        "decision": "director decision D287 (contracts card yu4t3yGg, api card yUoszzMk): the legacy API gate PROBE_PENDING_GATE_ENABLED, for a job whose ONLY operation is compress of its own video upload, so the create reserves the probed duration instead of the class ceiling (schemas/pricing-policy.yaml duration_pricing.unknown_duration_at_create; a caller who cannot afford that reserve is refused error.duration_unknown). ON on staging only (terraform card FVPyVwpI). ON on prod only when terraform's prod follow-up applies, which director decision D293 gates on api's 62-minute / 300-credit check passing on staging, this listing being merged, and the operator's GO. Until that apply a client MUST NOT expect probe_pending for it on prod; pre-waiting is harmless",
+        "id": "legacy_single_op_video_compress",
+        "job_ref": "own",
+        "media": "video",
+        "operation": "compress",
+        "status": "declared"
       }
     ]
   },
@@ -5628,7 +5743,7 @@
       "availability": "planned"
     }
   },
-  "schema_version": "2.239.0",
+  "schema_version": "2.244.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

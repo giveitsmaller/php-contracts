@@ -1106,6 +1106,12 @@
       "input_model": "single",
       "media_groups": {
         "audio": {
+          "ceiling_basis": {
+            "max_input_duration": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_duration": "PT1H36M36S",
+          "max_input_size_bytes": 319202167,
           "media_group": "audio",
           "mimes": [
             "audio/mpeg",
@@ -3195,6 +3201,12 @@
       "input_model": "single",
       "media_groups": {
         "audio": {
+          "ceiling_basis": {
+            "max_input_duration": "unproven",
+            "max_input_size_bytes": "proven"
+          },
+          "max_input_duration": "PT1H36M36S",
+          "max_input_size_bytes": 1938571264,
           "media_group": "audio",
           "mimes": [
             "audio/mpeg",
@@ -3266,6 +3278,10 @@
           }
         },
         "document_pdf": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 2114732032,
           "media_group": "document",
           "mimes": [
             "application/pdf"
@@ -3309,6 +3325,12 @@
           }
         },
         "image": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 2148286464,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -3497,6 +3519,12 @@
           }
         },
         "image_gif": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 1623998464,
           "max_output_pixels": 16000000,
           "media_group": "image",
           "mimes": [
@@ -3691,6 +3719,10 @@
           }
         },
         "image_svg": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 2148286464,
           "media_group": "image",
           "mimes": [
             "image/svg+xml"
@@ -4128,6 +4160,12 @@
       "input_model": "multi",
       "media_groups": {
         "image": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 840187392,
           "media_group": "image",
           "mimes": [
             "image/jpeg",
@@ -4258,6 +4296,12 @@
           }
         },
         "image_bmp": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 840187392,
           "media_group": "image",
           "mimes": [
             "image/bmp"
@@ -4407,6 +4451,12 @@
           }
         },
         "image_tiff": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 840187392,
           "media_group": "image",
           "mimes": [
             "image/tiff"
@@ -4629,6 +4679,10 @@
           }
         },
         "image": {
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 20971520,
           "media_group": "image",
           "mimes": [
             "image/jpeg",
@@ -5914,6 +5968,12 @@
           }
         },
         "image_gif": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 2147483648,
           "media_group": "image",
           "mimes": [
             "image/gif"
@@ -6092,6 +6152,12 @@
       "input_model": "single",
       "media_groups": {
         "image": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 1680374784,
           "media_group": "image",
           "mimes": [
             "image/jpeg",
@@ -6240,6 +6306,12 @@
           }
         },
         "image_bmp": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 1680374784,
           "media_group": "image",
           "mimes": [
             "image/bmp"
@@ -6386,6 +6458,12 @@
           }
         },
         "image_tiff": {
+          "ceiling_basis": {
+            "max_input_pixels": "unproven",
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_pixels": 100000000,
+          "max_input_size_bytes": 1680374784,
           "media_group": "image",
           "mimes": [
             "image/tiff"
@@ -6791,7 +6869,10 @@
           }
         },
         "document_pdf": {
-          "input_size_bound": "processing_time",
+          "ceiling_basis": {
+            "max_input_size_bytes": "unproven"
+          },
+          "max_input_size_bytes": 484442112,
           "max_output_pixels": 16000000,
           "media_group": "document",
           "mimes": [
@@ -7802,7 +7883,7 @@
     }
   },
   "preset_config_hash": "sha256:605a1c44be4b67f9a50467897598b6d6b10bad16ad76c1572d13b5191a2c5a2d",
-  "schema_version": "2.239.0",
-  "sdk_spec_version": "2.23.0",
-  "source_hash": "sha256:240c9a0bf192af930b86cd9190eaf1ada8f98f3ce1924cbd09f5f7146472200a"
+  "schema_version": "2.244.0",
+  "sdk_spec_version": "2.25.0",
+  "source_hash": "sha256:c986a70a3a3c40d1568e4c4af1cb6ab68fe32e1f8407f6ed3eb913e79c28a15c"
 }
