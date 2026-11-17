@@ -246,6 +246,12 @@ final class MergeMetadata
                         ),
                         'codec' => new OptionMetadata(
                             per_value_availability: [
+                                'h265' => new AvailabilityEntry(
+                                    availability: 'stable',
+                                ),
+                                'vp9' => new AvailabilityEntry(
+                                    availability: 'stable',
+                                ),
                                 'av1' => new AvailabilityEntry(
                                     availability: 'beta',
                                 ),
@@ -373,6 +379,10 @@ final class MergeMetadata
                     per_mime_availability: [],
                     options: [
                         'output_type' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'audio_format' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'transition' => new OptionMetadata(

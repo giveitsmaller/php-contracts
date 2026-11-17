@@ -1124,7 +1124,7 @@
           "options": {
             "bitrate": {
               "default": 128,
-              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels, sample_rate, normalize, trim) apply only with `output_format` absent or `original`: with any explicit `output_format` they are refused with `feature_not_available` (constraint compress.audio.format_facade.knob).\n",
+              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. A caller-EXPLICIT bitrate on a lossless output is rejected as invalid_options; the `default: 128` is never the basis for that rejection. The output is the input format unless `output_format` re-targets it, so a lossy output keeps bitrate. Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels, sample_rate, normalize, trim) apply only with `output_format` absent or `original`: with any explicit `output_format` they are refused with `feature_not_available` (constraint compress.audio.format_facade.knob).\n",
               "enum_ref": "AudioBitrate",
               "enum_translations": {
                 "128": "_128",
@@ -2969,7 +2969,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. max = fit within bounds (preserves ratio), crop/scale/pad = exact dimensions. Only applies when width or height is set.",
+              "description": "Resize mode. max = fit within bounds (preserves ratio), crop/scale/pad = exact dimensions and need both width and height. max needs at least one of width or height.",
               "enum_ref": "VideoFit",
               "enum_translations": {
                 "crop": "Crop",
@@ -2978,6 +2978,20 @@
                 "scale": "Scale"
               },
               "origin": "contract",
+              "per_value_depends_on": {
+                "crop": {
+                  "height": "set",
+                  "width": "set"
+                },
+                "pad": {
+                  "height": "set",
+                  "width": "set"
+                },
+                "scale": {
+                  "height": "set",
+                  "width": "set"
+                }
+              },
               "sdk_exposure": "expose",
               "surface_key": "fit",
               "type": "enum",
@@ -4560,6 +4574,35 @@
             "audio/flac"
           ],
           "options": {
+            "audio_format": {
+              "availability": "planned",
+              "depends_on": {
+                "output_type": "audio"
+              },
+              "description": "Output format of the merged audio file. Not yet available: a request that sets it is refused until it ships. When every input has the same format, the merged file keeps that format. When the inputs differ, choose the format here; if you do not, the first input's format is used. Default by input type: audio/mpeg -> mp3, audio/aac -> aac, audio/ogg -> ogg (Ogg Vorbis), audio/flac -> flac, audio/wav -> wav. m4a is AAC in an MP4 container. Converting lossy inputs to FLAC or WAV keeps every sample, so the file is much larger without restoring any quality. WAV is uncompressed, so its length is limited by size: about 45 minutes at 48 kHz stereo 16-bit, longer for mono or lower sample rates, shorter for more channels or higher rates. Past that the job fails.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "audioFormat",
+              "type": "enum",
+              "value_exposure": {
+                "aac": "coming_soon",
+                "flac": "coming_soon",
+                "m4a": "coming_soon",
+                "mp3": "coming_soon",
+                "ogg": "coming_soon",
+                "opus": "coming_soon",
+                "wav": "coming_soon"
+              },
+              "values": [
+                "mp3",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wav",
+                "m4a"
+              ]
+            },
             "crossfade_duration": {
               "default": 0,
               "depends_on": {
@@ -4592,7 +4635,7 @@
               "type": "boolean"
             },
             "output_type": {
-              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio': the merged file is always AAC audio in an MP4 container (.m4a, audio/mp4), whatever the input formats. Optional \u2014 API injects this default post-validation so callers may omit it.",
+              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio': until `audio_format` is available, the merged file is always AAC audio in an MP4 container (.m4a, audio/mp4), whatever the input formats. Optional \u2014 API injects this default post-validation so callers may omit it.",
               "origin": "contract",
               "positional": 0,
               "required": false,
@@ -4986,7 +5029,28 @@
               "origin": "contract",
               "per_value_availability": {
                 "av1": {
-                  "availability": "beta"
+                  "availability": "beta",
+                  "per_class_availability": {
+                    "long_form_re_encode": {
+                      "availability": "planned"
+                    }
+                  }
+                },
+                "h265": {
+                  "availability": "stable",
+                  "per_class_availability": {
+                    "long_form_re_encode": {
+                      "availability": "planned"
+                    }
+                  }
+                },
+                "vp9": {
+                  "availability": "stable",
+                  "per_class_availability": {
+                    "long_form_re_encode": {
+                      "availability": "planned"
+                    }
+                  }
                 }
               },
               "sdk_exposure": "expose",
@@ -5171,6 +5235,11 @@
               "description": "Output dimensions WxH (e.g. \"1920x1080\"). Omit to inherit from inputs.",
               "origin": "contract",
               "pattern": "^\\d+x\\d+$",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "sdk_exposure": "expose",
               "surface_key": "targetResolution",
               "type": "string"
@@ -5194,6 +5263,11 @@
               "default": "none",
               "description": "Default transition between clips. Some effects are still\nrolling out \u2014 check their availability.\n",
               "origin": "contract",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "per_value_availability": {
                 "circleclose": {
                   "availability": "beta"
@@ -5374,6 +5448,11 @@
             "transition": {
               "description": "Override transition for the join point preceding this input.",
               "origin": "contract",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "per_value_availability": {
                 "circleclose": {
                   "availability": "beta"
@@ -5541,6 +5620,11 @@
               "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\n",
               "min": 0,
               "origin": "contract",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "sdk_exposure": "expose",
               "surface_key": "trimEnd",
               "type": "float"
@@ -5549,6 +5633,11 @@
               "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\n",
               "min": 0,
               "origin": "contract",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "sdk_exposure": "expose",
               "surface_key": "trimStart",
               "type": "float"
@@ -7883,7 +7972,7 @@
     }
   },
   "preset_config_hash": "sha256:605a1c44be4b67f9a50467897598b6d6b10bad16ad76c1572d13b5191a2c5a2d",
-  "schema_version": "2.244.0",
+  "schema_version": "2.246.0",
   "sdk_spec_version": "2.25.0",
-  "source_hash": "sha256:c986a70a3a3c40d1568e4c4af1cb6ab68fe32e1f8407f6ed3eb913e79c28a15c"
+  "source_hash": "sha256:b176f3ef631697e0835cfb4fa57c54a02e7454dae7cf84e9249a0790f660e83e"
 }

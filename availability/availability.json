@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 281,
+  "capabilities_version": 285,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -1047,7 +1047,7 @@
           "options": {
             "bitrate": {
               "default": 128,
-              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels, sample_rate, normalize, trim) apply only with `output_format` absent or `original`: with any explicit `output_format` they are refused with `feature_not_available` (constraint compress.audio.format_facade.knob).\n",
+              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. A caller-EXPLICIT bitrate on a lossless output is rejected as invalid_options; the `default: 128` is never the basis for that rejection. The output is the input format unless `output_format` re-targets it, so a lossy output keeps bitrate. Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels, sample_rate, normalize, trim) apply only with `output_format` absent or `original`: with any explicit `output_format` they are refused with `feature_not_available` (constraint compress.audio.format_facade.knob).\n",
               "type": "enum",
               "value_type": "integer",
               "values": [
@@ -2160,7 +2160,21 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. max = fit within bounds (preserves ratio), crop/scale/pad = exact dimensions. Only applies when width or height is set.",
+              "description": "Resize mode. max = fit within bounds (preserves ratio), crop/scale/pad = exact dimensions and need both width and height. max needs at least one of width or height.",
+              "per_value_depends_on": {
+                "crop": {
+                  "height": "set",
+                  "width": "set"
+                },
+                "pad": {
+                  "height": "set",
+                  "width": "set"
+                },
+                "scale": {
+                  "height": "set",
+                  "width": "set"
+                }
+              },
               "type": "enum",
               "values": [
                 "max",
@@ -2990,7 +3004,7 @@
     },
     "image_watermark": {
       "default": false,
-      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until backend\nsupport ships.\n\nTIFF (image/tiff) and BMP (image/bmp) bases are now `stable` too\n(flipped planned->stable 2026-06-30 on the lambdas staging proof,\nUANjD38A / #296) via the parallel `image_tiff` / `image_bmp`\nmime_groups. Because watermark output mirrors the input format\n(`produces: same_as_input`), advertising a base format is only honest\nwhen the worker can both decode AND encode it \u2014 which holds for\nTIFF/BMP but not for HEIC/AVIF (no encoder) or SVG (cannot re-emit svg\nfrom a rasterised composite); those stay out of scope.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`), which overlays and\nre-encodes the video.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 100 megapixels for image bases; per-frame caps for\nanimated GIF bases will be defined when the corresponding backend\nsupport ships.\n",
+      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until backend\nsupport ships.\n\nTIFF (image/tiff) and BMP (image/bmp) bases are now `stable` too\n(flipped planned->stable 2026-06-30 on the lambdas staging proof,\nUANjD38A / #296) via the parallel `image_tiff` / `image_bmp`\nmime_groups. Because watermark output mirrors the input format\n(`produces: same_as_input`), advertising a base format is only honest\nwhen the worker can both decode AND encode it \u2014 which holds for\nTIFF/BMP but not for HEIC/AVIF (no encoder) or SVG (cannot re-emit svg\nfrom a rasterised composite); those stay out of scope.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`), which overlays and\nre-encodes the video.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 100 megapixels for image bases (and for each\noverlay); per-frame caps for animated GIF bases will be defined when\nthe corresponding backend support ships. 100 MP is the 8-bit RGBA\nvalue: a deeper image reaches the worker's memory limit first and is\nrefused with `input_too_large` (not retryable) below 100 MP. A TIFF\nbase that is uncompressed, single-strip and 16-bit RGBA is served up\nto ~74.8 MP (multi-strip, tiled or compressed TIFFs reach higher).\nOn any other base, and on every overlay, a 16-bit RGBA image is\nrefused above ~50 MP, and an uncompressed single-strip TIFF overlay\nsooner (near 33 MP at 8-bit RGBA).\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "stable",
@@ -3289,6 +3303,23 @@
             "audio/flac"
           ],
           "options": {
+            "audio_format": {
+              "availability": "planned",
+              "depends_on": {
+                "output_type": "audio"
+              },
+              "description": "Output format of the merged audio file. Not yet available: a request that sets it is refused until it ships. When every input has the same format, the merged file keeps that format. When the inputs differ, choose the format here; if you do not, the first input's format is used. Default by input type: audio/mpeg -> mp3, audio/aac -> aac, audio/ogg -> ogg (Ogg Vorbis), audio/flac -> flac, audio/wav -> wav. m4a is AAC in an MP4 container. Converting lossy inputs to FLAC or WAV keeps every sample, so the file is much larger without restoring any quality. WAV is uncompressed, so its length is limited by size: about 45 minutes at 48 kHz stereo 16-bit, longer for mono or lower sample rates, shorter for more channels or higher rates. Past that the job fails.",
+              "type": "enum",
+              "values": [
+                "mp3",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wav",
+                "m4a"
+              ]
+            },
             "crossfade_duration": {
               "default": 0,
               "depends_on": {
@@ -3312,7 +3343,7 @@
               "type": "boolean"
             },
             "output_type": {
-              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio': the merged file is always AAC audio in an MP4 container (.m4a, audio/mp4), whatever the input formats. Optional \u2014 API injects this default post-validation so callers may omit it.",
+              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio': until `audio_format` is available, the merged file is always AAC audio in an MP4 container (.m4a, audio/mp4), whatever the input formats. Optional \u2014 API injects this default post-validation so callers may omit it.",
               "required": false,
               "type": "enum",
               "values": [
@@ -3599,7 +3630,28 @@
               "description": "Output codec when merge re-encodes. Inert when stream-copy\nconcat is selected (re_encode_mode=auto + compatible inputs).\n",
               "per_value_availability": {
                 "av1": {
-                  "availability": "beta"
+                  "availability": "beta",
+                  "per_class_availability": {
+                    "long_form_re_encode": {
+                      "availability": "planned"
+                    }
+                  }
+                },
+                "h265": {
+                  "availability": "stable",
+                  "per_class_availability": {
+                    "long_form_re_encode": {
+                      "availability": "planned"
+                    }
+                  }
+                },
+                "vp9": {
+                  "availability": "stable",
+                  "per_class_availability": {
+                    "long_form_re_encode": {
+                      "availability": "planned"
+                    }
+                  }
                 }
               },
               "type": "enum",
@@ -3730,6 +3782,11 @@
               },
               "description": "Output dimensions WxH (e.g. \"1920x1080\"). Omit to inherit from inputs.",
               "pattern": "^\\d+x\\d+$",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "type": "string"
             },
             "target_size_bytes": {
@@ -3747,6 +3804,11 @@
             "transition": {
               "default": "none",
               "description": "Default transition between clips. Some effects are still\nrolling out \u2014 check their availability.\n",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "per_value_availability": {
                 "circleclose": {
                   "availability": "beta"
@@ -3883,6 +3945,11 @@
             },
             "transition": {
               "description": "Override transition for the join point preceding this input.",
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "per_value_availability": {
                 "circleclose": {
                   "availability": "beta"
@@ -4009,11 +4076,21 @@
             "trim_end": {
               "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\n",
               "min": 0,
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "type": "float"
             },
             "trim_start": {
               "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\n",
               "min": 0,
+              "per_class_availability": {
+                "long_form_re_encode": {
+                  "availability": "planned"
+                }
+              },
               "type": "float"
             }
           },
@@ -4481,7 +4558,7 @@
     },
     "text_watermark": {
       "default": false,
-      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 100 megapixels in `single` mode. `tiled`\nmode keeps the 25-megapixel canvas bound (see `tile_spacing` /\n`watermark_mode`).\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n\nStable today for image/jpeg, image/png, image/webp inputs. TIFF\n(image/tiff) and BMP (image/bmp) inputs are now `stable` too (flipped\nplanned->stable 2026-06-30 on the lambdas staging proof, UANjD38A /\n#296) via the parallel `image_tiff` / `image_bmp` mime_groups. Output\nmirrors the input format (`produces: same_as_input`), so a format is\nonly advertised when the worker can both decode AND encode it;\nHEIC/AVIF (no encoder) and SVG (cannot re-emit svg from a rasterised\ncomposite) stay out of scope.\n",
+      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 100 megapixels in `single` mode. `tiled`\nmode keeps the 25-megapixel canvas bound (see `tile_spacing` /\n`watermark_mode`). 100 MP is the 8-bit RGBA value: a deeper image\nreaches the worker's memory limit first and is refused with\n`input_too_large` (not retryable) below 100 MP. An uncompressed\nsingle-strip 16-bit RGBA TIFF is served up to ~74.8 MP (multi-strip,\ntiled or compressed TIFFs reach higher); a 16-bit RGBA image in any\nother format is refused above ~50 MP.\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n\nStable today for image/jpeg, image/png, image/webp inputs. TIFF\n(image/tiff) and BMP (image/bmp) inputs are now `stable` too (flipped\nplanned->stable 2026-06-30 on the lambdas staging proof, UANjD38A /\n#296) via the parallel `image_tiff` / `image_bmp` mime_groups. Output\nmirrors the input format (`produces: same_as_input`), so a format is\nonly advertised when the worker can both decode AND encode it;\nHEIC/AVIF (no encoder) and SVG (cannot re-emit svg from a rasterised\ncomposite) stay out of scope.\n",
       "input_model": "single",
       "mime_groups": {
         "image": {
@@ -5725,6 +5802,7 @@
         "callers": "all",
         "decision": "director decision D287 (contracts card yu4t3yGg, api card yUoszzMk): the legacy API gate PROBE_PENDING_GATE_ENABLED, for a job whose ONLY operation is compress of its own video upload, so the create reserves the probed duration instead of the class ceiling (schemas/pricing-policy.yaml duration_pricing.unknown_duration_at_create; a caller who cannot afford that reserve is refused error.duration_unknown). ON on staging only (terraform card FVPyVwpI). ON on prod only when terraform's prod follow-up applies, which director decision D293 gates on api's 62-minute / 300-credit check passing on staging, this listing being merged, and the operator's GO. Until that apply a client MUST NOT expect probe_pending for it on prod; pre-waiting is harmless",
         "id": "legacy_single_op_video_compress",
+        "job_operation_count": "single",
         "job_ref": "own",
         "media": "video",
         "operation": "compress",
@@ -5743,7 +5821,7 @@
       "availability": "planned"
     }
   },
-  "schema_version": "2.244.0",
+  "schema_version": "2.246.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

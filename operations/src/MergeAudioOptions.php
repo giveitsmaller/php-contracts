@@ -13,6 +13,7 @@ final class MergeAudioOptions
         public readonly float $gap_duration = 0,
         public readonly bool $normalize_audio = true,
         public readonly ?MergeAudioOutputType $output_type = null,
+        public readonly ?MergeAudioAudioFormat $audio_format = null,
         public readonly ?float $crossfade_duration = null,
     ) {}
 }

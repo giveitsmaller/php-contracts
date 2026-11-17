@@ -107,7 +107,6 @@
             "trim_start"
           ],
           "flac": [
-            "bitrate",
             "channels",
             "normalize",
             "output_format",
@@ -152,7 +151,6 @@
             "trim_start"
           ],
           "wav": [
-            "bitrate",
             "channels",
             "normalize",
             "output_format",
@@ -900,6 +898,7 @@
       "audio": {
         "accepted_options": {
           "*": [
+            "audio_format",
             "crossfade_duration",
             "gap_duration",
             "normalize_audio",
@@ -1223,5 +1222,5 @@
       }
     }
   },
-  "schema_version": "2.244.0"
+  "schema_version": "2.246.0"
 }

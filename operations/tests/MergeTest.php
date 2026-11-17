@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace Gisl\Generated\Operations\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Gisl\Generated\Operations\MergeAudioAudioFormat;
 use Gisl\Generated\Operations\MergeAudioOptions;
 use Gisl\Generated\Operations\MergeAudioOutputType;
 use Gisl\Generated\Operations\MergeAudioPerInputOptions;
@@ -834,6 +835,60 @@ final class MergeTest extends TestCase
         $this->assertCount(1, MergeAudioOutputType::cases());
     }
 
+    public function testMergeAudioAudioFormatMp3BackingValue(): void
+    {
+        $enum = MergeAudioAudioFormat::from('mp3');
+        $this->assertSame(MergeAudioAudioFormat::Mp3, $enum);
+        $this->assertSame('mp3', $enum->value);
+    }
+
+    public function testMergeAudioAudioFormatAacBackingValue(): void
+    {
+        $enum = MergeAudioAudioFormat::from('aac');
+        $this->assertSame(MergeAudioAudioFormat::Aac, $enum);
+        $this->assertSame('aac', $enum->value);
+    }
+
+    public function testMergeAudioAudioFormatOggBackingValue(): void
+    {
+        $enum = MergeAudioAudioFormat::from('ogg');
+        $this->assertSame(MergeAudioAudioFormat::Ogg, $enum);
+        $this->assertSame('ogg', $enum->value);
+    }
+
+    public function testMergeAudioAudioFormatOpusBackingValue(): void
+    {
+        $enum = MergeAudioAudioFormat::from('opus');
+        $this->assertSame(MergeAudioAudioFormat::Opus, $enum);
+        $this->assertSame('opus', $enum->value);
+    }
+
+    public function testMergeAudioAudioFormatFlacBackingValue(): void
+    {
+        $enum = MergeAudioAudioFormat::from('flac');
+        $this->assertSame(MergeAudioAudioFormat::Flac, $enum);
+        $this->assertSame('flac', $enum->value);
+    }
+
+    public function testMergeAudioAudioFormatWavBackingValue(): void
+    {
+        $enum = MergeAudioAudioFormat::from('wav');
+        $this->assertSame(MergeAudioAudioFormat::Wav, $enum);
+        $this->assertSame('wav', $enum->value);
+    }
+
+    public function testMergeAudioAudioFormatM4aBackingValue(): void
+    {
+        $enum = MergeAudioAudioFormat::from('m4a');
+        $this->assertSame(MergeAudioAudioFormat::M4a, $enum);
+        $this->assertSame('m4a', $enum->value);
+    }
+
+    public function testMergeAudioAudioFormatCaseCount(): void
+    {
+        $this->assertCount(7, MergeAudioAudioFormat::cases());
+    }
+
     public function testMergeAudioTransitionNoneBackingValue(): void
     {
         $enum = MergeAudioTransition::from('none');
@@ -861,6 +916,7 @@ final class MergeTest extends TestCase
         $this->assertSame(0.0, $obj->gap_duration);
         $this->assertSame(true, $obj->normalize_audio);
         $this->assertNull($obj->output_type);
+        $this->assertNull($obj->audio_format);
         $this->assertNull($obj->crossfade_duration);
     }
 
@@ -868,6 +924,7 @@ final class MergeTest extends TestCase
     {
         $obj = new MergeAudioOptions(
             output_type: MergeAudioOutputType::Audio,
+            audio_format: MergeAudioAudioFormat::Mp3,
             transition: MergeAudioTransition::None,
             crossfade_duration: 0.0,
             gap_duration: 0.0,

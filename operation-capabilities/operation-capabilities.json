@@ -467,6 +467,60 @@
             ]
           },
           "wire_code": "invalid_options"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.audio.bitrate.lossless_output",
+          "message": "bitrate applies to lossy outputs only; a flac or wav output takes no bitrate. Omit bitrate, or choose a lossy output_format.",
+          "when": {
+            "all": [
+              {
+                "equals": "audio",
+                "field": "input_mime_group"
+              },
+              {
+                "field": "compress.bitrate",
+                "isSet": true
+              },
+              {
+                "any": [
+                  {
+                    "field": "output_format",
+                    "in": [
+                      "flac",
+                      "wav"
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "any": [
+                          {
+                            "not": {
+                              "field": "output_format",
+                              "isSet": true
+                            }
+                          },
+                          {
+                            "equals": "original",
+                            "field": "output_format"
+                          }
+                        ]
+                      },
+                      {
+                        "field": "input_mime",
+                        "in": [
+                          "audio/flac",
+                          "audio/wav"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
         }
       ],
       "produces": {
@@ -976,5 +1030,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.244.0"
+  "schema_version": "2.246.0"
 }
