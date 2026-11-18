@@ -283,6 +283,7 @@ class CreateWorkflow503Response implements ModelInterface, ArrayAccess, \JsonSer
     }
 
     public const ERROR_TYPE_LONG_VIDEO_CAP_REACHED = 'long_video_cap_reached';
+    public const ERROR_TYPE_SERVICE_DEGRADED = 'service_degraded';
 
     /**
      * Gets allowable values of the enum
@@ -293,6 +294,7 @@ class CreateWorkflow503Response implements ModelInterface, ArrayAccess, \JsonSer
     {
         return [
             self::ERROR_TYPE_LONG_VIDEO_CAP_REACHED,
+            self::ERROR_TYPE_SERVICE_DEGRADED,
         ];
     }
 

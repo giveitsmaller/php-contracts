@@ -272,6 +272,7 @@ class UpdateProfile422Response implements ModelInterface, ArrayAccess, \JsonSeri
 
     public const ERROR_TYPE_UNPROCESSABLE_ENTITY = 'unprocessable_entity';
     public const ERROR_TYPE_EMAIL_SAME = 'email_same';
+    public const ERROR_TYPE_VALIDATION_ERROR = 'validation_error';
 
     /**
      * Gets allowable values of the enum
@@ -283,6 +284,7 @@ class UpdateProfile422Response implements ModelInterface, ArrayAccess, \JsonSeri
         return [
             self::ERROR_TYPE_UNPROCESSABLE_ENTITY,
             self::ERROR_TYPE_EMAIL_SAME,
+            self::ERROR_TYPE_VALIDATION_ERROR,
         ];
     }
 

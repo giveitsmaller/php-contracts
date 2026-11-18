@@ -277,6 +277,7 @@ class CreateExternalImport422Response implements ModelInterface, ArrayAccess, \J
     }
 
     public const ERROR_TYPE_FEATURE_NOT_AVAILABLE = 'feature_not_available';
+    public const ERROR_TYPE_VALIDATION_ERROR = 'validation_error';
 
     /**
      * Gets allowable values of the enum
@@ -287,6 +288,7 @@ class CreateExternalImport422Response implements ModelInterface, ArrayAccess, \J
     {
         return [
             self::ERROR_TYPE_FEATURE_NOT_AVAILABLE,
+            self::ERROR_TYPE_VALIDATION_ERROR,
         ];
     }
 

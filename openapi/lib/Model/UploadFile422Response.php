@@ -289,6 +289,7 @@ class UploadFile422Response implements ModelInterface, ArrayAccess, \JsonSeriali
     }
 
     public const ERROR_TYPE_UPLOAD_DURATION_EXCEEDS_TIER = 'upload_duration_exceeds_tier';
+    public const ERROR_TYPE_UPLOAD_SIZE_EXCEEDS_TIER = 'upload_size_exceeds_tier';
 
     /**
      * Gets allowable values of the enum
@@ -299,6 +300,7 @@ class UploadFile422Response implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         return [
             self::ERROR_TYPE_UPLOAD_DURATION_EXCEEDS_TIER,
+            self::ERROR_TYPE_UPLOAD_SIZE_EXCEEDS_TIER,
         ];
     }
 

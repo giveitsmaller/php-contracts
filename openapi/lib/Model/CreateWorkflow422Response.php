@@ -301,6 +301,12 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
     }
 
     public const ERROR_TYPE_LONG_VIDEO_JOB_TOO_COSTLY = 'long_video_job_too_costly';
+    public const ERROR_TYPE_VALIDATION_ERROR = 'validation_error';
+    public const ERROR_TYPE_FEATURE_NOT_AVAILABLE = 'feature_not_available';
+    public const ERROR_TYPE_PROCESSING_CLASS_EXCEEDS_BAND = 'processing_class_exceeds_band';
+    public const ERROR_TYPE_PROBE_PENDING = 'probe_pending';
+    public const ERROR_TYPE_KNOWN_BAD_INPUT = 'known_bad_input';
+    public const ERROR_TYPE_IDEMPOTENCY_KEY_REUSED = 'idempotency_key_reused';
 
     /**
      * Gets allowable values of the enum
@@ -311,6 +317,12 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
     {
         return [
             self::ERROR_TYPE_LONG_VIDEO_JOB_TOO_COSTLY,
+            self::ERROR_TYPE_VALIDATION_ERROR,
+            self::ERROR_TYPE_FEATURE_NOT_AVAILABLE,
+            self::ERROR_TYPE_PROCESSING_CLASS_EXCEEDS_BAND,
+            self::ERROR_TYPE_PROBE_PENDING,
+            self::ERROR_TYPE_KNOWN_BAD_INPUT,
+            self::ERROR_TYPE_IDEMPOTENCY_KEY_REUSED,
         ];
     }
 

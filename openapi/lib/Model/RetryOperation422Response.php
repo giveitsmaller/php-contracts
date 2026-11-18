@@ -289,6 +289,7 @@ class RetryOperation422Response implements ModelInterface, ArrayAccess, \JsonSer
     }
 
     public const ERROR_TYPE_LONG_VIDEO_JOB_TOO_COSTLY = 'long_video_job_too_costly';
+    public const ERROR_TYPE_KNOWN_BAD_INPUT = 'known_bad_input';
 
     /**
      * Gets allowable values of the enum
@@ -299,6 +300,7 @@ class RetryOperation422Response implements ModelInterface, ArrayAccess, \JsonSer
     {
         return [
             self::ERROR_TYPE_LONG_VIDEO_JOB_TOO_COSTLY,
+            self::ERROR_TYPE_KNOWN_BAD_INPUT,
         ];
     }
 

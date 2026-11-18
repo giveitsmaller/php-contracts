@@ -289,6 +289,7 @@ class CreateExternalImport403Response implements ModelInterface, ArrayAccess, \J
     }
 
     public const ERROR_TYPE_FEATURE_TIER_RESTRICTED = 'feature_tier_restricted';
+    public const ERROR_TYPE_TIER_RESTRICTION = 'tier_restriction';
 
     /**
      * Gets allowable values of the enum
@@ -299,6 +300,7 @@ class CreateExternalImport403Response implements ModelInterface, ArrayAccess, \J
     {
         return [
             self::ERROR_TYPE_FEATURE_TIER_RESTRICTED,
+            self::ERROR_TYPE_TIER_RESTRICTION,
         ];
     }
 

@@ -283,6 +283,9 @@ class ResumeWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
     }
 
     public const ERROR_TYPE_IDEMPOTENCY_KEY_REUSED = 'idempotency_key_reused';
+    public const ERROR_TYPE_WORKFLOW_EXPIRED = 'workflow_expired';
+    public const ERROR_TYPE_VALIDATION_ERROR = 'validation_error';
+    public const ERROR_TYPE_FEATURE_NOT_AVAILABLE = 'feature_not_available';
 
     /**
      * Gets allowable values of the enum
@@ -293,6 +296,9 @@ class ResumeWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
     {
         return [
             self::ERROR_TYPE_IDEMPOTENCY_KEY_REUSED,
+            self::ERROR_TYPE_WORKFLOW_EXPIRED,
+            self::ERROR_TYPE_VALIDATION_ERROR,
+            self::ERROR_TYPE_FEATURE_NOT_AVAILABLE,
         ];
     }
 

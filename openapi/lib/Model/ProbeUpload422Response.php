@@ -265,6 +265,7 @@ class ProbeUpload422Response implements ModelInterface, ArrayAccess, \JsonSerial
     }
 
     public const ERROR_TYPE_PROBE_NOT_APPLICABLE = 'probe_not_applicable';
+    public const ERROR_TYPE_PROBE_NOT_READY = 'probe_not_ready';
 
     /**
      * Gets allowable values of the enum
@@ -275,6 +276,7 @@ class ProbeUpload422Response implements ModelInterface, ArrayAccess, \JsonSerial
     {
         return [
             self::ERROR_TYPE_PROBE_NOT_APPLICABLE,
+            self::ERROR_TYPE_PROBE_NOT_READY,
         ];
     }
 

@@ -271,6 +271,10 @@ class CreateWorkflow409Response implements ModelInterface, ArrayAccess, \JsonSer
     }
 
     public const ERROR_TYPE_QUOTE_ALREADY_ACCEPTED = 'quote_already_accepted';
+    public const ERROR_TYPE_QUOTE_NOT_FOUND = 'quote_not_found';
+    public const ERROR_TYPE_QUOTE_EXPIRED = 'quote_expired';
+    public const ERROR_TYPE_QUOTE_REQUEST_MISMATCH = 'quote_request_mismatch';
+    public const ERROR_TYPE_QUOTE_SUPERSEDED = 'quote_superseded';
 
     /**
      * Gets allowable values of the enum
@@ -281,6 +285,10 @@ class CreateWorkflow409Response implements ModelInterface, ArrayAccess, \JsonSer
     {
         return [
             self::ERROR_TYPE_QUOTE_ALREADY_ACCEPTED,
+            self::ERROR_TYPE_QUOTE_NOT_FOUND,
+            self::ERROR_TYPE_QUOTE_EXPIRED,
+            self::ERROR_TYPE_QUOTE_REQUEST_MISMATCH,
+            self::ERROR_TYPE_QUOTE_SUPERSEDED,
         ];
     }
 

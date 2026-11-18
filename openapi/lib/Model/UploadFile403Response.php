@@ -289,6 +289,7 @@ class UploadFile403Response implements ModelInterface, ArrayAccess, \JsonSeriali
     }
 
     public const ERROR_TYPE_FEATURE_TIER_RESTRICTED = 'feature_tier_restricted';
+    public const ERROR_TYPE_TIER_RESTRICTION = 'tier_restriction';
 
     /**
      * Gets allowable values of the enum
@@ -299,6 +300,7 @@ class UploadFile403Response implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         return [
             self::ERROR_TYPE_FEATURE_TIER_RESTRICTED,
+            self::ERROR_TYPE_TIER_RESTRICTION,
         ];
     }
 

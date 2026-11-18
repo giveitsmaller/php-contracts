@@ -332,19 +332,12 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
 
     public const ERROR_ABUSE_DETECTED = 'ABUSE_DETECTED';
     public const ERROR_TYPE_ABUSE_DETECTED = 'abuse_detected';
+    public const ERROR_TYPE_TIER_RESTRICTION = 'tier_restriction';
+    public const ERROR_TYPE_FEATURE_TIER_RESTRICTED = 'feature_tier_restricted';
+    public const ERROR_TYPE_ANONYMOUS_OPERATION_NOT_ALLOWED = 'anonymous_operation_not_allowed';
+    public const ERROR_TYPE_ANONYMOUS_QUOTA_EXHAUSTED = 'anonymous_quota_exhausted';
+    public const ERROR_TYPE_ANONYMOUS_LIMIT_EXCEEDED = 'anonymous_limit_exceeded';
     public const LIMIT_VIDEO_DURATION_SECONDS = 'video_duration_seconds';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getErrorAllowableValues()
-    {
-        return [
-            self::ERROR_ABUSE_DETECTED,
-        ];
-    }
 
     /**
      * Gets allowable values of the enum
@@ -355,6 +348,11 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
     {
         return [
             self::ERROR_TYPE_ABUSE_DETECTED,
+            self::ERROR_TYPE_TIER_RESTRICTION,
+            self::ERROR_TYPE_FEATURE_TIER_RESTRICTED,
+            self::ERROR_TYPE_ANONYMOUS_OPERATION_NOT_ALLOWED,
+            self::ERROR_TYPE_ANONYMOUS_QUOTA_EXHAUSTED,
+            self::ERROR_TYPE_ANONYMOUS_LIMIT_EXCEEDED,
         ];
     }
 
@@ -441,14 +439,6 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
 
         if ($this->container['error'] === null) {
             $invalidProperties[] = "'error' can't be null";
-        }
-        $allowedValues = $this->getErrorAllowableValues();
-        if (!is_null($this->container['error']) && !in_array($this->container['error'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'error', must be one of '%s'",
-                $this->container['error'],
-                implode("', '", $allowedValues)
-            );
         }
 
         if ($this->container['error_type'] === null) {
@@ -573,16 +563,6 @@ class CreateWorkflow403Response implements ModelInterface, ArrayAccess, \JsonSer
     {
         if (is_null($error)) {
             throw new \InvalidArgumentException('non-nullable error cannot be null');
-        }
-        $allowedValues = $this->getErrorAllowableValues();
-        if (!in_array($error, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'error', must be one of '%s'",
-                    $error,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['error'] = $error;
 
