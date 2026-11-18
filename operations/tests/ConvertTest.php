@@ -26,6 +26,9 @@ use Gisl\Generated\Operations\ConvertImageSvgOutputFormat;
 use Gisl\Generated\Operations\ConvertVideoDither;
 use Gisl\Generated\Operations\ConvertVideoOptions;
 use Gisl\Generated\Operations\ConvertVideoOutputFormat;
+use Gisl\Generated\Operations\ConvertVideoQuicktimeDither;
+use Gisl\Generated\Operations\ConvertVideoQuicktimeOptions;
+use Gisl\Generated\Operations\ConvertVideoQuicktimeOutputFormat;
 
 final class ConvertTest extends TestCase
 {
@@ -506,6 +509,125 @@ final class ConvertTest extends TestCase
             dither: ConvertVideoDither::None,
         );
         $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
+    }
+
+    public function testConvertVideoQuicktimeOutputFormatMp4BackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeOutputFormat::from('mp4');
+        $this->assertSame(ConvertVideoQuicktimeOutputFormat::Mp4, $enum);
+        $this->assertSame('mp4', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeOutputFormatWebmBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeOutputFormat::from('webm');
+        $this->assertSame(ConvertVideoQuicktimeOutputFormat::Webm, $enum);
+        $this->assertSame('webm', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeOutputFormatOggBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeOutputFormat::from('ogg');
+        $this->assertSame(ConvertVideoQuicktimeOutputFormat::Ogg, $enum);
+        $this->assertSame('ogg', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeOutputFormatGifBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeOutputFormat::from('gif');
+        $this->assertSame(ConvertVideoQuicktimeOutputFormat::Gif, $enum);
+        $this->assertSame('gif', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeOutputFormatMovBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeOutputFormat::from('mov');
+        $this->assertSame(ConvertVideoQuicktimeOutputFormat::Mov, $enum);
+        $this->assertSame('mov', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeOutputFormatMkvBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeOutputFormat::from('mkv');
+        $this->assertSame(ConvertVideoQuicktimeOutputFormat::Mkv, $enum);
+        $this->assertSame('mkv', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeOutputFormatCaseCount(): void
+    {
+        $this->assertCount(6, ConvertVideoQuicktimeOutputFormat::cases());
+    }
+
+    public function testConvertVideoQuicktimeDitherNoneBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeDither::from('none');
+        $this->assertSame(ConvertVideoQuicktimeDither::None, $enum);
+        $this->assertSame('none', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeDitherBayerBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeDither::from('bayer');
+        $this->assertSame(ConvertVideoQuicktimeDither::Bayer, $enum);
+        $this->assertSame('bayer', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeDitherFloydSteinbergBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeDither::from('floyd_steinberg');
+        $this->assertSame(ConvertVideoQuicktimeDither::FloydSteinberg, $enum);
+        $this->assertSame('floyd_steinberg', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeDitherSierra2BackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeDither::from('sierra2');
+        $this->assertSame(ConvertVideoQuicktimeDither::Sierra2, $enum);
+        $this->assertSame('sierra2', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeDitherSierra24aBackingValue(): void
+    {
+        $enum = ConvertVideoQuicktimeDither::from('sierra2_4a');
+        $this->assertSame(ConvertVideoQuicktimeDither::Sierra24a, $enum);
+        $this->assertSame('sierra2_4a', $enum->value);
+    }
+
+    public function testConvertVideoQuicktimeDitherCaseCount(): void
+    {
+        $this->assertCount(5, ConvertVideoQuicktimeDither::cases());
+    }
+
+    public function testConvertVideoQuicktimeOptionsDefaultConstruction(): void
+    {
+        $obj = new ConvertVideoQuicktimeOptions(
+            output_format: ConvertVideoQuicktimeOutputFormat::Mp4,
+        );
+        $this->assertInstanceOf(ConvertVideoQuicktimeOptions::class, $obj);
+        $this->assertNull($obj->crf);
+        $this->assertNull($obj->trim_start);
+        $this->assertNull($obj->trim_end);
+        $this->assertNull($obj->fps);
+        $this->assertNull($obj->width);
+        $this->assertNull($obj->max_colors);
+        $this->assertNull($obj->loop);
+        $this->assertNull($obj->dither);
+    }
+
+    public function testConvertVideoQuicktimeOptionsFullConstruction(): void
+    {
+        $obj = new ConvertVideoQuicktimeOptions(
+            output_format: ConvertVideoQuicktimeOutputFormat::Mp4,
+            crf: 0,
+            trim_start: 0.0,
+            trim_end: 0.0,
+            fps: 1.0,
+            width: 1,
+            max_colors: 2,
+            loop: -1,
+            dither: ConvertVideoQuicktimeDither::None,
+        );
+        $this->assertInstanceOf(ConvertVideoQuicktimeOptions::class, $obj);
     }
 
     public function testConvertAudioOutputFormatMp3BackingValue(): void

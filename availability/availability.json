@@ -1,6 +1,6 @@
 {
   "capabilities_profile": "baseline",
-  "capabilities_version": 285,
+  "capabilities_version": 294,
   "endpoints": {
     "DELETE /api/auth/account": {
       "auth": "required",
@@ -2905,6 +2905,179 @@
               }
             }
           }
+        },
+        "video_quicktime": {
+          "availability": "beta",
+          "mimes": [
+            "video/quicktime"
+          ],
+          "options": {
+            "crf": {
+              "default": 23,
+              "depends_on": {
+                "output_format": [
+                  "mp4",
+                  "webm",
+                  "ogg",
+                  "mov",
+                  "mkv"
+                ]
+              },
+              "description": "CRF (Constant Rate Factor): 0 = lossless/best, 51 = worst. Lower = higher quality + larger file (the inverse of image `quality`). Video outputs only \u2014 NOT applicable to a `gif` output (frame extraction has no CRF). An explicit `crf` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit. Left at 23 (the default) when converting an MP4 to MOV and the streams can be carried over as they are, the video is copied without re-encoding, so its quality is unchanged. Choose any other value to force a re-encode.\n",
+              "max": 51,
+              "min": 0,
+              "type": "integer"
+            },
+            "dither": {
+              "default": "bayer",
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF dithering method. `bayer` is a good size/quality balance; `none` is smallest (may band).\n",
+              "type": "enum",
+              "values": [
+                "none",
+                "bayer",
+                "floyd_steinberg",
+                "sierra2",
+                "sierra2_4a"
+              ]
+            },
+            "fps": {
+              "default": 12,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "Output frame rate for video \u2192 GIF. Lower = fewer frames = smaller file. Video \u2192 GIF only.\n",
+              "max": 50,
+              "min": 1,
+              "type": "float"
+            },
+            "loop": {
+              "default": 0,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF loop count: 0 = infinite (default), N > 0 = loop N times, -1 = play once.\n",
+              "min": -1,
+              "type": "integer"
+            },
+            "max_colors": {
+              "default": 256,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF palette size (the palette generation max colours). Fewer colors = smaller file.\n",
+              "max": 256,
+              "min": 2,
+              "type": "integer"
+            },
+            "output_format": {
+              "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette, mov->H.264, mkv->H.264) \u2014 not caller-selectable.",
+              "per_value_availability": {
+                "gif": {
+                  "availability": "beta",
+                  "per_class_availability": {
+                    "long_form": {
+                      "availability": "planned"
+                    }
+                  }
+                }
+              },
+              "per_value_constraints": {
+                "gif": {
+                  "max_kept_duration": "PT10S"
+                }
+              },
+              "required": true,
+              "type": "enum",
+              "values": [
+                "mp4",
+                "webm",
+                "ogg",
+                "gif",
+                "mov",
+                "mkv"
+              ]
+            },
+            "trim_end": {
+              "description": "Trim from end in seconds (absent = to the end of the clip). Removes this many seconds from the end; combined with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live \u2014 see `trim_start`.\n",
+              "min": 0,
+              "type": "float"
+            },
+            "trim_start": {
+              "description": "Trim from beginning in seconds (absent = from the start). The clip is cut before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live for all video outputs.\n",
+              "min": 0,
+              "type": "float"
+            },
+            "width": {
+              "default": 480,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "Maximum output width in pixels \u2014 a downscale-only CAP (a source narrower than this is left untouched; height is aspect-preserved). Smaller = smaller file.\n",
+              "max": 4096,
+              "min": 1,
+              "type": "integer"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
+              },
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
+              },
+              "long_form_size_floor_bytes": 268435456,
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
+                }
+              }
+            },
+            "short_form": {
+              "availability": "beta",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              },
+              "resolution_bands": {
+                "gt_1080p": {
+                  "basis": "not_served"
+                },
+                "le_720p": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT2M25S"
+                  }
+                },
+                "p1080": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT1M20S"
+                  }
+                },
+                "unknown": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT2M25S"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -3295,6 +3468,10 @@
       "max_inputs": 10,
       "mime_groups": {
         "audio": {
+          "ceiling_basis": {
+            "max_total_duration": "unproven"
+          },
+          "max_total_duration": "PT5M",
           "mimes": [
             "audio/mpeg",
             "audio/aac",
@@ -3308,7 +3485,7 @@
               "depends_on": {
                 "output_type": "audio"
               },
-              "description": "Output format of the merged audio file. Not yet available: a request that sets it is refused until it ships. When every input has the same format, the merged file keeps that format. When the inputs differ, choose the format here; if you do not, the first input's format is used. Default by input type: audio/mpeg -> mp3, audio/aac -> aac, audio/ogg -> ogg (Ogg Vorbis), audio/flac -> flac, audio/wav -> wav. m4a is AAC in an MP4 container. Converting lossy inputs to FLAC or WAV keeps every sample, so the file is much larger without restoring any quality. WAV is uncompressed, so its length is limited by size: about 45 minutes at 48 kHz stereo 16-bit, longer for mono or lower sample rates, shorter for more channels or higher rates. Past that the job fails.",
+              "description": "Output format of the merged audio file. Not yet available: a request that sets it is refused until it ships. When every input has the same format, the merged file keeps that format. When the inputs differ, choose the format here; if you do not, the first input's format is used. Default by input type: audio/mpeg -> mp3, audio/aac -> aac, audio/ogg -> ogg (Ogg Vorbis), audio/flac -> flac, audio/wav -> wav, audio/mp4 -> m4a. m4a is AAC in an MP4 container. Converting lossy inputs to FLAC or WAV keeps every sample, so the file is much larger without restoring any quality. WAV is uncompressed, but a WAV merge is limited by this merge's total-duration limit (`max_total_duration`), like every other format, not by file size, except for audio with many channels at a high sample rate, where the file-size cap binds first.",
               "type": "enum",
               "values": [
                 "mp3",
@@ -3385,12 +3562,119 @@
               ]
             },
             "trim_end": {
-              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\n",
+              "availability": "planned",
+              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\nNot yet available: a request that sets it on any input is refused at create.\n",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\n",
+              "availability": "planned",
+              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\nNot yet available: a request that sets it on any input is refused at create.\n",
+              "min": 0,
+              "type": "float"
+            }
+          }
+        },
+        "audio_m4a": {
+          "availability": "beta",
+          "ceiling_basis": {
+            "max_total_duration": "unproven"
+          },
+          "max_total_duration": "PT5M",
+          "mimes": [
+            "audio/mp4"
+          ],
+          "options": {
+            "audio_format": {
+              "availability": "planned",
+              "depends_on": {
+                "output_type": "audio"
+              },
+              "description": "Output format of the merged audio file. Not yet available: a request that sets it is refused until it ships. When every input has the same format, the merged file keeps that format. When the inputs differ, choose the format here; if you do not, the first input's format is used. Default by input type: audio/mpeg -> mp3, audio/aac -> aac, audio/ogg -> ogg (Ogg Vorbis), audio/flac -> flac, audio/wav -> wav, audio/mp4 -> m4a. m4a is AAC in an MP4 container. Converting lossy inputs to FLAC or WAV keeps every sample, so the file is much larger without restoring any quality. WAV is uncompressed, but a WAV merge is limited by this merge's total-duration limit (`max_total_duration`), like every other format, not by file size, except for audio with many channels at a high sample rate, where the file-size cap binds first.",
+              "type": "enum",
+              "values": [
+                "mp3",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wav",
+                "m4a"
+              ]
+            },
+            "crossfade_duration": {
+              "default": 0,
+              "depends_on": {
+                "transition": "crossfade"
+              },
+              "description": "Crossfade duration in seconds",
+              "max": 10.0,
+              "min": 0,
+              "type": "float"
+            },
+            "gap_duration": {
+              "default": 0,
+              "description": "Silence duration between clips in seconds",
+              "max": 10.0,
+              "min": 0,
+              "type": "float"
+            },
+            "normalize_audio": {
+              "default": true,
+              "description": "Normalize audio levels across all clips",
+              "type": "boolean"
+            },
+            "output_type": {
+              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio': until `audio_format` is available, the merged file is always AAC audio in an MP4 container (.m4a, audio/mp4), whatever the input formats. Optional \u2014 API injects this default post-validation so callers may omit it.",
+              "required": false,
+              "type": "enum",
+              "values": [
+                "audio"
+              ]
+            },
+            "transition": {
+              "default": "none",
+              "description": "Transition between audio clips. `none` joins them with a\nhard cut; `crossfade` blends one into the next.\n",
+              "type": "enum",
+              "values": [
+                "none",
+                "crossfade"
+              ]
+            }
+          },
+          "per_input_options": {
+            "crossfade_duration": {
+              "depends_on": {
+                "transition": "crossfade"
+              },
+              "description": "Override crossfade duration for this join point",
+              "max": 10.0,
+              "min": 0,
+              "type": "float"
+            },
+            "gap_duration": {
+              "description": "Override gap duration for this join point",
+              "max": 10.0,
+              "min": 0,
+              "type": "float"
+            },
+            "transition": {
+              "description": "Override transition for the join point preceding this\ninput. Audio-only catalog (acrossfade-backed); see\nFORMAT.md \u00a7\"Audio vs visual transition catalogs (merge)\".\n",
+              "type": "enum",
+              "values": [
+                "none",
+                "crossfade"
+              ]
+            },
+            "trim_end": {
+              "availability": "planned",
+              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\nNot yet available: a request that sets it on any input is refused at create.\n",
+              "min": 0,
+              "type": "float"
+            },
+            "trim_start": {
+              "availability": "planned",
+              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\nNot yet available: a request that sets it on any input is refused at create.\n",
               "min": 0,
               "type": "float"
             }
@@ -4074,7 +4358,8 @@
               ]
             },
             "trim_end": {
-              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\n",
+              "availability": "planned",
+              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\nNot yet available: a request that sets it on any input is refused at create.\n",
               "min": 0,
               "per_class_availability": {
                 "long_form_re_encode": {
@@ -4084,7 +4369,8 @@
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\n",
+              "availability": "planned",
+              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\nNot yet available: a request that sets it on any input is refused at create.\n",
               "min": 0,
               "per_class_availability": {
                 "long_form_re_encode": {
@@ -4174,7 +4460,8 @@
       "availability": "beta",
       "default": false,
       "description": "Inert lossless source operation. A single-input source job whose\nSOLE operation is `passthrough` emits its source bytes UNCHANGED \u2014\nno compression, no transformation, no backend dispatch. The API\nself-completes the job at workflow-create/publish time: the job's\nterminal output IS the upload's `{bucket, key}` unchanged.\n\n**Purpose.** Lets an uploaded file enter a multi-input operation\n(`merge` / `archive` / `image_watermark` / etc.) LOSSLESSLY. Since\nV2 narrows the input source to exclude upload-direct (a multi-input source\n\u2014 job_output / external_import / connection only), an upload that\nmust feed a multi-input op enters via a `passthrough` source job\nreferenced downstream by `{ type: job_output, from: <id> }`. This\npreserves billing / DAG / lineage that direct upload-in-inputs[]\nwould bypass.\n\n**Distinct from `operations: []`.** An empty `operations[]` on a\nsingle-input upload job KEEPS its implicit-compress meaning (see\n`POST /api/workflows` description). `passthrough` is the EXPLICIT\nlossless opt-out chosen via the existing rule \"non-empty\n`operations[]` without `compress` = compression opt-out\" \u2014 it is a\nsole, named operation, not an empty chain.\n\n**Never published to SNS.** Because the API self-completes the job\nat publish, `passthrough` is INTENTIONALLY absent from the AsyncAPI\nrouting enums (`OperationType`, `OperationRequestAttributes.operation_type`)\nand has no `ops-passthrough` queue. It never appears on the wire as\na request message.\n\nMedia-agnostic (no `mime_groups`): it accepts any uploaded MIME and\ncopies it verbatim, so there are no per-MIME options or constraints.\n`availability: beta` \u2014 the API self-completion path is LIVE (the\ninputs[]-narrowing + passthrough self-complete mechanism is deployed),\nso workflow-create accepts `passthrough` source jobs and MUST NOT\nreturn `feature_not_available`. Activated per ticket\n[`4som89Uh`](https://trello.com/c/4som89Uh) (planned\u2192beta flip;\nself-complete code deployed API-side).\n",
-      "input_model": "single"
+      "input_model": "single",
+      "sole_op": true
     },
     "render_variants": {
       "availability": "planned",
@@ -5782,20 +6069,29 @@
       },
       {
         "callers": "all",
-        "decision": "api card 1y9SkeYY (contracts card xgLtUf10, hub decision 709 step D). The audio compress duration ceiling (compress.audio max_input_duration, #759) is judged at create from the probed duration, so an unprobed upload must be waited on; the API switch is NOT on yet",
+        "decision": "api #918 (api card 1y9SkeYY; contracts card xgLtUf10, hub decision 709 step D). The audio compress duration ceiling (compress.audio max_input_duration, #759) is judged at create from the probed duration, so an unprobed upload is waited on. No API switch gates it.",
         "id": "audio_compress",
         "job_ref": "own",
         "media": "audio",
         "operation": "compress",
-        "status": "declared"
+        "status": "live"
       },
       {
         "callers": "all",
-        "decision": "api card 1y9SkeYY (contracts card xgLtUf10, hub decision 709 step D). The audio convert duration ceiling (convert.audio max_input_duration, #759) is judged at create from the probed duration, so an unprobed upload must be waited on; the API switch is NOT on yet",
+        "decision": "api #918 (api card 1y9SkeYY; contracts card xgLtUf10, hub decision 709 step D). The audio convert duration ceiling (convert.audio max_input_duration, #759) is judged at create from the probed duration, so an unprobed upload is waited on. No API switch gates it.",
         "id": "audio_convert",
         "job_ref": "own",
         "media": "audio",
         "operation": "convert",
+        "status": "live"
+      },
+      {
+        "callers": "all",
+        "decision": "api card J7yMZatB (contract first; the API gate is not built yet) and contracts card WEaJOG3p, which declares the merge.audio group-level max_total_duration PT5M this gate protects (triage 80, decision D607). api #958 refuses an audio merge over PT5M at create on the PROBED durations and adds nothing for an input whose probe has not landed, so such a merge is admitted and the worker refuses it at Run. Live once api card J7yMZatB's gate is on prod (a condition, not a date).",
+        "id": "audio_merge",
+        "job_ref": "feeder",
+        "media": "audio",
+        "operation": "merge",
         "status": "declared"
       },
       {
@@ -5821,7 +6117,7 @@
       "availability": "planned"
     }
   },
-  "schema_version": "2.246.0",
+  "schema_version": "2.251.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

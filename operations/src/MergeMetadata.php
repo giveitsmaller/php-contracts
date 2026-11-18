@@ -367,9 +367,11 @@ final class MergeMetadata
                             per_value_availability: [],
                         ),
                         'trim_start' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'trim_end' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -409,9 +411,56 @@ final class MergeMetadata
                             per_value_availability: [],
                         ),
                         'trim_start' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'trim_end' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                    ],
+                ),
+                'audio_m4a' => new MimeGroupMetadata(
+                    availability: 'beta',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'output_type' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'audio_format' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'transition' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'crossfade_duration' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'gap_duration' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'normalize_audio' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [
+                        'transition' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'crossfade_duration' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'gap_duration' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'trim_start' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'trim_end' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],

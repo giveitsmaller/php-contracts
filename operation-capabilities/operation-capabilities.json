@@ -783,7 +783,7 @@
       "produces": {
         "same_as_input": true
       },
-      "sole_op": false
+      "sole_op": true
     },
     "render_variants": {
       "accepts": [
@@ -1030,5 +1030,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.246.0"
+  "schema_version": "2.251.0"
 }

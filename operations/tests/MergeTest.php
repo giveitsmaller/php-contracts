@@ -8,6 +8,11 @@ namespace Gisl\Generated\Operations\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Gisl\Generated\Operations\MergeAudioAudioFormat;
+use Gisl\Generated\Operations\MergeAudioM4aAudioFormat;
+use Gisl\Generated\Operations\MergeAudioM4aOptions;
+use Gisl\Generated\Operations\MergeAudioM4aOutputType;
+use Gisl\Generated\Operations\MergeAudioM4aPerInputOptions;
+use Gisl\Generated\Operations\MergeAudioM4aTransition;
 use Gisl\Generated\Operations\MergeAudioOptions;
 use Gisl\Generated\Operations\MergeAudioOutputType;
 use Gisl\Generated\Operations\MergeAudioPerInputOptions;
@@ -954,6 +959,139 @@ final class MergeTest extends TestCase
             trim_end: 0.0,
         );
         $this->assertInstanceOf(MergeAudioPerInputOptions::class, $obj);
+    }
+
+    public function testMergeAudioM4aOutputTypeAudioBackingValue(): void
+    {
+        $enum = MergeAudioM4aOutputType::from('audio');
+        $this->assertSame(MergeAudioM4aOutputType::Audio, $enum);
+        $this->assertSame('audio', $enum->value);
+    }
+
+    public function testMergeAudioM4aOutputTypeCaseCount(): void
+    {
+        $this->assertCount(1, MergeAudioM4aOutputType::cases());
+    }
+
+    public function testMergeAudioM4aAudioFormatMp3BackingValue(): void
+    {
+        $enum = MergeAudioM4aAudioFormat::from('mp3');
+        $this->assertSame(MergeAudioM4aAudioFormat::Mp3, $enum);
+        $this->assertSame('mp3', $enum->value);
+    }
+
+    public function testMergeAudioM4aAudioFormatAacBackingValue(): void
+    {
+        $enum = MergeAudioM4aAudioFormat::from('aac');
+        $this->assertSame(MergeAudioM4aAudioFormat::Aac, $enum);
+        $this->assertSame('aac', $enum->value);
+    }
+
+    public function testMergeAudioM4aAudioFormatOggBackingValue(): void
+    {
+        $enum = MergeAudioM4aAudioFormat::from('ogg');
+        $this->assertSame(MergeAudioM4aAudioFormat::Ogg, $enum);
+        $this->assertSame('ogg', $enum->value);
+    }
+
+    public function testMergeAudioM4aAudioFormatOpusBackingValue(): void
+    {
+        $enum = MergeAudioM4aAudioFormat::from('opus');
+        $this->assertSame(MergeAudioM4aAudioFormat::Opus, $enum);
+        $this->assertSame('opus', $enum->value);
+    }
+
+    public function testMergeAudioM4aAudioFormatFlacBackingValue(): void
+    {
+        $enum = MergeAudioM4aAudioFormat::from('flac');
+        $this->assertSame(MergeAudioM4aAudioFormat::Flac, $enum);
+        $this->assertSame('flac', $enum->value);
+    }
+
+    public function testMergeAudioM4aAudioFormatWavBackingValue(): void
+    {
+        $enum = MergeAudioM4aAudioFormat::from('wav');
+        $this->assertSame(MergeAudioM4aAudioFormat::Wav, $enum);
+        $this->assertSame('wav', $enum->value);
+    }
+
+    public function testMergeAudioM4aAudioFormatM4aBackingValue(): void
+    {
+        $enum = MergeAudioM4aAudioFormat::from('m4a');
+        $this->assertSame(MergeAudioM4aAudioFormat::M4a, $enum);
+        $this->assertSame('m4a', $enum->value);
+    }
+
+    public function testMergeAudioM4aAudioFormatCaseCount(): void
+    {
+        $this->assertCount(7, MergeAudioM4aAudioFormat::cases());
+    }
+
+    public function testMergeAudioM4aTransitionNoneBackingValue(): void
+    {
+        $enum = MergeAudioM4aTransition::from('none');
+        $this->assertSame(MergeAudioM4aTransition::None, $enum);
+        $this->assertSame('none', $enum->value);
+    }
+
+    public function testMergeAudioM4aTransitionCrossfadeBackingValue(): void
+    {
+        $enum = MergeAudioM4aTransition::from('crossfade');
+        $this->assertSame(MergeAudioM4aTransition::Crossfade, $enum);
+        $this->assertSame('crossfade', $enum->value);
+    }
+
+    public function testMergeAudioM4aTransitionCaseCount(): void
+    {
+        $this->assertCount(2, MergeAudioM4aTransition::cases());
+    }
+
+    public function testMergeAudioM4aOptionsDefaultConstruction(): void
+    {
+        $obj = new MergeAudioM4aOptions();
+        $this->assertInstanceOf(MergeAudioM4aOptions::class, $obj);
+        $this->assertSame(MergeAudioM4aTransition::None, $obj->transition);
+        $this->assertSame(0.0, $obj->gap_duration);
+        $this->assertSame(true, $obj->normalize_audio);
+        $this->assertNull($obj->output_type);
+        $this->assertNull($obj->audio_format);
+        $this->assertNull($obj->crossfade_duration);
+    }
+
+    public function testMergeAudioM4aOptionsFullConstruction(): void
+    {
+        $obj = new MergeAudioM4aOptions(
+            output_type: MergeAudioM4aOutputType::Audio,
+            audio_format: MergeAudioM4aAudioFormat::Mp3,
+            transition: MergeAudioM4aTransition::None,
+            crossfade_duration: 0.0,
+            gap_duration: 0.0,
+            normalize_audio: true,
+        );
+        $this->assertInstanceOf(MergeAudioM4aOptions::class, $obj);
+    }
+
+    public function testMergeAudioM4aPerInputOptionsDefaultConstruction(): void
+    {
+        $obj = new MergeAudioM4aPerInputOptions();
+        $this->assertInstanceOf(MergeAudioM4aPerInputOptions::class, $obj);
+        $this->assertNull($obj->transition);
+        $this->assertNull($obj->crossfade_duration);
+        $this->assertNull($obj->gap_duration);
+        $this->assertNull($obj->trim_start);
+        $this->assertNull($obj->trim_end);
+    }
+
+    public function testMergeAudioM4aPerInputOptionsFullConstruction(): void
+    {
+        $obj = new MergeAudioM4aPerInputOptions(
+            transition: MergeAudioM4aTransition::None,
+            crossfade_duration: 0.0,
+            gap_duration: 0.0,
+            trim_start: 0.0,
+            trim_end: 0.0,
+        );
+        $this->assertInstanceOf(MergeAudioM4aPerInputOptions::class, $obj);
     }
 
 }

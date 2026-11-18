@@ -12,6 +12,7 @@ final class PassthroughMetadata
     {
         return new OperationMetadata(
             availability: 'beta',
+            sole_op: true,
             features: [],
             mime_groups: [],
         );

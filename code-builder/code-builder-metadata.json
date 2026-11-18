@@ -4033,6 +4033,223 @@
               }
             }
           }
+        },
+        "video_quicktime": {
+          "availability": "beta",
+          "media_group": "video",
+          "mimes": [
+            "video/quicktime"
+          ],
+          "options": {
+            "crf": {
+              "default": 23,
+              "depends_on": {
+                "output_format": [
+                  "mp4",
+                  "webm",
+                  "ogg",
+                  "mov",
+                  "mkv"
+                ]
+              },
+              "description": "CRF (Constant Rate Factor): 0 = lossless/best, 51 = worst. Lower = higher quality + larger file (the inverse of image `quality`). Video outputs only \u2014 NOT applicable to a `gif` output (frame extraction has no CRF). An explicit `crf` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit. Left at 23 (the default) when converting an MP4 to MOV and the streams can be carried over as they are, the video is copied without re-encoding, so its quality is unchanged. Choose any other value to force a re-encode.\n",
+              "max": 51,
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "crf",
+              "type": "integer"
+            },
+            "dither": {
+              "default": "bayer",
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF dithering method. `bayer` is a good size/quality balance; `none` is smallest (may band).\n",
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "dither",
+              "type": "enum",
+              "value_exposure": {
+                "bayer": "expose",
+                "floyd_steinberg": "expose",
+                "none": "expose",
+                "sierra2": "expose",
+                "sierra2_4a": "expose"
+              },
+              "values": [
+                "none",
+                "bayer",
+                "floyd_steinberg",
+                "sierra2",
+                "sierra2_4a"
+              ]
+            },
+            "fps": {
+              "default": 12,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "Output frame rate for video \u2192 GIF. Lower = fewer frames = smaller file. Video \u2192 GIF only.\n",
+              "max": 50,
+              "min": 1,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "fps",
+              "type": "float"
+            },
+            "loop": {
+              "default": 0,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF loop count: 0 = infinite (default), N > 0 = loop N times, -1 = play once.\n",
+              "min": -1,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "loop",
+              "type": "integer"
+            },
+            "max_colors": {
+              "default": 256,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF palette size (the palette generation max colours). Fewer colors = smaller file.\n",
+              "max": 256,
+              "min": 2,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "maxColors",
+              "type": "integer"
+            },
+            "output_format": {
+              "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette, mov->H.264, mkv->H.264) \u2014 not caller-selectable.",
+              "origin": "contract",
+              "per_value_availability": {
+                "gif": {
+                  "availability": "beta",
+                  "per_class_availability": {
+                    "long_form": {
+                      "availability": "planned"
+                    }
+                  }
+                }
+              },
+              "per_value_constraints": {
+                "gif": {
+                  "max_kept_duration": "PT10S"
+                }
+              },
+              "positional": 0,
+              "required": true,
+              "sdk_exposure": "expose",
+              "surface_key": "outputFormat",
+              "type": "enum",
+              "value_exposure": {
+                "gif": "expose",
+                "mkv": "expose",
+                "mov": "expose",
+                "mp4": "expose",
+                "ogg": "expose",
+                "webm": "expose"
+              },
+              "values": [
+                "mp4",
+                "webm",
+                "ogg",
+                "gif",
+                "mov",
+                "mkv"
+              ]
+            },
+            "trim_end": {
+              "description": "Trim from end in seconds (absent = to the end of the clip). Removes this many seconds from the end; combined with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live \u2014 see `trim_start`.\n",
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "trimEnd",
+              "type": "float"
+            },
+            "trim_start": {
+              "description": "Trim from beginning in seconds (absent = from the start). The clip is cut before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live for all video outputs.\n",
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "trimStart",
+              "type": "float"
+            },
+            "width": {
+              "default": 480,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "Maximum output width in pixels \u2014 a downscale-only CAP (a source narrower than this is left untouched; height is aspect-preserved). Smaller = smaller file.\n",
+              "max": 4096,
+              "min": 1,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "width",
+              "type": "integer"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven",
+                "per_tier.enterprise.max_input_size_bytes": "unproven"
+              },
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 53687091200,
+                "max_output_size_bytes": 53687091200
+              },
+              "long_form_size_floor_bytes": 268435456,
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 107374182400,
+                  "max_output_size_bytes": 107374182400
+                }
+              }
+            },
+            "short_form": {
+              "availability": "beta",
+              "ceiling_basis": {
+                "max_input_duration": "unproven",
+                "max_input_size_bytes": "unproven"
+              },
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              },
+              "resolution_bands": {
+                "gt_1080p": {
+                  "basis": "not_served"
+                },
+                "le_720p": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT2M25S"
+                  }
+                },
+                "p1080": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT1M20S"
+                  }
+                },
+                "unknown": {
+                  "basis": "ruled",
+                  "constraints": {
+                    "max_input_duration": "PT2M25S"
+                  }
+                }
+              }
+            }
+          }
         }
       },
       "produces": {
@@ -4565,6 +4782,10 @@
       "input_model": "multi",
       "media_groups": {
         "audio": {
+          "ceiling_basis": {
+            "max_total_duration": "unproven"
+          },
+          "max_total_duration": "PT5M",
           "media_group": "audio",
           "mimes": [
             "audio/mpeg",
@@ -4579,7 +4800,7 @@
               "depends_on": {
                 "output_type": "audio"
               },
-              "description": "Output format of the merged audio file. Not yet available: a request that sets it is refused until it ships. When every input has the same format, the merged file keeps that format. When the inputs differ, choose the format here; if you do not, the first input's format is used. Default by input type: audio/mpeg -> mp3, audio/aac -> aac, audio/ogg -> ogg (Ogg Vorbis), audio/flac -> flac, audio/wav -> wav. m4a is AAC in an MP4 container. Converting lossy inputs to FLAC or WAV keeps every sample, so the file is much larger without restoring any quality. WAV is uncompressed, so its length is limited by size: about 45 minutes at 48 kHz stereo 16-bit, longer for mono or lower sample rates, shorter for more channels or higher rates. Past that the job fails.",
+              "description": "Output format of the merged audio file. Not yet available: a request that sets it is refused until it ships. When every input has the same format, the merged file keeps that format. When the inputs differ, choose the format here; if you do not, the first input's format is used. Default by input type: audio/mpeg -> mp3, audio/aac -> aac, audio/ogg -> ogg (Ogg Vorbis), audio/flac -> flac, audio/wav -> wav, audio/mp4 -> m4a. m4a is AAC in an MP4 container. Converting lossy inputs to FLAC or WAV keeps every sample, so the file is much larger without restoring any quality. WAV is uncompressed, but a WAV merge is limited by this merge's total-duration limit (`max_total_duration`), like every other format, not by file size, except for audio with many channels at a high sample rate, where the file-size cap binds first.",
               "origin": "contract",
               "sdk_exposure": "coming_soon",
               "surface_key": "audioFormat",
@@ -4704,18 +4925,180 @@
               ]
             },
             "trim_end": {
-              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\n",
+              "availability": "planned",
+              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\nNot yet available: a request that sets it on any input is refused at create.\n",
               "min": 0,
               "origin": "contract",
-              "sdk_exposure": "expose",
+              "sdk_exposure": "coming_soon",
               "surface_key": "trimEnd",
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\n",
+              "availability": "planned",
+              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\nNot yet available: a request that sets it on any input is refused at create.\n",
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "trimStart",
+              "type": "float"
+            }
+          }
+        },
+        "audio_m4a": {
+          "availability": "beta",
+          "ceiling_basis": {
+            "max_total_duration": "unproven"
+          },
+          "max_total_duration": "PT5M",
+          "media_group": "audio",
+          "mimes": [
+            "audio/mp4"
+          ],
+          "options": {
+            "audio_format": {
+              "availability": "planned",
+              "depends_on": {
+                "output_type": "audio"
+              },
+              "description": "Output format of the merged audio file. Not yet available: a request that sets it is refused until it ships. When every input has the same format, the merged file keeps that format. When the inputs differ, choose the format here; if you do not, the first input's format is used. Default by input type: audio/mpeg -> mp3, audio/aac -> aac, audio/ogg -> ogg (Ogg Vorbis), audio/flac -> flac, audio/wav -> wav, audio/mp4 -> m4a. m4a is AAC in an MP4 container. Converting lossy inputs to FLAC or WAV keeps every sample, so the file is much larger without restoring any quality. WAV is uncompressed, but a WAV merge is limited by this merge's total-duration limit (`max_total_duration`), like every other format, not by file size, except for audio with many channels at a high sample rate, where the file-size cap binds first.",
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "audioFormat",
+              "type": "enum",
+              "value_exposure": {
+                "aac": "coming_soon",
+                "flac": "coming_soon",
+                "m4a": "coming_soon",
+                "mp3": "coming_soon",
+                "ogg": "coming_soon",
+                "opus": "coming_soon",
+                "wav": "coming_soon"
+              },
+              "values": [
+                "mp3",
+                "aac",
+                "ogg",
+                "opus",
+                "flac",
+                "wav",
+                "m4a"
+              ]
+            },
+            "crossfade_duration": {
+              "default": 0,
+              "depends_on": {
+                "transition": "crossfade"
+              },
+              "description": "Crossfade duration in seconds",
+              "max": 10.0,
               "min": 0,
               "origin": "contract",
               "sdk_exposure": "expose",
+              "surface_key": "crossfadeDuration",
+              "type": "float"
+            },
+            "gap_duration": {
+              "default": 0,
+              "description": "Silence duration between clips in seconds",
+              "max": 10.0,
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "gapDuration",
+              "type": "float"
+            },
+            "normalize_audio": {
+              "default": true,
+              "description": "Normalize audio levels across all clips",
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "normalizeAudio",
+              "type": "boolean"
+            },
+            "output_type": {
+              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio': until `audio_format` is available, the merged file is always AAC audio in an MP4 container (.m4a, audio/mp4), whatever the input formats. Optional \u2014 API injects this default post-validation so callers may omit it.",
+              "origin": "contract",
+              "positional": 0,
+              "required": false,
+              "sdk_exposure": "expose",
+              "surface_key": "outputType",
+              "type": "enum",
+              "value_exposure": {
+                "audio": "expose"
+              },
+              "values": [
+                "audio"
+              ]
+            },
+            "transition": {
+              "default": "none",
+              "description": "Transition between audio clips. `none` joins them with a\nhard cut; `crossfade` blends one into the next.\n",
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "transition",
+              "type": "enum",
+              "value_exposure": {
+                "crossfade": "expose",
+                "none": "expose"
+              },
+              "values": [
+                "none",
+                "crossfade"
+              ]
+            }
+          },
+          "per_input_options": {
+            "crossfade_duration": {
+              "depends_on": {
+                "transition": "crossfade"
+              },
+              "description": "Override crossfade duration for this join point",
+              "max": 10.0,
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "crossfadeDuration",
+              "type": "float"
+            },
+            "gap_duration": {
+              "description": "Override gap duration for this join point",
+              "max": 10.0,
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "gapDuration",
+              "type": "float"
+            },
+            "transition": {
+              "description": "Override transition for the join point preceding this\ninput. Audio-only catalog (acrossfade-backed); see\nFORMAT.md \u00a7\"Audio vs visual transition catalogs (merge)\".\n",
+              "origin": "contract",
+              "sdk_exposure": "expose",
+              "surface_key": "transition",
+              "type": "enum",
+              "value_exposure": {
+                "crossfade": "expose",
+                "none": "expose"
+              },
+              "values": [
+                "none",
+                "crossfade"
+              ]
+            },
+            "trim_end": {
+              "availability": "planned",
+              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\nNot yet available: a request that sets it on any input is refused at create.\n",
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
+              "surface_key": "trimEnd",
+              "type": "float"
+            },
+            "trim_start": {
+              "availability": "planned",
+              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\nNot yet available: a request that sets it on any input is refused at create.\n",
+              "min": 0,
+              "origin": "contract",
+              "sdk_exposure": "coming_soon",
               "surface_key": "trimStart",
               "type": "float"
             }
@@ -5617,7 +6000,8 @@
               ]
             },
             "trim_end": {
-              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\n",
+              "availability": "planned",
+              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\nNot yet available: a request that sets it on any input is refused at create.\n",
               "min": 0,
               "origin": "contract",
               "per_class_availability": {
@@ -5625,12 +6009,13 @@
                   "availability": "planned"
                 }
               },
-              "sdk_exposure": "expose",
+              "sdk_exposure": "coming_soon",
               "surface_key": "trimEnd",
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\n",
+              "availability": "planned",
+              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\nNot yet available: a request that sets it on any input is refused at create.\n",
               "min": 0,
               "origin": "contract",
               "per_class_availability": {
@@ -5638,7 +6023,7 @@
                   "availability": "planned"
                 }
               },
-              "sdk_exposure": "expose",
+              "sdk_exposure": "coming_soon",
               "surface_key": "trimStart",
               "type": "float"
             }
@@ -5733,7 +6118,7 @@
       "produces": {
         "same_as_input": true
       },
-      "sole_op": false
+      "sole_op": true
     },
     "render_variants": {
       "accepts": [
@@ -7972,7 +8357,7 @@
     }
   },
   "preset_config_hash": "sha256:605a1c44be4b67f9a50467897598b6d6b10bad16ad76c1572d13b5191a2c5a2d",
-  "schema_version": "2.246.0",
-  "sdk_spec_version": "2.25.0",
-  "source_hash": "sha256:b176f3ef631697e0835cfb4fa57c54a02e7454dae7cf84e9249a0790f660e83e"
+  "schema_version": "2.251.0",
+  "sdk_spec_version": "2.26.0",
+  "source_hash": "sha256:2003361de63e6fdb801be778be7dc5acbfc41c16251c8ae69d7287be3e20235c"
 }

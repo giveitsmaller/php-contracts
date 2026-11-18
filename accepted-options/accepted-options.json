@@ -827,6 +827,51 @@
           ]
         },
         "output_format_option": "output_format"
+      },
+      "video_quicktime": {
+        "accepted_options": {
+          "gif": [
+            "dither",
+            "fps",
+            "loop",
+            "max_colors",
+            "output_format",
+            "trim_end",
+            "trim_start",
+            "width"
+          ],
+          "mkv": [
+            "crf",
+            "output_format",
+            "trim_end",
+            "trim_start"
+          ],
+          "mov": [
+            "crf",
+            "output_format",
+            "trim_end",
+            "trim_start"
+          ],
+          "mp4": [
+            "crf",
+            "output_format",
+            "trim_end",
+            "trim_start"
+          ],
+          "ogg": [
+            "crf",
+            "output_format",
+            "trim_end",
+            "trim_start"
+          ],
+          "webm": [
+            "crf",
+            "output_format",
+            "trim_end",
+            "trim_start"
+          ]
+        },
+        "output_format_option": "output_format"
       }
     },
     "custom_luma": {
@@ -896,6 +941,28 @@
     },
     "merge": {
       "audio": {
+        "accepted_options": {
+          "*": [
+            "audio_format",
+            "crossfade_duration",
+            "gap_duration",
+            "normalize_audio",
+            "output_type",
+            "transition"
+          ]
+        },
+        "accepted_per_input_options": {
+          "*": [
+            "crossfade_duration",
+            "gap_duration",
+            "transition",
+            "trim_end",
+            "trim_start"
+          ]
+        },
+        "output_format_option": null
+      },
+      "audio_m4a": {
         "accepted_options": {
           "*": [
             "audio_format",
@@ -1222,5 +1289,5 @@
       }
     }
   },
-  "schema_version": "2.246.0"
+  "schema_version": "2.251.0"
 }

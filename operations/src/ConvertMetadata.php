@@ -150,6 +150,62 @@ final class ConvertMetadata
                     ],
                     per_input_options: [],
                 ),
+                'video_quicktime' => new MimeGroupMetadata(
+                    availability: 'beta',
+                    processing_class: [
+                        'short_form' => new AvailabilityEntry(
+                            availability: 'beta',
+                            constraints: new ProcessingClassConstraints(
+                                max_input_duration: 'PT5M',
+                                max_input_size_bytes: 524288000,
+                                max_output_size_bytes: 524288000,
+                            ),
+                        ),
+                        'long_form' => new AvailabilityEntry(
+                            availability: 'planned',
+                            constraints: new ProcessingClassConstraints(
+                                max_input_duration: 'PT12H',
+                                max_input_size_bytes: 53687091200,
+                                max_output_size_bytes: 53687091200,
+                            ),
+                        ),
+                    ],
+                    per_mime_availability: [],
+                    options: [
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [
+                                'gif' => new AvailabilityEntry(
+                                    availability: 'beta',
+                                ),
+                            ],
+                        ),
+                        'crf' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'trim_start' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'trim_end' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'fps' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'max_colors' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'loop' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'dither' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
                 'audio' => new MimeGroupMetadata(
                     processing_class: [],
                     per_mime_availability: [],
