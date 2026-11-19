@@ -102,6 +102,15 @@ class ObjectSerializer
                         $values[$data::attributeMap()[$property]] = self::sanitizeForSerialization($value, $openAPIType, $formats[$property]);
                     }
                 }
+                // A1YdQY5Q (sdks postprocess): write the kept undeclared keys back. A key the
+                // declared loop already wrote wins.
+                if (method_exists($data, 'getUndeclaredProperties')) {
+                    foreach ($data->getUndeclaredProperties() as $undeclaredKey => $undeclaredValue) {
+                        if (!array_key_exists($undeclaredKey, $values)) {
+                            $values[$undeclaredKey] = $undeclaredValue;
+                        }
+                    }
+                }
             } else {
                 foreach ($data as $property => $value) {
                     $values[$property] = self::sanitizeForSerialization($value);
@@ -551,6 +560,13 @@ class ObjectSerializer
                         $instance->$propertySetter($value);
                     }
                 }
+            }
+            // A1YdQY5Q (sdks postprocess): keep the wire keys no oneOf arm declares. Only the
+            // classes that carry setUndeclaredProperties() (the flattened-oneOf ones) take them.
+            if (is_object($data) && method_exists($instance, 'setUndeclaredProperties')) {
+                $instance->setUndeclaredProperties(
+                    array_diff_key(get_object_vars($data), array_flip($instance::attributeMap()))
+                );
             }
             return $instance;
         }

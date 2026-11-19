@@ -491,6 +491,39 @@ class ExternalDestination implements ModelInterface, ArrayAccess, \JsonSerializa
         return $this;
     }
     /**
+     * Keys this value carries that no oneOf arm declares (A1YdQY5Q). Kept verbatim so a
+     * newer server's additive arm is not dropped on hydrate. Not part of openAPITypes,
+     * attributeMap, setters or getters, and it does not change valid().
+     *
+     * @var array<string, mixed>
+     */
+    protected array $undeclaredProperties = [];
+
+    /**
+     * Returns the keys this value carries that no oneOf arm declares.
+     *
+     * @return array<string, mixed>
+     */
+    public function getUndeclaredProperties(): array
+    {
+        return $this->undeclaredProperties;
+    }
+
+    /**
+     * Sets the keys this value carries that no oneOf arm declares.
+     *
+     * @param array<string, mixed> $undeclaredProperties Wire key => raw value
+     *
+     * @return self
+     */
+    public function setUndeclaredProperties(array $undeclaredProperties): self
+    {
+        $this->undeclaredProperties = $undeclaredProperties;
+
+        return $this;
+    }
+
+    /**
      * Returns true if offset exists. False otherwise.
      *
      * @param integer|string $offset Offset
